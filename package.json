@@ -6,8 +6,8 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc -b && vite build",
-		"lint": "biome lint",
-		"format": "biome format --write",
+		"lint": "biome lint --write --no-errors-on-unmatched",
+		"format": "biome format --write --no-errors-on-unmatched",
 		"format-imports": "prettier --write --ignore-unknown",
 		"test": "vitest",
 		"preview": "vite preview",
