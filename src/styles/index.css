@@ -1,4 +1,4 @@
-@import 'normalize.css';
+@import "normalize.css";
 /* @import './fonts.css'; */
 
 @tailwind base;
@@ -71,12 +71,11 @@
   }
 }
 
-
 * {
-    font-family: 'Roboto', system-ui, sans-serif;
-    scroll-behavior: smooth;
+  font-family: "Roboto", system-ui, sans-serif;
+  scroll-behavior: smooth;
 }
 
 #root {
-    position: relative;
+  position: relative;
 }
