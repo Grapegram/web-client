@@ -7,7 +7,6 @@ import "./App.css";
 function App() {
 	return (
 		<>
-			<Button>sfsfwsf</Button>
 			<Calendar />
 			<Calendar />
 		</>
