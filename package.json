@@ -9,7 +9,9 @@
 		"lint": "biome lint --write --no-errors-on-unmatched",
 		"format": "biome format --write --no-errors-on-unmatched",
 		"format-imports": "prettier --write --ignore-unknown",
-		"test": "vitest",
+		"lint-check": "biome lint --no-errors-on-unmatched",
+		"format-check": "biome format --no-errors-on-unmatched",
+		"test": "vitest run",
 		"preview": "vite preview",
 		"prepare": "husky"
 	},
