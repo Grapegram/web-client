@@ -51,6 +51,7 @@
 		"!node_modules/**/*": [],
 		"!dist/**/*": [],
 		"!yarn.lock": [],
-		"!.husky/**/*": []
+		"!.husky/**/*": [],
+		"!.prettierrc": []
 	}
 }
