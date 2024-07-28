@@ -6,13 +6,13 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc -b && vite build",
-		"lint": "biome lint --write --no-errors-on-unmatched",
-		"format": "biome format --write --no-errors-on-unmatched",
-		"format-imports": "prettier --write --ignore-unknown",
-		"lint-check": "biome lint --no-errors-on-unmatched",
-		"format-check": "biome format --no-errors-on-unmatched",
 		"test": "vitest run",
 		"preview": "vite preview",
+		"lint": "biome lint --write --no-errors-on-unmatched",
+		"lint-check": "biome lint --no-errors-on-unmatched",
+		"format": "biome format --write --no-errors-on-unmatched",
+		"format-imports": "prettier --write --ignore-unknown",
+		"format-check": "biome format --no-errors-on-unmatched",
 		"prepare": "husky"
 	},
 	"dependencies": {
