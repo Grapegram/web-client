@@ -1,3 +1,10 @@
+import { PageContainer } from "@/components/common";
+import { Login } from "@/components/interface";
+
 export const LoginPage = () => {
-	return <div>LoginPage</div>;
+	return (
+		<PageContainer>
+			<Login />
+		</PageContainer>
+	);
 };

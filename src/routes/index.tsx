@@ -6,7 +6,7 @@ import { privateRoutes, publicRoutes } from "./routesConfig";
 
 const AppRoutes = () => {
 	// TODO: move to hook useAuth
-	const isAuth = true;
+	const isAuth = false;
 
 	return isAuth ? (
 		<Routes>
