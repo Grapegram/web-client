@@ -18,36 +18,41 @@ export const Login = () => {
 		},
 		mode: "all",
 	});
+	const { reset, formState, handleSubmit, control } = form;
 
 	const onSubmit = (
 		values: z.infer<ReturnType<typeof authValidationSchema>>,
 	) => {
 		console.log(values);
-		form.reset();
+		reset();
 	};
 
 	return (
 		<Form {...form}>
 			<form
 				className="flex flex-col gap-8 w-full"
-				onSubmit={form.handleSubmit(onSubmit)}
+				onSubmit={handleSubmit(onSubmit)}
 			>
 				<div className="flex flex-col gap-2">
 					<InputField
-						control={form.control}
+						control={control}
 						name="email"
 						label="Email:"
 						type="email"
 					/>
 					<InputField
-						control={form.control}
+						control={control}
 						name="password"
 						label="Password:"
 						type="password"
 					/>
 				</div>
 				<div className="flex flex-col gap-4">
-					<Button variant="secondary" type="submit">
+					<Button
+						variant="secondary"
+						type="submit"
+						disabled={!formState.isValid}
+					>
 						Log in
 					</Button>
 					<Button variant="outline" asChild>
