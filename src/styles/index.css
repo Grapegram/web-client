@@ -5,6 +5,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg-color: #212121;
+  --text-color: #ffffff;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -73,7 +78,13 @@
 
 * {
   font-family: "Roboto", system-ui, sans-serif;
+  box-sizing: border-box;
   scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
 #root {

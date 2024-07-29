@@ -1,0 +1,1 @@
+export { authValidationSchema } from "./authValidationShema";
