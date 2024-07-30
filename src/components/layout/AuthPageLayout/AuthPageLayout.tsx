@@ -1,6 +1,6 @@
 import type { FC, ReactNode } from "react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui";
+import { Avatar, AvatarFallback, AvatarImage, Skeleton } from "@/components/ui";
 
 import { PageContainer } from "../PageContainer/PageContainer";
 
@@ -22,7 +22,9 @@ export const AuthPageLayout: FC<AuthPageLayout> = ({
 			<div className="w-[250px] flex flex-col justify-center items-center gap-8">
 				<Avatar className="w-[150px] h-[150px]">
 					<AvatarImage src={avatar} />
-					<AvatarFallback>LOGO</AvatarFallback>
+					<AvatarFallback>
+						<Skeleton className="h-full w-full rounded-full" />
+					</AvatarFallback>
 				</Avatar>
 				<div className="flex flex-col justify-center items-center gap-6">
 					<h4 className="font-bold text-2xl">{title}</h4>

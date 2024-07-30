@@ -3,6 +3,7 @@ export { InputField } from "./InputField";
 export { Label } from "./label";
 export { Input } from "./input";
 export { Avatar, AvatarImage, AvatarFallback } from "./avatar";
+export { Skeleton } from "./skeleton";
 export {
 	useFormField,
 	Form,
