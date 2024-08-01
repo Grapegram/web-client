@@ -19,6 +19,7 @@ Development of a web version of our messenger.
     <img src="https://img.shields.io/badge/-Yarn-black?style=for-the-badge&logoColor=white&logo=yarn&color=212121" alt="Yarn" />
     <img src="https://img.shields.io/badge/-biome-black?style=for-the-badge&logoColor=white&logo=biome&color=9C36CF" alt="biome" />
     <img src="https://img.shields.io/badge/-prettier-black?style=for-the-badge&logoColor=white&logo=prettier&color=212121" alt="prettier" />
+    <img src="https://img.shields.io/badge/-github_actions-black?style=for-the-badge&logoColor=white&logo=githubactions&color=9C36CF" alt="githubactions" />
 </div>
 
 ## Run locally
