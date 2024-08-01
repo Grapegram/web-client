@@ -1,12 +1,12 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
+import { useAuth } from "@/core/hooks";
 import { HOME_ROUTE, LOGIN_ROUTE } from "@/core/utils";
 
 import { privateRoutes, publicRoutes } from "./routesConfig";
 
 const AppRoutes = () => {
-	// TODO: move to hook useAuth
-	const isAuth = false;
+	const { isAuth } = useAuth();
 
 	return isAuth ? (
 		<Routes>
