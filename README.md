@@ -1,30 +1,82 @@
-# React + TypeScript + Vite
+# Grapegram-Web-Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Development of a web version of our messenger.
 
-Currently, two official plugins are available:
+## Tech stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+<div align="center">
+    <img src="https://img.shields.io/badge/-Typescript-black?style=for-the-badge&logoColor=white&logo=typescript&color=9C36CF" alt="Typescript" />
+    <img src="https://img.shields.io/badge/-React-black?style=for-the-badge&logoColor=white&logo=react&color=212121" alt="React" />
+    <img src="https://img.shields.io/badge/-Redux-black?style=for-the-badge&logoColor=white&logo=redux&color=9C36CF" alt="Redux" />
+    <img src="https://img.shields.io/badge/-shadcn-black?style=for-the-badge&logoColor=white&logo=shadcnui&color=212121" alt="shadcnui" />
+    <img src="https://img.shields.io/badge/-Tailwind_CSS-black?style=for-the-badge&logoColor=white&logo=tailwindcss&color=9C36CF" alt="tailwindcss" />
+</div>
 
-## Expanding the ESLint configuration
+## Dev instruments
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+<div align="center">
+    <img src="https://img.shields.io/badge/-Vite-black?style=for-the-badge&logoColor=white&logo=vite&color=9C36CF" alt="Vite" />
+    <img src="https://img.shields.io/badge/-Yarn-black?style=for-the-badge&logoColor=white&logo=yarn&color=212121" alt="Yarn" />
+    <img src="https://img.shields.io/badge/-biome-black?style=for-the-badge&logoColor=white&logo=biome&color=9C36CF" alt="biome" />
+    <img src="https://img.shields.io/badge/-prettier-black?style=for-the-badge&logoColor=white&logo=prettier&color=212121" alt="prettier" />
+</div>
 
-- Configure the top-level `parserOptions` property like this:
+## Run locally
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: "latest",
-    sourceType: "module",
-    project: ["./tsconfig.json", "./tsconfig.node.json", "./tsconfig.app.json"],
-    tsconfigRootDir: __dirname,
-  },
-};
+Clone repository on your local machine:
+
+```bash
+git clone https://github.com/Grapegram/web-client.git
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+Move into project folder:
+
+```bash
+cd ./web-client
+```
+
+Install all dependencies from `package.json`:
+
+```bash
+yarn
+```
+
+To start a project in `development mode`, enter the following command in the console:
+
+```bash
+yarn dev
+```
+
+## Custom project scripts
+
+Formatting project files according to the `biome.json`:
+
+```bash
+yarn format
+```
+
+Formatting/Sorting file imports according to the `.prettierrc`:
+
+```bash
+yarn format-imports
+```
+
+To run project tests:
+
+```bash
+yarn test
+```
+
+## Build locally
+
+To perform an optimised production build run:
+
+```bash
+yarn build
+```
+
+Show in browser:
+
+```bash
+yarn preview
+```
