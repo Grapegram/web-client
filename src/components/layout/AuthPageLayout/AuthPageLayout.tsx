@@ -20,7 +20,7 @@ export const AuthPageLayout: FC<AuthPageLayout> = ({
 	return (
 		<PageContainer>
 			<div className="w-[250px] flex flex-col justify-center items-center gap-8">
-				<Avatar className="w-[150px] h-[150px]">
+				<Avatar className="w-[120px] h-[120px]">
 					<AvatarImage src={avatar} />
 					<AvatarFallback>
 						<Skeleton className="h-full w-full rounded-full" />

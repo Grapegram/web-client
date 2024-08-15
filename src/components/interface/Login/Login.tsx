@@ -39,6 +39,7 @@ export const Login = () => {
 						name="email"
 						label="Email:"
 						type="email"
+						autoComplete="email"
 					/>
 					<InputField
 						control={control}

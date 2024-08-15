@@ -39,6 +39,7 @@ export const Signup = () => {
 						name="email"
 						label="Email:"
 						type="email"
+						autoComplete="email"
 					/>
 					<InputField
 						control={control}
