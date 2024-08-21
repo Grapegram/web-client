@@ -87,7 +87,11 @@ body {
   color: var(--text-color);
 }
 
+/* fix scrollarea style */
+div[data-radix-scroll-area-viewport] > div {
+  display: block !important;
+}
+
 #root {
   position: relative;
-  height: 100vh;
 }
