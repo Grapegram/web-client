@@ -1,9 +1,14 @@
 @import "normalize.css";
-/* @import './fonts.css'; */
+@import "./fonts.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --bg-color: #212121;
+  --text-color: #ffffff;
+}
 
 @layer base {
   :root {
@@ -72,8 +77,19 @@
 }
 
 * {
-  font-family: "Roboto", system-ui, sans-serif;
+  font-family: "Roboto Mono", system-ui, sans-serif;
+  box-sizing: border-box;
   scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* fix scrollarea style */
+div[data-radix-scroll-area-viewport] > div {
+  display: block !important;
 }
 
 #root {
