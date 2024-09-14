@@ -1,9 +1,15 @@
 export { Button } from "./button";
-export { InputField } from "./InputField";
 export { Label } from "./label";
 export { Input } from "./input";
-export { Avatar, AvatarImage, AvatarFallback } from "./avatar";
 export { Skeleton } from "./skeleton";
+export { InputField } from "./InputField";
+export { ScrollArea, ScrollBar } from "./scroll-area";
+export { Avatar, AvatarImage, AvatarFallback } from "./avatar";
+export {
+	ResizablePanel,
+	ResizableHandle,
+	ResizablePanelGroup,
+} from "./resizable";
 export {
 	useFormField,
 	Form,

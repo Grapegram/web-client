@@ -19,8 +19,8 @@ export const AuthPageLayout: FC<AuthPageLayout> = ({
 }) => {
 	return (
 		<PageContainer>
-			<div className="w-[250px] flex flex-col justify-center items-center gap-8">
-				<Avatar className="w-[150px] h-[150px]">
+			<div className="w-[300px] flex flex-col justify-center items-center gap-8">
+				<Avatar className="w-[120px] h-[120px]">
 					<AvatarImage src={avatar} />
 					<AvatarFallback>
 						<Skeleton className="h-full w-full rounded-full" />
@@ -28,7 +28,7 @@ export const AuthPageLayout: FC<AuthPageLayout> = ({
 				</Avatar>
 				<div className="flex flex-col justify-center items-center gap-6">
 					<h4 className="font-bold text-2xl">{title}</h4>
-					<p className="text-center">{description}</p>
+					<p className="text-base text-center">{description}</p>
 				</div>
 				{children}
 			</div>

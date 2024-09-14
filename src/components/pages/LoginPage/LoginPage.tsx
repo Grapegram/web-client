@@ -1,12 +1,12 @@
 import { Login } from "@/components/interface";
 import { AuthPageLayout } from "@/components/layout";
 
-import { avatar } from "@/assets";
+import { logo } from "@/assets";
 
 export const LoginPage = () => {
 	return (
 		<AuthPageLayout
-			avatar={avatar}
+			avatar={logo}
 			title="Log in to Grapegram"
 			description="Please place your credentials in the appropriate fields."
 		>

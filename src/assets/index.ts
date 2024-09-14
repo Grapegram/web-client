@@ -1,4 +1,3 @@
-import avatar2 from "./avatar2.jpg";
-import avatar from "./avatar.jpg";
+import logo from "./logo.svg";
 
-export { avatar, avatar2 };
+export { logo };
