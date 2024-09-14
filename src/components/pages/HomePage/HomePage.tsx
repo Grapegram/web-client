@@ -12,7 +12,7 @@ export const HomePage = () => {
 			<ResizablePanelGroup direction="horizontal">
 				<ResizablePanel
 					collapsible
-					collapsedSize={4}
+					collapsedSize={6}
 					minSize={15}
 					defaultSize={25}
 				>
