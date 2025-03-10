@@ -1,45 +1,88 @@
-# grapegram-client
+# Grapegram-Web-Client
 
-This template should help get you started developing with Vue 3 in Vite.
+Web-client for the Grapegram messenger.
+
+## Tech stack
+
+<div align="center">
+    <img src="https://img.shields.io/badge/-Typescript-black?style=for-the-badge&logoColor=white&logo=typescript&color=9C36CF" alt="Typescript" />
+    <img src="https://img.shields.io/badge/-Vue-black?style=for-the-badge&logoColor=white&logo=vuedotjs&color=212121" alt="Vue" />
+    <img src="https://img.shields.io/badge/-Headless UI-black?style=for-the-badge&logoColor=white&logo=headlessui&color=9C36CF" alt="headlessui" />
+    <img src="https://img.shields.io/badge/-Tailwind_CSS-black?style=for-the-badge&logoColor=white&logo=tailwindcss&color=212121" alt="tailwindcss" />
+</div>
+
+## Dev instruments
+
+<div align="center">
+    <img src="https://img.shields.io/badge/-Vite-black?style=for-the-badge&logoColor=white&logo=vite&color=9C36CF" alt="Vite" />
+    <img src="https://img.shields.io/badge/-Yarn-black?style=for-the-badge&logoColor=white&logo=yarn&color=212121" alt="Yarn" />
+    <img src="https://img.shields.io/badge/-Eslint-black?style=for-the-badge&logoColor=white&logo=eslint&color=9C36CF" alt="eslint" />
+    <img src="https://img.shields.io/badge/-prettier-black?style=for-the-badge&logoColor=white&logo=prettier&color=212121" alt="prettier" />
+    <img src="https://img.shields.io/badge/-github_actions-black?style=for-the-badge&logoColor=white&logo=githubactions&color=9C36CF" alt="githubactions" />
+</div>
 
 ## Recommended IDE Setup
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
 
-## Type Support for `.vue` Imports in TS
+If you are using VSCode, you can install the recommended extensions for development. Just search for `@recommended` in the extensions tab and install them.
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+## Run locally
 
-## Customize configuration
+Clone repository on your local machine:
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+```bash
+git clone https://github.com/Grapegram/web-client.git
+```
 
-## Project Setup
+Move into project folder:
 
-```sh
+```bash
+cd ./web-client
+```
+
+Install all dependencies from `package.json`:
+
+```bash
 yarn
 ```
 
-### Compile and Hot-Reload for Development
+To start a project in `development mode`, enter the following command in the console:
 
-```sh
+```bash
 yarn dev
 ```
 
-### Type-Check, Compile and Minify for Production
+## Custom project scripts
 
-```sh
-yarn build
+Formatting project files according to the `.prettierrc.json`:
+
+```bash
+yarn format
 ```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+Linting project files according to the `eslint.config.ts`:
 
-```sh
+```bash
+yarn lint
+```
+
+To run project unit tests:
+
+```bash
 yarn test:unit
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+## Build locally
 
-```sh
-yarn lint
+Full production build of the project:
+
+```bash
+yarn build
+```
+
+Build and run production build of the project:
+
+```bash
+yarn preview
 ```
