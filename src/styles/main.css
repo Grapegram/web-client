@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-grapegrambg: #212121;
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-grapegrambg container mx-auto text-white;
+}
+
+#app {
+  position: relative;
+}
