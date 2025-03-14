@@ -35,13 +35,13 @@ jobs:
           fi
 
       - name: Check formatting
-        run: npm run format
+        run: npm run ci:format
 
-      - name: Lint
-        run: npm run lint
+      - name: Check lint
+        run: npm run ci:lint
 
       - name: Build
         run: npm run build
 
-      # - name: Unit tests
-      #   run: npm run test:unit
+      - name: Unit tests
+        run: npm run test:unit
