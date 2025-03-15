@@ -1,5 +1,8 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import CounterExample from '@/components/CounterExample.vue'
+</script>
 
 <template>
   <h1>This is a main page</h1>
+  <CounterExample />
 </template>
