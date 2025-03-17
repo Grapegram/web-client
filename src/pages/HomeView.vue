@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CounterExample from '@/components/CounterExample.vue'
+import { CounterExample } from '@/shared/ui'
 </script>
 
 <template>
