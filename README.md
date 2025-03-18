@@ -1,7 +1,6 @@
 # Grapegram-Web-Client
 
 Web-client for the Grapegram messenger.
-Test
 
 ## Tech stack
 
