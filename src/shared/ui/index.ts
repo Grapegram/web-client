@@ -1,1 +1,1 @@
-export { default as CounterExample } from './CounterExample.vue'
+export { default as CounterExample } from './CounterExample.vue';

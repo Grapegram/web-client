@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CounterExample } from '@/shared/ui'
+import { CounterExample } from '@shared/ui';
 </script>
 
 <template>
