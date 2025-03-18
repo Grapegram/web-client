@@ -37,6 +37,9 @@ jobs:
       - name: Check formatting
         run: npm run ci:format
 
+      - name: Check architecture lint
+        run: npm run ci:lint-arch
+
       - name: Check lint
         run: npm run ci:lint
 
