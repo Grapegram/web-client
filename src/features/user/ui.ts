@@ -1,1 +1,1 @@
-export const user = { mom: 1 }
+export const user = { mom: 1 };
