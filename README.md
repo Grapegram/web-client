@@ -45,6 +45,11 @@ Web-client for the Grapegram messenger.
     </a>
 </div>
 
+## See live demos
+
+Production: [https://grapegram-web.netlify.app](https://grapegram-web.netlify.app)
+Development: [https://dev-grapegram-web.netlify.app](https://dev-grapegram-web.netlify.app)
+
 ## Recommended IDE Setup
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
