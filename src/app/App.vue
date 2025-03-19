@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router';
-import { user } from '@features/user';
-console.log(user);
+import AppRoutes from './router/AppRoutes.vue';
 </script>
 
 <template>
-  <RouterView />
+  <AppRoutes />
 </template>
