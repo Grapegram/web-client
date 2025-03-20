@@ -1,8 +1,3 @@
-<script setup lang="ts">
-import { CounterExample } from '@shared/ui';
-</script>
+<script setup lang="ts"></script>
 
-<template>
-  <h1>This is a Home messenger page</h1>
-  <CounterExample />
-</template>
+<template>Home</template>
