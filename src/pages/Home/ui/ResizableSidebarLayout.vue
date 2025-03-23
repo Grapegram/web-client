@@ -44,7 +44,7 @@ const {
   autoSaveId
 } = defineProps<Props>();
 
-const sidebarContainer = useTemplateRef('sidebar-container');
+const sidebarContainer = useTemplateRef<HTMLElement>('sidebar-container');
 const { width } = useElementSize(sidebarContainer);
 
 const convertToSidebarUnits = (unite: Unite) => {
