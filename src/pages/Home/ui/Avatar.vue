@@ -6,11 +6,21 @@ type Props = {
   class?: string;
 };
 
-function hashString(str: string): number {
-  return str.split('').reduce(function (a, b) {
-    a = (a << 5) - a + b.charCodeAt(0);
-    return a & a;
-  }, 0);
+function hashString(str: string, seed: number = 0): number {
+  // cyrb53Hex
+  let h1 = 0xdeadbeef ^ seed,
+    h2 = 0x41c6ce57 ^ seed;
+  for (let i = 0, ch; i < str.length; i++) {
+    ch = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+  h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+  h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+
+  return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 }
 </script>
 
@@ -18,13 +28,13 @@ function hashString(str: string): number {
 import { Avatar, AvatarImage, AvatarFallback } from '@shared/ui/avatar';
 import { computed } from 'vue';
 
-const { src, alt, name, class: avatarClass } = defineProps<Props>();
+const props = defineProps<Props>();
 
 const colorAspect = computed(() => {
-  return ((hashString(name) % 255) + 255) % 255;
+  return ((hashString(props.name) % 255) + 255) % 255;
 });
 const fallback = computed(() => {
-  return name
+  return props.name
     .split(' ')
     .slice(0, 2)
     .map(s => s.charAt(0).toUpperCase())
@@ -34,11 +44,11 @@ const fallback = computed(() => {
 
 <template>
   <Avatar
-    :class="avatarClass"
+    :class="props.class"
     :style="`background: linear-gradient(hsl(${colorAspect},80%,65%), hsl(${colorAspect},60%,45%))`"
     size="base"
   >
-    <AvatarImage v-if="src" :src="src" :alt="alt" />
+    <AvatarImage v-if="props.src" :src="props.src" :alt="props.alt" />
     <AvatarFallback>
       <strong>{{ fallback }}</strong>
     </AvatarFallback>
