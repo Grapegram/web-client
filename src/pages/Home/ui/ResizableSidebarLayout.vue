@@ -34,16 +34,7 @@ import { provide } from 'vue';
 import { watchEffect } from 'vue';
 import { ref, useTemplateRef } from 'vue';
 
-const {
-  collapsedSize,
-  minSize,
-  maxSize,
-  class: mainClass,
-  sidebarClass,
-  contentClass,
-  autoSaveId
-} = defineProps<Props>();
-
+const props = defineProps<Props>();
 const sidebarContainer = useTemplateRef<HTMLElement>('sidebar-container');
 const { width } = useElementSize(sidebarContainer);
 
@@ -56,9 +47,9 @@ const sidebarMode = ref<'compact' | 'expanded'>('expanded');
 provide('sidebarMode', sidebarMode);
 
 watchEffect(() => {
-  const collapsedSizeComp = convertToSidebarUnits(collapsedSize);
-  const minSizeComp = convertToSidebarUnits(minSize);
-  const maxSizeComp = convertToSidebarUnits(maxSize);
+  const collapsedSizeComp = convertToSidebarUnits(props.collapsedSize);
+  const minSizeComp = convertToSidebarUnits(props.minSize);
+  const maxSizeComp = convertToSidebarUnits(props.maxSize);
 
   computedSizes.value = [
     collapsedSizeComp,
@@ -73,8 +64,8 @@ watchEffect(() => {
     ref="sidebar-container"
     id="demo-group-1"
     direction="horizontal"
-    :auto-save-id="autoSaveId"
-    :class="mainClass"
+    :auto-save-id="props.autoSaveId"
+    :class="props.class"
   >
     <ResizablePanel
       id="demo-panel-1"
@@ -83,14 +74,18 @@ watchEffect(() => {
       :min-size="computedSizes[1]"
       :max-size="computedSizes[2]"
       :default-size="50"
-      :class="sidebarClass"
+      :class="props.sidebarClass"
       @collapse="sidebarMode = 'compact'"
       @expand="sidebarMode = 'expanded'"
     >
       <slot name="sidebar" />
     </ResizablePanel>
     <ResizableHandle class="bg-transparent" id="demo-handle-1" />
-    <ResizablePanel id="demo-panel-2" :default-size="50" :class="contentClass">
+    <ResizablePanel
+      id="demo-panel-2"
+      :default-size="50"
+      :class="props.contentClass"
+    >
       <slot name="content" />
     </ResizablePanel>
   </ResizablePanelGroup>
