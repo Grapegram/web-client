@@ -18,16 +18,13 @@ import { toTypedSchema } from '@vee-validate/zod';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
 import { vAutoAnimate } from '@formkit/auto-animate/vue';
+import { cn } from '@/shared/lib/utils';
 
 const formSchema = toTypedSchema(
   z.object({
-    email: z
-      .string()
-      .min(1, { message: 'This field is required.' })
-      .email({ message: 'Incorrect email syntax.' }),
+    email: z.string().email({ message: 'Incorrect email syntax.' }),
     password: z
       .string()
-      .min(1, { message: 'This field is required.' })
       .min(6, { message: 'Password must be at least 6 characters.' })
       .regex(/[A-Z]/, {
         message: 'Password must contain at least one uppercase letter.'
@@ -44,7 +41,7 @@ const formSchema = toTypedSchema(
   })
 );
 
-const { isFieldDirty, handleSubmit } = useForm({
+const { handleSubmit, errors } = useForm({
   validationSchema: formSchema
 });
 
@@ -69,11 +66,7 @@ const onSubmit = handleSubmit(values => {
     </div>
 
     <form @submit="onSubmit" class="flex w-full flex-col gap-6">
-      <FormField
-        name="email"
-        v-slot="{ componentField }"
-        :validate-on-blur="!isFieldDirty"
-      >
+      <FormField name="email" v-slot="{ componentField }">
         <FormItem v-auto-animate>
           <FormLabel>Email</FormLabel>
           <FormControl>
@@ -81,17 +74,14 @@ const onSubmit = handleSubmit(values => {
               type="email"
               placeholder="Your email... promise we won't spam."
               v-bind="componentField"
+              :class="cn({ 'border-destructive': errors.email })"
             />
           </FormControl>
           <FormMessage />
         </FormItem>
       </FormField>
 
-      <FormField
-        name="password"
-        v-slot="{ componentField }"
-        :validate-on-blur="!isFieldDirty"
-      >
+      <FormField name="password" v-slot="{ componentField }">
         <FormItem v-auto-animate>
           <FormLabel>Password</FormLabel>
           <FormControl>
@@ -99,6 +89,7 @@ const onSubmit = handleSubmit(values => {
               type="password"
               placeholder="Your password... make it strong"
               v-bind="componentField"
+              :class="cn({ 'border-destructive': errors.password })"
             />
           </FormControl>
           <FormMessage />
