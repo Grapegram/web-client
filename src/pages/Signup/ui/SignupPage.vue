@@ -1,5 +1,13 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { FormLayout } from '@/widgets/FormLayout';
+import { SignupForm } from '@/widgets/Auth';
+</script>
 
 <template>
-  <h1>This is a Signup page</h1>
+  <FormLayout
+    title="Join Grapegram"
+    subtitle="Please place your credentials in the appropriate fields."
+  >
+    <SignupForm />
+  </FormLayout>
 </template>
