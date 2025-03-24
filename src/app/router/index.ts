@@ -2,13 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { HomePage } from '@pages/Home';
 import { LoginPage } from '@pages/Login';
 import { SignupPage } from '@pages/Signup';
-
-export const ROUTES = {
-  HOME: '/home',
-  LOGIN: '/login',
-  SIGNUP: '/signup',
-  NOT_FOUND: '/:pathMatch(.*)*'
-} as const;
+import { ROUTES } from '@/shared/lib/routes';
 
 const publicRoutes = [
   { path: ROUTES.SIGNUP, component: SignupPage },

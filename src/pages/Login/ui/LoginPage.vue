@@ -1,5 +1,13 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { FormLayout } from '@/widgets/FormLayout';
+import { LoginForm } from '@/widgets/Auth';
+</script>
 
 <template>
-  <h1>This is a Login page</h1>
+  <FormLayout
+    title="Welcome back"
+    subtitle="Please place your credentials in the appropriate fields."
+  >
+    <LoginForm />
+  </FormLayout>
 </template>
