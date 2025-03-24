@@ -5,10 +5,11 @@ import { ScrollArea } from '@/shared/ui/scroll-area';
 import { inject } from 'vue';
 import { DateTime } from 'luxon';
 import { computed } from 'vue';
+import SwappableList from './SwappableList.vue';
 
 const activeChatId = ref('1');
 const pinnedChatsIds = ref(['47', '0']);
-const chats = ref<ChatData[]>([
+const rawChats = ref<ChatData[]>([
   {
     id: '0',
     type: 'group',
@@ -89,6 +90,7 @@ const chats = ref<ChatData[]>([
     ]
   }
 ]);
+
 const sidebarMode = inject<'compact' | 'expanded'>('sidebarMode');
 
 function sortByMessageTime(chats: ChatData[]): ChatData[] {
@@ -102,32 +104,38 @@ function getChatById(chats: ChatData[], chatId: ChatId): ChatData | undefined {
   return chats.find(c => c.id === chatId);
 }
 
-const allChats = computed(() => {
-  return sortByMessageTime(chats.value).filter(
-    c => !pinnedChatsIds.value.includes(c.id)
-  );
-});
-const pinnedChats = computed(() => {
+const pinnedChats = computed<ChatData[]>(() => {
   return pinnedChatsIds.value.flatMap(id => {
-    const chat = getChatById(chats.value, id);
+    const chat = getChatById(rawChats.value, id);
     return chat ? [chat] : [];
   });
+});
+const unpinnedChats = computed<ChatData[]>(() => {
+  return sortByMessageTime(rawChats.value).filter(
+    c => !pinnedChatsIds.value.includes(c.id)
+  );
 });
 </script>
 
 <template>
   <header>somting in head</header>
   <ScrollArea class="h-full w-full">
+    <SwappableList
+      :data="pinnedChats.map(c => ({ id: c.id, data: c, isSwappable: true }))"
+      :size="80"
+    >
+      <template v-slot="{ itemData: chat }">
+        <Chat
+          :key="chat.id"
+          v-bind="chat"
+          :sidebar-mode="sidebarMode || 'expanded'"
+          :is-active="activeChatId === chat.id"
+          is-pinned
+        />
+      </template>
+    </SwappableList>
     <Chat
-      v-for="chat in pinnedChats"
-      :key="chat.id"
-      v-bind="chat"
-      :sidebar-mode="sidebarMode || 'expanded'"
-      :is-active="activeChatId === chat.id"
-      is-pinned
-    />
-    <Chat
-      v-for="chat in allChats"
+      v-for="chat in unpinnedChats"
       :key="chat.id"
       v-bind="chat"
       :sidebar-mode="sidebarMode || 'expanded'"

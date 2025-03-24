@@ -22,6 +22,7 @@ export type ChatData = {
 };
 
 type Props = ChatData & {
+  class?: string;
   sidebarMode: 'compact' | 'expanded';
   isActive: boolean;
   isPinned?: boolean;
@@ -36,10 +37,21 @@ import { computed } from 'vue';
 import { cva } from 'class-variance-authority';
 import { Badge } from '@/shared/ui/badge';
 import { Pin } from 'lucide-vue-next';
+import { toRefs } from '@vueuse/core';
 
-const { avatar, name, sidebarMode, isActive, isPinned, unreaded, messages } =
-  defineProps<Props>();
-const lastMessage = computed(() => messages.at(-1));
+const props = defineProps<Props>();
+const {
+  id,
+  type,
+  name,
+  avatar,
+  unreaded,
+  messages,
+  isActive,
+  isPinned,
+  sidebarMode
+} = toRefs(props);
+const lastMessage = computed(() => messages.value.at(-1));
 
 function formatDateTime(date: DateTime): string {
   const now = DateTime.now();
@@ -72,7 +84,8 @@ const chatVariants = cva('', {
   <div
     :class="
       cn(
-        'hover:bg-secondary h-[80px] w-full py-2',
+        props.class,
+        'hover:bg-secondary h-full w-full py-2',
         chatVariants({ sidebarMode: sidebarMode }),
         {
           'bg-accent': isActive
