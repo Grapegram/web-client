@@ -15,6 +15,7 @@ import { Separator } from '@/shared/ui/separator';
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
+import { ServerSelector } from '@features/SelectServer';
 import { vAutoAnimate } from '@formkit/auto-animate/vue';
 import { cn } from '@/shared/lib/utils';
 
@@ -50,6 +51,14 @@ const onSubmit = handleSubmit(values => {
 
 <template>
   <form @submit="onSubmit" class="flex w-full flex-col gap-6">
+    <FormField name="server">
+      <FormItem v-auto-animate>
+        <FormLabel>Server</FormLabel>
+        <ServerSelector />
+        <FormMessage />
+      </FormItem>
+    </FormField>
+
     <FormField name="email" v-slot="{ componentField }">
       <FormItem v-auto-animate>
         <FormLabel>Email</FormLabel>
