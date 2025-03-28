@@ -2,6 +2,7 @@
 type Props = {
   src?: string;
   alt?: string;
+  size?: AvatarVariants['size'];
   name: string;
   class?: string;
 };
@@ -25,7 +26,12 @@ function hashString(str: string, seed: number = 0): number {
 </script>
 
 <script setup lang="ts">
-import { Avatar, AvatarImage, AvatarFallback } from '@shared/ui/avatar';
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+  type AvatarVariants
+} from '@shared/ui/avatar';
 import { computed } from 'vue';
 
 const props = defineProps<Props>();
@@ -46,7 +52,7 @@ const fallback = computed(() => {
   <Avatar
     :class="props.class"
     :style="`background: linear-gradient(hsl(${colorAspect},80%,65%), hsl(${colorAspect},60%,45%))`"
-    size="base"
+    :size="props.size ?? 'base'"
   >
     <AvatarImage v-if="props.src" :src="props.src" :alt="props.alt" />
     <AvatarFallback>
