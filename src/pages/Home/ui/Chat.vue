@@ -2,6 +2,8 @@
 type UserId = string;
 export type ChatId = string;
 
+const users = ref({});
+
 type Message = {
   author: UserId;
   data: {
@@ -18,12 +20,14 @@ export type ChatData = {
   name: string;
   avatar: string;
   unreaded: number;
+  partisipents: string[];
   messages: Message[];
 };
 
+type Variants = 'compact' | 'expanded';
 type Props = ChatData & {
   class?: string;
-  sidebarMode: 'compact' | 'expanded';
+  variant?: Variants;
   isActive: boolean;
   isPinned?: boolean;
 };
@@ -38,19 +42,12 @@ import { cva } from 'class-variance-authority';
 import { Badge } from '@/shared/ui/badge';
 import { Pin } from 'lucide-vue-next';
 import { toRefs } from '@vueuse/core';
+import { ref } from 'vue';
 
 const props = defineProps<Props>();
-const {
-  id,
-  type,
-  name,
-  avatar,
-  unreaded,
-  messages,
-  isActive,
-  isPinned,
-  sidebarMode
-} = toRefs(props);
+const { id, type, name, avatar, unreaded, messages, isActive, isPinned } =
+  toRefs(props);
+const variant = computed<Variants>(() => props.variant ?? 'expanded');
 const lastMessage = computed(() => messages.value.at(-1));
 
 function formatDateTime(date: DateTime): string {
@@ -69,13 +66,13 @@ function formatDateTime(date: DateTime): string {
 
 const chatVariants = cva('', {
   variants: {
-    sidebarMode: {
+    variant: {
       expanded: 'px-3 flex flex-row items-center gap-3',
       compact: 'flex flex-row items-start justify-center'
     }
   },
   defaultVariants: {
-    sidebarMode: 'expanded'
+    variant: 'expanded'
   }
 });
 </script>
@@ -85,10 +82,11 @@ const chatVariants = cva('', {
     :class="
       cn(
         props.class,
-        'hover:bg-secondary h-full w-full py-2',
-        chatVariants({ sidebarMode: sidebarMode }),
+        'h-full w-full py-2',
+        chatVariants({ variant: variant }),
         {
-          'bg-accent': isActive
+          'bg-accent': isActive,
+          'hover:bg-secondary': !isActive
         }
       )
     "
@@ -97,7 +95,7 @@ const chatVariants = cva('', {
       <Avatar class="" :src="avatar" :name="name" />
       <Badge
         class="absolute right-0 bottom-0 rounded-full px-2"
-        v-if="sidebarMode === 'compact' && unreaded > 0"
+        v-if="variant === 'compact' && unreaded > 0"
         variant="secondary"
       >
         {{ unreaded }}
@@ -105,7 +103,7 @@ const chatVariants = cva('', {
     </div>
 
     <div
-      v-if="sidebarMode === 'expanded'"
+      v-if="variant === 'expanded'"
       class="flex h-full grow flex-col justify-between self-start overflow-hidden py-1"
     >
       <h3 class="truncate">
@@ -117,7 +115,7 @@ const chatVariants = cva('', {
     </div>
 
     <div
-      v-if="sidebarMode === 'expanded'"
+      v-if="variant === 'expanded'"
       class="flex h-full flex-col items-end justify-between self-start py-1"
     >
       <div class="flex flex-row items-center gap-1">
