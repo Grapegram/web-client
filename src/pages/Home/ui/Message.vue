@@ -1,20 +1,25 @@
 <script lang="ts">
 export type MessageVariants = 'first' | 'middle' | 'last' | 'standalone';
-export type MessageSide = 'left' | 'right';
 </script>
 
 <script setup lang="ts">
 import { cn } from '@/shared/lib/utils';
 import { cva } from 'class-variance-authority';
 import type { DateTime } from 'luxon';
+import { inject } from 'vue';
 import { computed } from 'vue';
+import type { MessageSide } from './MessageGroup.vue';
 
 const props = defineProps<{
   text: string;
   variant: MessageVariants;
-  side: MessageSide;
   time: DateTime;
 }>();
+
+const time = computed(() => {
+  return props.time.toFormat('HH:mm');
+});
+const side = inject<MessageSide>('message-side', 'left');
 
 const messageVariants = cva('', {
   variants: {
@@ -75,17 +80,14 @@ const messageVariants = cva('', {
     variant: 'standalone'
   }
 });
-const time = computed(() => {
-  return props.time.toFormat('HH:mm');
-});
 </script>
 
 <template>
   <div
     :class="
       cn(
-        'bg-message rounded-message-l relative px-4 py-2',
-        messageVariants({ variant: props.variant, side: props.side })
+        'bg-message rounded-message-l relative w-fit px-4 py-2',
+        messageVariants({ variant: props.variant, side: side })
       )
     "
   >

@@ -1,10 +1,15 @@
+<script lang="ts">
+export type MessageSide = 'left' | 'right';
+</script>
+
 <script setup lang="ts">
-import { ref } from 'vue';
+import { cn } from '@/shared/lib/utils';
 import Avatar from './Avatar.vue';
-import { computed } from 'vue';
+import { provide, ref, computed } from 'vue';
 
 const props = defineProps<{
   user: string;
+  side: MessageSide;
 }>();
 
 type User = {
@@ -23,14 +28,31 @@ const users = ref<Record<string, User>>({
   }
 });
 
-const avatarPosition = ref(0);
 const userName = computed(() => users.value[props.user].name);
+
+provide('message-side', props.side);
 </script>
 
 <template>
-  <div class="relative flex flex-row items-end gap-3">
-    <Avatar size="sm" :style="`bottom: ${avatarPosition}px`" :name="userName" />
-    <div class="flex flex-col gap-[3px]">
+  <div class="relative w-fit">
+    <Avatar
+      :class="
+        cn('sticky top-[calc(100%-40px)]', {
+          'float-left mr-3': props.side === 'left',
+          'float-right ml-3': props.side === 'right'
+        })
+      "
+      size="sm"
+      :name="userName"
+    />
+    <div
+      :class="
+        cn('float-left flex flex-col gap-[3px]', {
+          'items-start': props.side === 'left',
+          'items-end': props.side === 'right'
+        })
+      "
+    >
       <slot />
     </div>
   </div>

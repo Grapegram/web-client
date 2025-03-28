@@ -145,6 +145,7 @@ function messageVariantByIdAndLength(
                 v-for="messageGroup in messagesGroups"
                 :key="messageGroup.id"
                 :user="messageGroup.author"
+                :side="messageGroup.author === '0' ? 'left' : 'right'"
               >
                 <Message
                   v-for="(message, i) in messageGroup.messages"
@@ -152,7 +153,6 @@ function messageVariantByIdAndLength(
                   :variant="
                     messageVariantByIdAndLength(i, messageGroup.messages.length)
                   "
-                  :side="message.author === '0' ? 'left' : 'right'"
                   :text="message.text"
                   :time="message.time"
                 />
