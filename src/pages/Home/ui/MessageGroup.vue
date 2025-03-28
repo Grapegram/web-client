@@ -6,11 +6,19 @@ export type MessageSide = 'left' | 'right';
 import { cn } from '@/shared/lib/utils';
 import Avatar from './Avatar.vue';
 import { provide, ref, computed } from 'vue';
+import type { HTMLAttributes } from 'vue';
 
-const props = defineProps<{
-  user: string;
-  side: MessageSide;
-}>();
+const props = withDefaults(
+  defineProps<{
+    user: string;
+    side: MessageSide;
+    showAvatar: boolean;
+    class?: HTMLAttributes['class'];
+  }>(),
+  {
+    showAvatar: true
+  }
+);
 
 type User = {
   id: string;
@@ -34,12 +42,13 @@ provide('message-side', props.side);
 </script>
 
 <template>
-  <div class="relative w-fit">
+  <div :class="cn('relative w-fit', props.class)">
     <Avatar
+      v-if="props.showAvatar"
       :class="
         cn('sticky top-[calc(100%-40px)]', {
-          'float-left mr-3': props.side === 'left',
-          'float-right ml-3': props.side === 'right'
+          'float-left': props.side === 'left',
+          'float-right': props.side === 'right'
         })
       "
       size="sm"
@@ -48,8 +57,8 @@ provide('message-side', props.side);
     <div
       :class="
         cn('float-left flex flex-col gap-[3px]', {
-          'items-start': props.side === 'left',
-          'items-end': props.side === 'right'
+          'ml-3 items-start': props.side === 'left',
+          'mr-3 items-end': props.side === 'right'
         })
       "
     >
