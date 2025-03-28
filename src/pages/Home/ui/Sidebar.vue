@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import Chat, { type ChatData, type ChatId } from './Chat.vue';
+import ChatPreview, { type ChatData, type ChatId } from './ChatPreview.vue';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { inject } from 'vue';
 import { DateTime } from 'luxon';
@@ -136,7 +136,7 @@ const unpinnedChats = computed<ChatData[]>(() => {
   </header>
   <div class="my-4 ml-4 grow rounded border">
     <ScrollArea class="h-full w-full">
-      <Chat
+      <ChatPreview
         v-for="chat in pinnedChats"
         :key="chat.id"
         v-bind="chat"
@@ -144,7 +144,7 @@ const unpinnedChats = computed<ChatData[]>(() => {
         :is-active="activeChatId === chat.id"
         is-pinned
       />
-      <Chat
+      <ChatPreview
         v-for="chat in unpinnedChats"
         :key="chat.id"
         v-bind="chat"
