@@ -1,3 +1,9 @@
+<script lang="ts">
+export type ScrollAreaProps = ScrollAreaRootProps & {
+  class?: HTMLAttributes['class'];
+};
+</script>
+
 <script setup lang="ts">
 import { cn } from '@/shared/lib/utils';
 import {
@@ -9,13 +15,10 @@ import {
 import { computed, type HTMLAttributes } from 'vue';
 import ScrollBar from './ScrollBar.vue';
 
-const props = defineProps<
-  ScrollAreaRootProps & { class?: HTMLAttributes['class'] }
->();
-
+const props = defineProps<ScrollAreaProps>();
+const emit = defineEmits(['scroll']);
 const delegatedProps = computed(() => {
   const { class: _, ...delegated } = props;
-
   return delegated;
 });
 </script>
@@ -25,7 +28,10 @@ const delegatedProps = computed(() => {
     v-bind="delegatedProps"
     :class="cn('relative overflow-hidden', props.class)"
   >
-    <ScrollAreaViewport class="h-full w-full rounded-[inherit]">
+    <ScrollAreaViewport
+      :onscroll="() => emit('scroll')"
+      class="h-full w-full rounded-[inherit]"
+    >
       <slot />
     </ScrollAreaViewport>
     <ScrollBar />
