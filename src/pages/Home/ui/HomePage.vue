@@ -9,18 +9,18 @@ import Sidebar from './Sidebar.vue';
 <template>
   <div class="h-dvh w-dvw">
     <ResizableSidebarLayout
-      :collapsed-size="Px(86)"
+      :collapsed-size="Px(106)"
       :min-size="Px(350)"
-      :max-size="Percentage(50)"
-      sidebar-class="border rounded my-2 ml-2"
+      :max-size="Percentage(35)"
+      sidebar-class="flex flex-col"
       auto-save-id="main"
     >
       <template #sidebar>
         <Sidebar />
       </template>
       <template #content>
-        <div class="flex h-[200px] items-center justify-center p-6">
-          <span class="font-semibold">Chat UI</span>
+        <div class="flex h-full flex-col">
+          <header class="h-header border-b">somting in head</header>
         </div>
       </template>
     </ResizableSidebarLayout>

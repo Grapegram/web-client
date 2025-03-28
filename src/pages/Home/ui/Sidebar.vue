@@ -5,7 +5,8 @@ import { ScrollArea } from '@/shared/ui/scroll-area';
 import { inject } from 'vue';
 import { DateTime } from 'luxon';
 import { computed } from 'vue';
-import SwappableList from './SwappableList.vue';
+import { AlignJustify } from 'lucide-vue-next';
+import { cn } from '@/shared/lib/utils';
 
 const activeChatId = ref('1');
 const pinnedChatsIds = ref(['47', '0']);
@@ -16,6 +17,7 @@ const rawChats = ref<ChatData[]>([
     name: 'Grapegram Team',
     avatar: 'url to avatar',
     unreaded: 101,
+    partisipents: ['0', '1', '2'],
     messages: []
   },
   {
@@ -23,6 +25,7 @@ const rawChats = ref<ChatData[]>([
     type: 'group',
     name: 'Team 1',
     avatar: 'url to avatar',
+    partisipents: ['0', '1', '2'],
     unreaded: 1,
     messages: []
   },
@@ -32,9 +35,10 @@ const rawChats = ref<ChatData[]>([
     name: 'Kirill',
     avatar: 'url to avatar',
     unreaded: 0,
+    partisipents: ['2'],
     messages: [
       {
-        author: 'user_id',
+        author: '0',
         data: {
           type: 'text',
           text: 'message 1'
@@ -43,7 +47,7 @@ const rawChats = ref<ChatData[]>([
         createTime: DateTime.fromISO('2023-04-15T14:30:00')
       },
       {
-        author: 'user_id',
+        author: '2',
         data: {
           type: 'text',
           text: 'message 2'
@@ -58,10 +62,11 @@ const rawChats = ref<ChatData[]>([
     type: 'direct',
     name: 'Andrew',
     avatar: 'url to avatar',
+    partisipents: ['1'],
     unreaded: 23,
     messages: [
       {
-        author: 'user_id',
+        author: '0',
         data: {
           type: 'text',
           text: 'Hi dude!'
@@ -76,10 +81,11 @@ const rawChats = ref<ChatData[]>([
     type: 'direct',
     name: 'Test 1',
     avatar: 'url to avatar',
+    partisipents: ['3'],
     unreaded: 2,
     messages: [
       {
-        author: 'user_id',
+        author: '3',
         data: {
           type: 'text',
           text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque imperdiet, ante in cursus suscipit, enim est rhoncus nisl, vel venenatis nulla felis condimentum felis.'
@@ -118,28 +124,33 @@ const unpinnedChats = computed<ChatData[]>(() => {
 </script>
 
 <template>
-  <header>somting in head</header>
-  <ScrollArea class="h-full w-full">
-    <SwappableList
-      :data="pinnedChats.map(c => ({ id: c.id, data: c, isSwappable: true }))"
-      :size="80"
-    >
-      <template v-slot="{ itemData: chat }">
-        <Chat
-          :key="chat.id"
-          v-bind="chat"
-          :sidebar-mode="sidebarMode || 'expanded'"
-          :is-active="activeChatId === chat.id"
-          is-pinned
-        />
-      </template>
-    </SwappableList>
-    <Chat
-      v-for="chat in unpinnedChats"
-      :key="chat.id"
-      v-bind="chat"
-      :sidebar-mode="sidebarMode || 'expanded'"
-      :is-active="activeChatId === chat.id"
-    />
-  </ScrollArea>
+  <header
+    :class="
+      cn('h-header flex flex-row items-center border-r border-b', {
+        'justify-center': sidebarMode === 'compact',
+        'justify-start pl-5': sidebarMode === 'expanded'
+      })
+    "
+  >
+    <AlignJustify :size="30" />
+  </header>
+  <div class="my-4 ml-4 grow rounded border">
+    <ScrollArea class="h-full w-full">
+      <Chat
+        v-for="chat in pinnedChats"
+        :key="chat.id"
+        v-bind="chat"
+        :variant="sidebarMode"
+        :is-active="activeChatId === chat.id"
+        is-pinned
+      />
+      <Chat
+        v-for="chat in unpinnedChats"
+        :key="chat.id"
+        v-bind="chat"
+        :variant="sidebarMode"
+        :is-active="activeChatId === chat.id"
+      />
+    </ScrollArea>
+  </div>
 </template>
