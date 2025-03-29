@@ -9,6 +9,9 @@ import type { DateTime } from 'luxon';
 import { inject } from 'vue';
 import { computed } from 'vue';
 import type { MessageSide } from './MessageGroup.vue';
+import { useTemplateRef } from 'vue';
+import { watchEffect } from 'vue';
+import { inlineMarkdown } from '@shared/lib/markdown';
 
 const props = defineProps<{
   text: string;
@@ -20,6 +23,7 @@ const time = computed(() => {
   return props.time.toFormat('HH:mm');
 });
 const side = inject<MessageSide>('message-side', 'left');
+const messageTextRef = useTemplateRef('message-text');
 
 const messageVariants = cva('', {
   variants: {
@@ -80,6 +84,12 @@ const messageVariants = cva('', {
     variant: 'standalone'
   }
 });
+
+watchEffect(() => {
+  if (!messageTextRef.value) return;
+  const nodes = inlineMarkdown.renderInline(props.text);
+  messageTextRef.value.setHTMLUnsafe(nodes);
+});
 </script>
 
 <template>
@@ -92,7 +102,9 @@ const messageVariants = cva('', {
     "
   >
     <div class="w-max max-w-[400px] break-words whitespace-pre-line">
-      {{ props.text }}
+      <span ref="message-text">
+        {{ props.text }}
+      </span>
       <div class="float-right pl-2">
         <span class="text-gray-500">
           {{ time }}
