@@ -20,8 +20,8 @@ import Chat from './Chat.vue';
         <Sidebar />
       </template>
       <template #content>
-        <div class="flex h-full flex-col">
-          <header class="h-header border-b">somting in head</header>
+        <div class="flex h-full w-full flex-col">
+          <header class="min-h-header border-b">somting in head</header>
           <Chat />
         </div>
       </template>
