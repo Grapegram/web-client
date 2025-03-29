@@ -7,6 +7,8 @@ import { onMounted, ref } from 'vue';
 import { DateTime } from 'luxon';
 import { computed } from 'vue';
 import { ScrollArea } from '@/shared/ui/scroll-area';
+import { useTemplateRef } from 'vue';
+import { watch } from 'vue';
 
 type Message = {
   id: string;
@@ -21,6 +23,8 @@ type MessageGroup = {
 };
 
 const currentUserId = ref('1');
+const isScrolled = ref(true);
+const scrollArea = useTemplateRef('scroll-area');
 
 const messages = ref<Message[]>([
   {
@@ -110,11 +114,42 @@ function messageVariantByIdAndLength(
   return 'middle';
 }
 
-onMounted(() => {
+function onScroll(e: Event) {
+  if (!e.target) return;
+  const view = e.target as HTMLElement;
+  isScrolled.value =
+    view.scrollHeight - (view.scrollTop + view.getBoundingClientRect().height) <
+    10;
+}
+
+watch(
+  () => messages.value.length,
+  () => {
+    if (!scrollArea.value) return;
+    const scrollView = (scrollArea.value.$el as HTMLElement).children[0];
+    if (isScrolled.value) {
+      scrollView.scrollTo({ top: scrollView.scrollHeight, behavior: 'smooth' });
+      isScrolled.value = true;
+    }
+  },
+  {
+    flush: 'post'
+  }
+);
+
+const wait = async (delay: number) => {
+  await new Promise(resolve => {
+    setTimeout(resolve, delay);
+  });
+};
+
+onMounted(async () => {
   let author = false;
+  await wait(2000);
   for (let i = 0; i != 300; i++) {
-    if (i % 4 === 0 && Math.random() < 0.3) {
+    if (i % 2 === 0 && Math.random() < 0.3) {
       author = !author;
+      await wait(500);
     }
     messages.value.push({
       id: '10' + i,
@@ -127,7 +162,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <ScrollArea class="w-full grow p-5">
+  <ScrollArea
+    @scroll="onScroll"
+    ref="scroll-area"
+    class="m-4 ml-2 grow rounded border p-5"
+  >
     <div class="flex h-full flex-col items-start justify-end gap-2">
       <div
         :key="messageGroup.id"
