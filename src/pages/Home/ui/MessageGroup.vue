@@ -38,7 +38,10 @@ const users = ref<Record<string, User>>({
 
 const userName = computed(() => users.value[props.user].name);
 
-provide('message-side', props.side);
+provide(
+  'message-side',
+  computed(() => props.side)
+);
 </script>
 
 <template>
