@@ -1,20 +1,16 @@
-<script lang="ts">
-export type MessageVariants = 'first' | 'middle' | 'last' | 'standalone';
-</script>
-
 <script setup lang="ts">
 import type { DateTime } from 'luxon';
 import { computed } from 'vue';
 import { useTemplateRef } from 'vue';
 import { watchEffect } from 'vue';
 import { inlineMarkdown } from '@shared/lib/markdown';
+import BaseMessage from './BaseMessage.vue';
 
 const props = defineProps<{
   data: {
     type: 'text';
     text: string;
   };
-  variant: MessageVariants;
   createTime: DateTime;
 }>();
 
@@ -31,14 +27,16 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="w-max max-w-[400px] px-4 py-2 break-words whitespace-pre-line">
+  <BaseMessage
+    class="w-max max-w-full px-4 py-2 break-words whitespace-pre-line"
+  >
     <span ref="message-text">
       {{ props.data.text }}
     </span>
-    <div class="float-right pl-2">
+    <div class="float-right translate-y-1 pl-4">
       <span class="text-gray-500">
         {{ time }}
       </span>
     </div>
-  </div>
+  </BaseMessage>
 </template>

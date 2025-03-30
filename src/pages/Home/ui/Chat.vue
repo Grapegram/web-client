@@ -9,15 +9,22 @@ import { ScrollArea } from '@/shared/ui/scroll-area';
 import { useTemplateRef } from 'vue';
 import { watch } from 'vue';
 import { Textarea } from '@/shared/ui/textarea';
-import Message from './Message.vue';
+import TextMessage from './TextMessage.vue';
+import ImageMessage from './ImageMessage.vue';
+import FallbackMessage from './FallbackMessage.vue';
 
 type MessageData = {
   id: string;
   author: string;
-  data: {
-    type: 'text';
-    text: string;
-  };
+  data:
+    | {
+        type: 'text';
+        text: string;
+      }
+    | {
+        type: 'img';
+        url: string;
+      };
   createTime: DateTime;
 };
 type MessageGroup = {
@@ -32,7 +39,13 @@ const scrollArea = useTemplateRef('scroll-area');
 
 const messageComponents = {
   text: {
-    component: Message
+    component: TextMessage
+  },
+  img: {
+    component: ImageMessage
+  },
+  fallback: {
+    component: FallbackMessage
   }
 };
 
@@ -47,12 +60,39 @@ const messages = ref<MessageData[]>([
     createTime: DateTime.fromISO('2023-04-15T14:30:00')
   },
   {
+    id: '33',
+    author: '1',
+    data: {
+      type: 'lol'
+    },
+    createTime: DateTime.fromISO('2023-04-15T14:30:00')
+  },
+  {
+    id: '35',
+    author: '1',
+    data: {
+      type: 'text',
+      text: '\'"**Bold** *Italic* \n_Underlined_ ~~Strikethrough~~ [Link](https://example.com)          example.com    `asdf`\nlolllll\n\n\n\n```javascript\nconsole.log\nconsole.log\n```'
+    },
+    createTime: DateTime.fromISO('2023-04-15T14:10:00')
+  },
+  {
     id: '1',
     author: '1',
     data: {
-      type: 'image'
+      type: 'img',
+      url: 'https://get.pxhere.com/photo/animal-pet-kitten-cat-small-mammal-fauna-heal-blue-eye-close-up-nose-whiskers-vertebrate-domestic-lying-tabby-cat-norwegian-forest-cat-ginger-fur-small-to-medium-sized-cats-cat-like-mammal-carnivoran-domestic-short-haired-cat-domestic-long-haired-cat-609263.jpg'
     },
-    createTime: DateTime.fromISO('2023-04-15T14:30:00')
+    createTime: DateTime.fromISO('2023-04-15T14:10:00')
+  },
+  {
+    id: '13',
+    author: '1',
+    data: {
+      type: 'img',
+      url: 'https://get.pxhere.com/photo/animal-pet-kitten-cat-small-mammal-fauna-heal-blue-eye-close-up-nose-whiskers-vertebrate-domestic-lying-tabby-cat-norwegian-forest-cat-ginger-fur-small-to-medium-sized-cats-cat-like-mammal-carnivoran-domestic-short-haired-cat-domestic-long-haired-cat-609263.jpg'
+    },
+    createTime: DateTime.fromISO('2023-04-15T14:20:00')
   },
   {
     id: '2',
