@@ -2,8 +2,6 @@
 type UserId = string;
 export type ChatId = string;
 
-const users = ref({});
-
 type Message = {
   author: UserId;
   data: {
@@ -36,13 +34,12 @@ type Props = ChatData & {
 <script setup lang="ts">
 import { DateTime } from 'luxon';
 import { cn } from '@/shared/lib/utils';
-import Avatar from './Avatar.vue';
+import ChatAvatar from './ChatAvatar.vue';
 import { computed } from 'vue';
 import { cva } from 'class-variance-authority';
 import { Badge } from '@/shared/ui/badge';
 import { Pin } from 'lucide-vue-next';
 import { toRefs } from '@vueuse/core';
-import { ref } from 'vue';
 
 const props = defineProps<Props>();
 const { id, type, name, avatar, unreaded, messages, isActive, isPinned } =
@@ -52,15 +49,12 @@ const lastMessage = computed(() => messages.value.at(-1));
 
 function formatDateTime(date: DateTime): string {
   const now = DateTime.now();
-
   if (date.hasSame(now, 'day')) {
     return date.toFormat('HH:mm');
   }
-
   if (date >= now.startOf('week')) {
     return date.toFormat('ccc');
   }
-
   return date.toFormat('dd.MM.yy');
 }
 
@@ -92,7 +86,7 @@ const chatVariants = cva('', {
     "
   >
     <div class="relative h-auto w-auto">
-      <Avatar class="" :src="avatar" :name="name" />
+      <ChatAvatar class="" :src="avatar" :chat-id="id" />
       <Badge
         class="absolute right-0 bottom-0 rounded-full px-2"
         v-if="variant === 'compact' && unreaded > 0"
