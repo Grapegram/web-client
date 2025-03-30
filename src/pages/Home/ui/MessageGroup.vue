@@ -15,10 +15,10 @@ export type MessageMetadata = {
 import { cn } from '@/shared/lib/utils';
 import UserAvatar from './UserAvatar.vue';
 import Provider from './Provider.vue';
-import type { HTMLAttributes, VueElement } from 'vue';
+import type { HTMLAttributes } from 'vue';
 
 type MessageTypes = TMessage['data']['type'];
-type MessageRenderer = { component: VueElement };
+type MessageRenderer = { component: unknown };
 
 const props = withDefaults(
   defineProps<{

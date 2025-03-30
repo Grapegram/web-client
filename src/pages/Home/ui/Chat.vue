@@ -63,6 +63,7 @@ const messages = ref<MessageData[]>([
     id: '33',
     author: '1',
     data: {
+      //@ts-expect-error for test unavaliable type
       type: 'lol'
     },
     createTime: DateTime.fromISO('2023-04-15T14:30:00')
