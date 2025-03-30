@@ -1,7 +1,6 @@
 <script lang="ts"></script>
 
 <script setup lang="ts">
-import Message, { type MessageVariants } from './Message.vue';
 import MessageGroup from './MessageGroup.vue';
 import { onMounted, ref } from 'vue';
 import { DateTime } from 'luxon';
@@ -9,65 +8,96 @@ import { computed } from 'vue';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { useTemplateRef } from 'vue';
 import { watch } from 'vue';
+import { Textarea } from '@/shared/ui/textarea';
+import Message from './Message.vue';
 
-type Message = {
+type MessageData = {
   id: string;
   author: string;
-  text: string;
-  time: DateTime;
+  data: {
+    type: 'text';
+    text: string;
+  };
+  createTime: DateTime;
 };
 type MessageGroup = {
   id: string;
   author: string;
-  messages: Message[];
+  messages: MessageData[];
 };
 
 const currentUserId = ref('1');
 const isScrolled = ref(true);
 const scrollArea = useTemplateRef('scroll-area');
 
-const messages = ref<Message[]>([
+const messageComponents = {
+  text: {
+    component: Message
+  }
+};
+
+const messages = ref<MessageData[]>([
   {
     id: '0',
     author: '0',
-    text: '     message 1 looooooong looooooong \nlooooooong\n\nlooooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooonglooooooonglooooooonglooooooonglooooooonlooooooong looooooong looooooong',
-    time: DateTime.fromISO('2023-04-15T14:30:00')
+    data: {
+      type: 'text',
+      text: '     message 1 looooooong looooooong \nlooooooong\n\nlooooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooonglooooooonglooooooonglooooooonglooooooonlooooooong looooooong looooooong'
+    },
+    createTime: DateTime.fromISO('2023-04-15T14:30:00')
   },
   {
     id: '1',
     author: '1',
-    text: '\'"**Bold** *Italic* \n_Underlined_ ~~Strikethrough~~ [Link](https://example.com)          example.com    `asdf`\nlolllll\n\n\n\n```javascript\nconsole.log\nconsole.log\n```',
-    time: DateTime.fromISO('2023-04-15T14:30:00')
+    data: {
+      type: 'image'
+    },
+    createTime: DateTime.fromISO('2023-04-15T14:30:00')
   },
   {
     id: '2',
     author: '1',
-    text: 'message 3',
-    time: DateTime.fromISO('2023-04-15T14:30:00')
+    data: {
+      type: 'text',
+      text: 'message 3'
+    },
+    createTime: DateTime.fromISO('2023-04-15T14:30:00')
   },
   {
     id: '3',
     author: '1',
-    text: 'message 4',
-    time: DateTime.fromISO('2023-04-15T14:30:00')
+    data: {
+      type: 'text',
+      text: 'message 4'
+    },
+    createTime: DateTime.fromISO('2023-04-15T14:30:00')
   },
   {
     id: '4',
     author: '0',
-    text: 'message 5',
-    time: DateTime.fromISO('2023-04-15T14:30:00')
+    data: {
+      type: 'text',
+      text: 'message 5'
+    },
+    createTime: DateTime.fromISO('2023-04-15T14:30:00')
   },
   {
     id: '5',
     author: '1',
-    text: 'message 6',
-    time: DateTime.fromISO('2023-04-15T14:30:00')
+    data: {
+      type: 'text',
+      text: 'message 6'
+    },
+    createTime: DateTime.fromISO('2023-04-15T14:30:00')
   },
   {
     id: '6',
     author: '1',
-    text: 'message 7',
-    time: DateTime.fromISO('2023-04-15T14:40:00')
+    data: {
+      type: 'text',
+      text: 'message 7'
+    },
+    createTime: DateTime.fromISO('2023-04-15T14:40:00')
   }
 ]);
 
@@ -81,13 +111,13 @@ const messagesGroups = computed<MessageGroup[]>(() => {
     return group.messages.reduce((acc, m) => acc + `|${m.id}|`, '');
   };
   return messages.value.reduce(
-    (acc: MessageGroup[], msg: Message): MessageGroup[] => {
+    (acc: MessageGroup[], msg: MessageData): MessageGroup[] => {
       const currentGroup = acc.at(-1);
       const prev = currentGroup?.messages.at(-1);
       if (
         prev &&
         msg.author === prev.author &&
-        msg.time.diff(prev?.time, 'minute').minutes < 10
+        msg.createTime.diff(prev?.createTime, 'minute').minutes < 10
       ) {
         currentGroup?.messages.push(msg);
       } else {
@@ -103,16 +133,6 @@ const messagesGroups = computed<MessageGroup[]>(() => {
     [] as MessageGroup[]
   );
 });
-
-function messageVariantByIdAndLength(
-  i: number,
-  length: number
-): MessageVariants {
-  if (length === 1) return 'standalone';
-  if (i === 0) return 'first';
-  if (i === length - 1) return 'last';
-  return 'middle';
-}
 
 function onScroll(e: Event) {
   if (!e.target) return;
@@ -154,8 +174,11 @@ onMounted(async () => {
     messages.value.push({
       id: '10' + i,
       author: author ? '0' : '1',
-      text: 'message l ' + i,
-      time: DateTime.fromISO('2023-04-15T14:40:00')
+      data: {
+        type: 'text',
+        text: 'message l ' + i
+      },
+      createTime: DateTime.fromISO('2023-04-15T14:40:00')
     });
   }
 });
@@ -165,7 +188,7 @@ onMounted(async () => {
   <ScrollArea
     @scroll="onScroll"
     ref="scroll-area"
-    class="m-4 ml-2 grow rounded border p-5"
+    class="m-4 mb-2 ml-2 grow rounded border p-5"
   >
     <div class="flex h-full flex-col items-start justify-end gap-2">
       <div
@@ -180,18 +203,19 @@ onMounted(async () => {
           "
           :side="messageGroup.author !== currentUserId ? 'left' : 'right'"
           :show-avatar="messageGroup.author !== currentUserId"
+          :messages="messageGroup.messages"
+          :message-components="messageComponents"
         >
-          <Message
-            v-for="(message, i) in messageGroup.messages"
-            :key="message.id"
-            :variant="
-              messageVariantByIdAndLength(i, messageGroup.messages.length)
-            "
-            :text="message.text"
-            :time="message.time"
-          />
         </MessageGroup>
       </div>
     </div>
   </ScrollArea>
+  <div
+    class="m-4 mt-2 ml-2 flex min-h-16 items-center justify-start rounded border"
+  >
+    <Textarea
+      class="h-10 w-[60%] border-0"
+      placeholder="Type your message..."
+    />
+  </div>
 </template>
