@@ -12,6 +12,7 @@ import { Textarea } from '@/shared/ui/textarea';
 import TextMessage from './TextMessage.vue';
 import ImageMessage from './ImageMessage.vue';
 import FallbackMessage from './FallbackMessage.vue';
+import { useElementSize } from '@vueuse/core';
 
 type MessageData = {
   id: string;
@@ -35,7 +36,12 @@ type MessageGroup = {
 
 const currentUserId = ref('1');
 const isScrolled = ref(true);
+const chatType = ref<'group' | 'direct'>('direct');
 const scrollArea = useTemplateRef('scroll-area');
+const MIN_CHAT_SIZE = 500;
+const { width: messagesContainerWidth } = useElementSize(
+  scrollArea as unknown as HTMLElement
+);
 
 const messageComponents = {
   text: {
@@ -240,10 +246,23 @@ onMounted(async () => {
         <MessageGroup
           :user="messageGroup.author"
           :class="
-            messageGroup.author !== currentUserId ? 'float-left' : 'float-right'
+            messagesContainerWidth > MIN_CHAT_SIZE &&
+            messageGroup.author === currentUserId
+              ? 'float-right'
+              : 'float-left'
           "
-          :side="messageGroup.author !== currentUserId ? 'left' : 'right'"
-          :show-avatar="messageGroup.author !== currentUserId"
+          :side="
+            messagesContainerWidth > MIN_CHAT_SIZE &&
+            messageGroup.author === currentUserId
+              ? 'right'
+              : 'left'
+          "
+          :show-avatar="
+            messagesContainerWidth > MIN_CHAT_SIZE &&
+            (messageGroup.author === currentUserId || chatType === 'direct')
+              ? false
+              : true
+          "
           :messages="messageGroup.messages"
           :message-components="messageComponents"
         >
