@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { provide } from 'vue';
+import { computed, provide } from 'vue';
 
 const props = defineProps<{
-  name: string;
-  data: unknown;
+  provided: Record<string, unknown>;
 }>();
 
-provide(props.name, props.data);
+for (const name in props.provided) {
+  provide(
+    name,
+    computed(() => props.provided[name])
+  );
+}
 </script>
 
 <template>

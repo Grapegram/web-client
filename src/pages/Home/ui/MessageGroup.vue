@@ -16,6 +16,7 @@ import { cn } from '@/shared/lib/utils';
 import UserAvatar from './UserAvatar.vue';
 import Provider from './Provider.vue';
 import type { HTMLAttributes } from 'vue';
+import { computed } from 'vue';
 
 type MessageTypes = TMessage['data']['type'];
 type MessageRenderer = { component: unknown };
@@ -50,15 +51,15 @@ function messageVariantByIdAndLength(i: number): MessageVariants {
   return 'middle';
 }
 
-function createMessageMetadata(
-  message: TMessage,
-  index: number
-): MessageMetadata {
-  return {
-    variant: messageVariantByIdAndLength(index),
-    side: props.side
-  };
-}
+const createMessageMetadata = computed(
+  () =>
+    (message: TMessage, index: number, side: MessageSide): MessageMetadata => {
+      return {
+        variant: messageVariantByIdAndLength(index),
+        side: side
+      };
+    }
+);
 </script>
 
 <template>
@@ -85,8 +86,10 @@ function createMessageMetadata(
       <Provider
         v-for="(message, i) in props.messages"
         :key="message.id"
-        name="message-meta-data"
-        :data="createMessageMetadata(message, i)"
+        :provided="{
+          'message-meta-data': createMessageMetadata(message, i, props.side),
+          test: 'lol'
+        }"
       >
         <component
           v-if="isMessageTypeAvaliable(message.data.type)"
