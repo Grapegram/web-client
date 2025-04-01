@@ -84,7 +84,7 @@ watchEffect(() => {
     >
       <slot name="sidebar" />
     </ResizablePanel>
-    <ResizableHandle class="bg-transparent" id="demo-handle-1" />
+    <ResizableHandle withHandle class="bg-transparent" id="demo-handle-1" />
     <ResizablePanel id="content" :default-size="50" :class="props.contentClass">
       <slot name="content" />
     </ResizablePanel>

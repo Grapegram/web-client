@@ -134,7 +134,7 @@ const unpinnedChats = computed<ChatData[]>(() => {
   >
     <AlignJustify :size="30" />
   </header>
-  <div class="my-4 ml-4 grow rounded border">
+  <div class="m-4 mr-2 grow rounded border">
     <ScrollArea class="h-full w-full">
       <ChatPreview
         v-for="chat in pinnedChats"
