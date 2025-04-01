@@ -57,6 +57,7 @@
 
   --font-roboto: 'Roboto', sans-serif;
   --height-header: 50px;
+  --ease-bounce: cubic-bezier(0.575, 0.15, 0.35, 1.6);
 }
 
 /*

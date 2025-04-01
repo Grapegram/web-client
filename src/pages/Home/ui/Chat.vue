@@ -1,5 +1,3 @@
-<script lang="ts"></script>
-
 <script setup lang="ts">
 import MessageGroup from './MessageGroup.vue';
 import { onMounted, ref } from 'vue';
@@ -8,11 +6,14 @@ import { computed } from 'vue';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { useTemplateRef } from 'vue';
 import { watch } from 'vue';
-import { Textarea } from '@/shared/ui/textarea';
+import MessageInput from './MessageInput.vue';
 import TextMessage from './TextMessage.vue';
 import ImageMessage from './ImageMessage.vue';
 import FallbackMessage from './FallbackMessage.vue';
 import { useElementSize } from '@vueuse/core';
+import { SendHorizontal } from 'lucide-vue-next';
+import { Button } from '@shared/ui/button';
+import { cn } from '@/shared/lib/utils';
 
 type MessageData = {
   id: string;
@@ -36,6 +37,7 @@ type MessageGroup = {
 
 const currentUserId = ref('1');
 const isScrolled = ref(true);
+const isMessageInputFocuse = ref(false);
 const chatType = ref<'group' | 'direct'>('direct');
 const scrollArea = useTemplateRef('scroll-area');
 const MIN_CHAT_SIZE = 500;
@@ -204,13 +206,19 @@ watch(
   }
 );
 
+function onMessageInput(e: Event) {
+  const el = e.target as HTMLElement;
+  el.style.height = '';
+  el.style.height = el.scrollHeight + 'px';
+}
+
 const wait = async (delay: number) => {
   await new Promise(resolve => {
     setTimeout(resolve, delay);
   });
 };
 
-onMounted(async () => {
+async function simulateChatMessaging() {
   let author = false;
   await wait(2000);
   for (let i = 0; i != 300; i++) {
@@ -228,6 +236,10 @@ onMounted(async () => {
       createTime: DateTime.fromISO('2023-04-15T14:40:00')
     });
   }
+}
+
+onMounted(async () => {
+  await simulateChatMessaging();
 });
 </script>
 
@@ -271,11 +283,29 @@ onMounted(async () => {
     </div>
   </ScrollArea>
   <div
-    class="m-4 mt-2 ml-2 flex min-h-16 items-center justify-start rounded border"
+    :class="
+      cn(
+        'm-4 mt-2 ml-2 flex items-center justify-start gap-1 rounded border p-2 transition',
+        {
+          'ring-ring ring-1': isMessageInputFocuse
+        }
+      )
+    "
   >
-    <Textarea
-      class="h-10 w-[60%] border-0"
-      placeholder="Type your message..."
+    <MessageInput
+      @input="onMessageInput"
+      @focus="isMessageInputFocuse = true"
+      @blur="isMessageInputFocuse = false"
+      class="h-10 max-h-[300px] min-h-0 grow"
     />
+    <Button
+      variant="outline"
+      size="icon"
+      class="group min-h-10 min-w-10 self-end hover:cursor-pointer"
+    >
+      <SendHorizontal
+        class="ease-bounce size-5! transition group-hover:scale-125 group-hover:rotate-[-30deg]"
+      />
+    </Button>
   </div>
 </template>
