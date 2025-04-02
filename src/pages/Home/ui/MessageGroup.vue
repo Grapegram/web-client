@@ -63,13 +63,13 @@ const createMessageMetadata = computed(
 </script>
 
 <template>
-  <div :class="cn('relative w-fit', props.class)">
+  <div :class="cn('relative max-w-[min(100%,500px)]', props.class)">
     <UserAvatar
       v-if="props.showAvatar"
       :class="
         cn('sticky top-[calc(100%-40px)]', {
-          'float-left': props.side === 'left',
-          'float-right': props.side === 'right'
+          'float-left mr-3': props.side === 'left',
+          'float-right ml-3': props.side === 'right'
         })
       "
       size="sm"
@@ -77,9 +77,11 @@ const createMessageMetadata = computed(
     />
     <div
       :class="
-        cn('float-left flex flex-col gap-[3px]', {
-          'ml-3 items-start': props.side === 'left',
-          'mr-3 items-end': props.side === 'right'
+        cn('flex flex-col gap-[3px]', {
+          'items-start': props.side === 'left',
+          'items-end': props.side === 'right',
+          'ml-3': !props.showAvatar && props.side === 'left',
+          'mr-3': !props.showAvatar && props.side === 'right'
         })
       "
     >

@@ -70,7 +70,7 @@ function messageWrapperVariants({
 <template>
   <div
     :class="
-      cn('base-message relative max-w-[400px]', props.wrapperClass, {
+      cn('base-message relative max-w-full', props.wrapperClass, {
         ...messageWrapperVariants({
           variant: metadata.variant,
           side: metadata.side,
