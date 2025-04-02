@@ -5,8 +5,6 @@ import { ScrollArea } from '@/shared/ui/scroll-area';
 import { inject } from 'vue';
 import { DateTime } from 'luxon';
 import { computed } from 'vue';
-import { AlignJustify } from 'lucide-vue-next';
-import { cn } from '@/shared/lib/utils';
 
 const activeChatId = ref('1');
 const pinnedChatsIds = ref(['47', '0']);
@@ -124,17 +122,7 @@ const unpinnedChats = computed<ChatData[]>(() => {
 </script>
 
 <template>
-  <header
-    :class="
-      cn('h-header flex flex-row items-center border-r border-b', {
-        'justify-center': sidebarMode === 'compact',
-        'justify-start pl-5': sidebarMode === 'expanded'
-      })
-    "
-  >
-    <AlignJustify :size="30" />
-  </header>
-  <div class="m-4 mr-2 grow rounded border">
+  <div class="h-full grow rounded border">
     <ScrollArea class="h-full w-full">
       <ChatPreview
         v-for="chat in pinnedChats"

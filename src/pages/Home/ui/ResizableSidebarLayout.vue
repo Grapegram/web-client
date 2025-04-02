@@ -24,6 +24,7 @@ export const Percentage = (value: number): Unite => ({
 </script>
 
 <script setup lang="ts">
+import { cn } from '@shared/lib/utils';
 import {
   ResizableHandle,
   ResizablePanel,
@@ -69,7 +70,7 @@ watchEffect(() => {
     id="resizable-layout"
     direction="horizontal"
     :auto-save-id="props.autoSaveId"
-    :class="props.class"
+    :class="cn('p-[var(--layout-gap-size)]', props.class)"
   >
     <ResizablePanel
       ref="sidebar"
@@ -84,7 +85,11 @@ watchEffect(() => {
     >
       <slot name="sidebar" />
     </ResizablePanel>
-    <ResizableHandle withHandle class="bg-transparent" id="demo-handle-1" />
+    <ResizableHandle
+      withHandle
+      class="w-[var(--layout-gap-size)] bg-transparent"
+      id="demo-handle-1"
+    />
     <ResizablePanel id="content" :default-size="50" :class="props.contentClass">
       <slot name="content" />
     </ResizablePanel>

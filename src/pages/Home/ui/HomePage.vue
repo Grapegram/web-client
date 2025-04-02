@@ -5,25 +5,24 @@ import ResizableSidebarLayout, {
 } from './ResizableSidebarLayout.vue';
 import Sidebar from './Sidebar.vue';
 import Chat from './Chat.vue';
+import Header from './Header.vue';
 </script>
 
 <template>
   <div class="h-dvh w-dvw">
+    <Header />
     <ResizableSidebarLayout
-      :collapsed-size="Px(106)"
+      :collapsed-size="Px(90)"
       :min-size="Px(350)"
       :max-size="Percentage(35)"
-      sidebar-class="flex flex-col"
+      class="h-[calc(100%-var(--height-header))]!"
       auto-save-id="main"
     >
       <template #sidebar>
         <Sidebar />
       </template>
       <template #content>
-        <div class="flex h-full w-full flex-col">
-          <header class="min-h-header border-b">somting in head</header>
-          <Chat />
-        </div>
+        <Chat />
       </template>
     </ResizableSidebarLayout>
   </div>

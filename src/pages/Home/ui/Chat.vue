@@ -40,7 +40,7 @@ const isScrolled = ref(true);
 const isMessageInputFocuse = ref(false);
 const chatType = ref<'group' | 'direct'>('direct');
 const scrollArea = useTemplateRef('scroll-area');
-const MIN_CHAT_SIZE = 500;
+const MIN_CHAT_SIZE = 1000;
 const { width: messagesContainerWidth } = useElementSize(
   scrollArea as unknown as HTMLElement
 );
@@ -244,68 +244,71 @@ onMounted(async () => {
 </script>
 
 <template>
-  <ScrollArea
-    @scroll="onScroll"
-    ref="scroll-area"
-    class="m-4 mb-2 ml-2 grow rounded border p-5"
-  >
-    <div class="flex h-full flex-col items-start justify-end gap-2">
-      <div
-        :key="messageGroup.id"
-        v-for="messageGroup in messagesGroups"
-        class="relative w-full"
-      >
-        <MessageGroup
-          :user="messageGroup.author"
-          :class="
-            messagesContainerWidth < MIN_CHAT_SIZE &&
-            messageGroup.author === currentUserId
-              ? 'float-right'
-              : 'float-left'
-          "
-          :side="
-            messagesContainerWidth < MIN_CHAT_SIZE &&
-            messageGroup.author === currentUserId
-              ? 'right'
-              : 'left'
-          "
-          :show-avatar="
-            messagesContainerWidth < MIN_CHAT_SIZE &&
-            (messageGroup.author === currentUserId || chatType === 'direct')
-              ? false
-              : true
-          "
-          :messages="messageGroup.messages"
-          :message-components="messageComponents"
-        >
-        </MessageGroup>
-      </div>
-    </div>
-  </ScrollArea>
-  <div
-    :class="
-      cn(
-        'm-4 mt-2 ml-2 flex items-center justify-start gap-1 rounded border p-2 transition',
-        {
-          'ring-ring ring-1': isMessageInputFocuse
-        }
-      )
-    "
-  >
-    <MessageInput
-      @input="onMessageInput"
-      @focus="isMessageInputFocuse = true"
-      @blur="isMessageInputFocuse = false"
-      class="h-10 max-h-[300px] min-h-0 grow"
-    />
-    <Button
-      variant="outline"
-      size="icon"
-      class="group min-h-10 min-w-10 self-end hover:cursor-pointer"
+  <div class="flex h-full w-full flex-col">
+    <ScrollArea
+      @scroll="onScroll"
+      ref="scroll-area"
+      class="grow rounded border p-5"
     >
-      <SendHorizontal
-        class="ease-bounce size-5! transition group-hover:scale-125 group-hover:rotate-[-30deg]"
+      <div class="flex h-full flex-col items-start justify-end gap-2">
+        <div
+          :key="messageGroup.id"
+          v-for="messageGroup in messagesGroups"
+          class="relative w-full"
+        >
+          <MessageGroup
+            :user="messageGroup.author"
+            :class="
+              messagesContainerWidth < MIN_CHAT_SIZE &&
+              messageGroup.author === currentUserId
+                ? 'float-right'
+                : 'float-left'
+            "
+            :side="
+              messagesContainerWidth < MIN_CHAT_SIZE &&
+              messageGroup.author === currentUserId
+                ? 'right'
+                : 'left'
+            "
+            :show-avatar="
+              messagesContainerWidth < MIN_CHAT_SIZE &&
+              (messageGroup.author === currentUserId || chatType === 'direct')
+                ? false
+                : true
+            "
+            :messages="messageGroup.messages"
+            :message-components="messageComponents"
+          >
+          </MessageGroup>
+        </div>
+      </div>
+    </ScrollArea>
+    <div class="min-h-[var(--layout-gap-size)] w-full"></div>
+    <div
+      :class="
+        cn(
+          'flex items-center justify-start gap-1 rounded border p-2 transition',
+          {
+            'ring-ring ring-1': isMessageInputFocuse
+          }
+        )
+      "
+    >
+      <MessageInput
+        @input="onMessageInput"
+        @focus="isMessageInputFocuse = true"
+        @blur="isMessageInputFocuse = false"
+        class="h-10 max-h-[300px] min-h-0 grow"
       />
-    </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        class="group min-h-10 min-w-10 self-end hover:cursor-pointer"
+      >
+        <SendHorizontal
+          class="ease-bounce size-5! transition group-hover:scale-125 group-hover:rotate-[-30deg]"
+        />
+      </Button>
+    </div>
   </div>
 </template>
