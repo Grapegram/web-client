@@ -258,19 +258,19 @@ onMounted(async () => {
         <MessageGroup
           :user="messageGroup.author"
           :class="
-            messagesContainerWidth > MIN_CHAT_SIZE &&
+            messagesContainerWidth < MIN_CHAT_SIZE &&
             messageGroup.author === currentUserId
               ? 'float-right'
               : 'float-left'
           "
           :side="
-            messagesContainerWidth > MIN_CHAT_SIZE &&
+            messagesContainerWidth < MIN_CHAT_SIZE &&
             messageGroup.author === currentUserId
               ? 'right'
               : 'left'
           "
           :show-avatar="
-            messagesContainerWidth > MIN_CHAT_SIZE &&
+            messagesContainerWidth < MIN_CHAT_SIZE &&
             (messageGroup.author === currentUserId || chatType === 'direct')
               ? false
               : true
