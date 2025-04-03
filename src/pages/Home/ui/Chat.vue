@@ -289,7 +289,7 @@ onMounted(async () => {
         cn(
           'flex items-center justify-start gap-1 rounded border p-2 transition',
           {
-            'ring-ring ring-1': isMessageInputFocuse
+            'border-accent/60': isMessageInputFocuse
           }
         )
       "
