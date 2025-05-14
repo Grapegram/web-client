@@ -8,6 +8,8 @@ export type BaseMessage = {
 export type MessageMetadata = {
   side: MessageSide;
   variant: MessageVariants;
+  showName: boolean;
+  backgroudColor?: string;
 };
 </script>
 
@@ -26,6 +28,8 @@ const props = withDefaults(
     user: string;
     side: MessageSide;
     showAvatar: boolean;
+    showName: boolean;
+    messageBackgroudColor?: string;
     messages: TMessage[];
     messageComponents: Record<MessageTypes, MessageRenderer>;
     class?: HTMLAttributes['class'];
@@ -56,7 +60,9 @@ const createMessageMetadata = computed(
     (message: TMessage, index: number, side: MessageSide): MessageMetadata => {
       return {
         variant: messageVariantByIdAndLength(index),
-        side: side
+        side: side,
+        showName: props.showName,
+        backgroudColor: props.messageBackgroudColor
       };
     }
 );
@@ -89,8 +95,7 @@ const createMessageMetadata = computed(
         v-for="(message, i) in props.messages"
         :key="message.id"
         :provided="{
-          'message-meta-data': createMessageMetadata(message, i, props.side),
-          test: 'lol'
+          'message-meta-data': createMessageMetadata(message, i, props.side)
         }"
       >
         <component

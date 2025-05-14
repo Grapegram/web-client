@@ -56,7 +56,7 @@
   --drop-shadow-accent: 0 0 1.3em hsl(var(--accent) / 66%);
 
   --font-roboto: 'Roboto', sans-serif;
-  --height-header: 50px;
+  --height-header: 64px;
   --ease-bounce: cubic-bezier(0.575, 0.15, 0.35, 1.6);
   --layout-gap-size: calc(var(--spacing) * 4);
 }
@@ -81,25 +81,90 @@
 
 @layer base {
   :root {
-    --background: 0 0% 8%;
-    --foreground: 0, 0%, 95%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 0 0% 16%;
-    --primary-foreground: 0, 0%, 95%;
-    --secondary: 0 0% 22%;
-    --secondary-foreground: 0, 0%, 95%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 280, 61%, 51%;
-    --accent-foreground: 0, 0%, 95%;
-    --destructive: 345, 100%, 56%;
-    --destructive-foreground: 0, 0%, 95%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 10% 3.9%;
+    /* --gray-50: #f2f2f2;
+    --gray-100: #e5e5e5;
+    --gray-150: #d8d8d8;
+    --gray-200: #cbcbcb;
+    --gray-250: #bebebe;
+    --gray-300: #b1b1b1;
+    --gray-350: #a4a4a4;
+    --gray-400: #979797;
+    --gray-450: #8a8a8a;
+    --gray-500: #7c7c7c;
+    --gray-550: #6f6f6f;
+    --gray-600: #626262;
+    --gray-650: #555555;
+    --gray-700: #484848;
+    --gray-750: #3b3b3b;
+    --gray-800: #2e2e2e;
+    --gray-850: #212121;
+    --gray-900: #141414;
+
+    --rose-50: #fff1f2;
+    --rose-100: #ffe4e6;
+    --rose-200: #ffccd3;
+    --rose-300: #ffa1ad;
+    --rose-400: #ff637e;
+    --rose-500: #ff2056;
+    --rose-600: #ec003f;
+    --rose-700: #c60036;
+    --rose-800: #a50036;
+    --rose-900: #8b0836;
+
+    --brand-purple: #9c36cf; */
+    --gray-50: 0 0% 94.9%;
+    --gray-100: 0 0% 89.8%;
+    --gray-150: 0 0% 84.7%;
+    --gray-200: 0 0% 79.6%;
+    --gray-250: 0 0% 74.5%;
+    --gray-300: 0 0% 69.4%;
+    --gray-350: 0 0% 64.3%;
+    --gray-400: 0 0% 59.2%;
+    --gray-450: 0 0% 54.1%;
+    --gray-500: 0 0% 48.6%;
+    --gray-550: 0 0% 43.5%;
+    --gray-600: 0 0% 38.4%;
+    --gray-650: 0 0% 33.3%;
+    --gray-700: 0 0% 28.2%;
+    --gray-750: 0 0% 23.1%;
+    --gray-800: 0 0% 18%;
+    --gray-850: 0 0% 12.9%;
+    --gray-900: 0 0% 7.8%;
+
+    --rose-50: 356 100% 97.3%;
+    --rose-100: 356 100% 94.7%;
+    --rose-200: 352 100% 90%;
+    --rose-300: 352 100% 81.6%;
+    --rose-400: 350 100% 69.4%;
+    --rose-500: 345 100% 56.3%;
+    --rose-600: 344 100% 46.3%;
+    --rose-700: 344 100% 38.8%;
+    --rose-800: 340 100% 32.4%;
+    --rose-900: 339 89.1% 28.8%;
+
+    --brand-purple: 280 61.4% 51.2%;
+  }
+
+  :root {
+    --background: var(--gray-100);
+    --foreground: var(--gray-900);
+    --card: var(--gray-150);
+    --card-foreground: var(--gray-900);
+    --popover: var(--gray-900);
+    --popover-foreground: var(--gray-50);
+    --primary: var(--gray-200);
+    --primary-foreground: var(--gray-900);
+    --secondary: var(--gray-150);
+    --secondary-foreground: var(--gray-900);
+    --muted: var(--gray-200);
+    --muted-foreground: var(--gray-500);
+    --accent: var(--brand-purple);
+    --accent-foreground: var(--gray-50);
+    --destructive: var(--rose-600);
+    --destructive-foreground: var(--gray-100);
+    --border: var(--gray-200);
+    --input: var(--gray-200);
+    --ring: var(--gray-900);
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -116,25 +181,25 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .dark {
-    --background: 0 0% 8%;
-    --foreground: 0, 0%, 95%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0, 0%, 95%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0, 0%, 95%;
-    --primary: 0 0% 16%;
-    --primary-foreground: 0, 0%, 95%;
-    --secondary: 0 0% 22%;
-    --secondary-foreground: 0, 0%, 95%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 280 61% 51%;
-    --accent-foreground: 0, 0%, 95%;
-    --destructive: 344, 100%, 39%;
-    --destructive-foreground: 0, 0%, 95%;
-    --border: 240 3.7% 20;
-    --input: 240 3.7% 20;
-    --ring: 240 4.9% 83.9%;
+    --background: var(--gray-900);
+    --foreground: var(--gray-50);
+    --card: var(--gray-850);
+    --card-foreground: var(--gray-50);
+    --popover: var(--gray-850);
+    --popover-foreground: var(--gray-50);
+    --primary: var(--gray-800);
+    --primary-foreground: var(--gray-50);
+    --secondary: var(--gray-750);
+    --secondary-foreground: var(--gray-50);
+    --muted: var(--gray-200);
+    --muted-foreground: var(--gray-400);
+    --accent: var(--brand-purple);
+    --accent-foreground: var(--gray-50);
+    --destructive: var(--rose-700);
+    --destructive-foreground: var(--gray-50);
+    --border: var(--gray-750);
+    --input: var(--gray-750);
+    --ring: var(--gray-100);
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -164,4 +229,47 @@
   #app {
     @apply relative flex min-h-screen items-center justify-center;
   }
+}
+
+:root {
+  /* --spacing-9: 36px;
+  --spacing-9-rem: 2.25rem;
+  --spacing-8: 32px;
+  --spacing-8-rem: 2rem;
+  --spacing-7: 28px;
+  --spacing-7-rem: 1.75rem;
+  --spacing-3: 12px;
+  --spacing-3-rem: 0.75rem;
+  --spacing-2: 8px;
+  --spacing-2-rem: 0.5rem;
+  --spacing-0: 0px;
+  --spacing-0-rem: 0rem;
+  --spacing-5: 20px;
+  --spacing-5-rem: 1.25rem;
+  --spacing-6: 24px;
+  --spacing-6-rem: 1.5rem;
+  --spacing-1: 4px;
+  --spacing-1-rem: 0.25rem;
+  --spacing-10: 40px;
+  --spacing-10-rem: 2.5rem;
+  --spacing-4: 16px;
+  --spacing-4-rem: 1rem; */
+
+  /* TOKENS */
+
+  /* PROTOTYPE */
+  --is-side-bar-collapsed: true;
+  --sidebar-size: 84px;
+  --sidebar-size-rem: 5.25rem;
+  --m0: 0px;
+  --m0-rem: 0rem;
+  --m1: 0px;
+  --m1-rem: 0rem;
+  --m2: 0px;
+  --m2-rem: 0rem;
+  --m3: 0px;
+  --m3-rem: 0rem;
+  --is-send-hover: 'default';
+  --is-message-typing: 'base';
+  --message-text: ' ';
 }

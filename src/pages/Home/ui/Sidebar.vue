@@ -122,7 +122,7 @@ const unpinnedChats = computed<ChatData[]>(() => {
 </script>
 
 <template>
-  <div class="h-full grow rounded border">
+  <div class="bg-card h-full grow">
     <ScrollArea class="h-full w-full">
       <ChatPreview
         v-for="chat in pinnedChats"

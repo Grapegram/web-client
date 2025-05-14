@@ -38,7 +38,7 @@ type MessageGroup = {
 const currentUserId = ref('1');
 const isScrolled = ref(true);
 const isMessageInputFocuse = ref(false);
-const chatType = ref<'group' | 'direct'>('direct');
+const chatType = ref<'group' | 'direct'>('group');
 const scrollArea = useTemplateRef('scroll-area');
 const MIN_CHAT_SIZE = 1000;
 const { width: messagesContainerWidth } = useElementSize(
@@ -239,17 +239,13 @@ async function simulateChatMessaging() {
 }
 
 onMounted(async () => {
-  await simulateChatMessaging();
+  // await simulateChatMessaging();
 });
 </script>
 
 <template>
-  <div class="flex h-full w-full flex-col">
-    <ScrollArea
-      @scroll="onScroll"
-      ref="scroll-area"
-      class="grow rounded border p-5"
-    >
+  <div class="flex h-full w-full flex-col p-5 pb-3">
+    <ScrollArea @scroll="onScroll" ref="scroll-area" class="grow">
       <div class="flex h-full flex-col items-start justify-end gap-2">
         <div
           :key="messageGroup.id"
@@ -276,30 +272,39 @@ onMounted(async () => {
                 ? false
                 : true
             "
+            :show-name="
+              chatType === 'group' && messageGroup.author !== currentUserId
+            "
             :messages="messageGroup.messages"
             :message-components="messageComponents"
+            :message-backgroud-color="
+              messageGroup.author === currentUserId
+                ? '--color-primary'
+                : '--color-secondary'
+            "
           >
           </MessageGroup>
         </div>
       </div>
     </ScrollArea>
-    <div class="min-h-[var(--layout-gap-size)] w-full"></div>
-    <div
-      :class="
-        cn(
-          'flex items-center justify-start gap-1 rounded border p-2 transition',
-          {
-            'border-accent/60': isMessageInputFocuse
-          }
-        )
-      "
-    >
-      <MessageInput
-        @input="onMessageInput"
-        @focus="isMessageInputFocuse = true"
-        @blur="isMessageInputFocuse = false"
-        class="h-10 max-h-[300px] min-h-0 grow"
-      />
+    <div class="flex items-center justify-start gap-1">
+      <div
+        :class="
+          cn(
+            'flex grow items-center justify-start rounded border p-1 transition',
+            {
+              'border-accent/60': isMessageInputFocuse
+            }
+          )
+        "
+      >
+        <MessageInput
+          @input="onMessageInput"
+          @focus="isMessageInputFocuse = true"
+          @blur="isMessageInputFocuse = false"
+          class="h-10 max-h-[300px] min-h-0 grow"
+        />
+      </div>
       <Button
         variant="outline"
         size="icon"

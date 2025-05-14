@@ -5,10 +5,13 @@ import type { MessageSide } from './MessageGroup.vue';
 import type { MessageVariants } from './MessageGroup.vue';
 import { cn } from '@shared/lib/utils';
 import type { HTMLAttributes } from 'vue';
+import { computed } from 'vue';
+import { watch } from 'vue';
 
 const props = withDefaults(
   defineProps<{
     withTail?: boolean;
+    backgroudColor?: string;
     class?: HTMLAttributes['class'];
     wrapperClass?: HTMLAttributes['class'];
   }>(),
@@ -18,6 +21,8 @@ const props = withDefaults(
 );
 const metadata = inject<MessageMetadata>('message-meta-data', {
   side: 'left',
+  showName: false,
+  backgroudColor: undefined,
   variant: 'standalone'
 });
 
@@ -65,6 +70,33 @@ function messageWrapperVariants({
       tail
   };
 }
+
+const messageVariantsClasses = computed(() => {
+  return messageVariants({
+    variant: metadata.variant,
+    side: metadata.side,
+    tail: props.withTail
+  });
+});
+
+const messageWrapperVariantsClasses = computed(() => {
+  return messageWrapperVariants({
+    variant: metadata.variant,
+    side: metadata.side,
+    tail: props.withTail
+  });
+});
+
+watch(
+  () => metadata,
+  () => {
+    console.log(metadata.side);
+  }
+);
+
+const backgroudColor = computed(
+  () => props.backgroudColor ?? metadata.backgroudColor ?? '--color-primary'
+);
 </script>
 
 <template>
@@ -78,12 +110,7 @@ function messageWrapperVariants({
         })
       })
     "
-    :style="
-      '--message-bg: ' +
-      (true // props.user === currentUserId
-        ? 'var(--color-primary)'
-        : 'var(--color-secondary)')
-    "
+    :style="`--message-bg: var(${props.backgroudColor ?? metadata.backgroudColor ?? '--color-primary'})`"
   >
     <div
       :class="
@@ -100,6 +127,14 @@ function messageWrapperVariants({
         )
       "
     >
+      <header
+        v-if="
+          metadata.showName &&
+          (metadata.variant === 'first' || metadata.variant === 'standalone')
+        "
+      >
+        <span class="font-bold text-orange-500">Username</span>
+      </header>
       <slot />
     </div>
   </div>

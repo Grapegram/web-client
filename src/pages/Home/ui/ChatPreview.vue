@@ -79,7 +79,7 @@ const chatVariants = cva('', {
         'h-full w-full py-2',
         chatVariants({ variant: variant }),
         {
-          'bg-accent': isActive,
+          'bg-secondary': isActive,
           'hover:bg-secondary': !isActive
         }
       )
