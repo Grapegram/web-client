@@ -14,6 +14,7 @@ import { useElementSize } from '@vueuse/core';
 import { SendHorizontal } from 'lucide-vue-next';
 import { Button } from '@shared/ui/button';
 import { cn } from '@/shared/lib/utils';
+import ChatHeader from './ChatHeader.vue';
 
 type MessageData = {
   id: string;
@@ -244,7 +245,8 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex h-full w-full flex-col p-5 pb-3">
+  <div class="flex h-full w-full flex-col gap-4 p-4 pb-2">
+    <ChatHeader />
     <ScrollArea @scroll="onScroll" ref="scroll-area" class="grow">
       <div class="flex h-full flex-col items-start justify-end gap-2">
         <div
