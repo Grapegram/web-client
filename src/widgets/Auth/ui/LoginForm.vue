@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { GoogleIcon } from '@/shared/icons';
-import { ROUTES } from '@/shared/lib/routes';
 
 import { Button } from '@/shared/ui/button';
 import {
@@ -17,6 +16,10 @@ import { useForm } from 'vee-validate';
 import * as z from 'zod';
 import { vAutoAnimate } from '@formkit/auto-animate/vue';
 import { cn } from '@/shared/lib/utils';
+import { ROUTES } from '@/shared/lib/routes';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const formSchema = toTypedSchema(
   z.object({
@@ -31,6 +34,7 @@ const { handleSubmit, errors } = useForm({
 
 const onSubmit = handleSubmit(values => {
   console.log(values);
+  router.push(ROUTES.HOME);
 });
 </script>
 

@@ -17,6 +17,9 @@ import { useForm } from 'vee-validate';
 import * as z from 'zod';
 import { vAutoAnimate } from '@formkit/auto-animate/vue';
 import { cn } from '@/shared/lib/utils';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const formSchema = toTypedSchema(
   z.object({
@@ -45,6 +48,7 @@ const { handleSubmit, errors } = useForm({
 
 const onSubmit = handleSubmit(values => {
   console.log(values);
+  router.push(ROUTES.HOME);
 });
 </script>
 
