@@ -240,7 +240,7 @@ async function simulateChatMessaging() {
 }
 
 onMounted(async () => {
-  // await simulateChatMessaging();
+  await simulateChatMessaging();
 });
 </script>
 
