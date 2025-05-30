@@ -5,9 +5,7 @@ import { Avatar, AvatarImage } from '@/shared/ui/avatar';
 
 <template>
   <div class="h-dvh max-h-dvh w-full overflow-hidden">
-    <header
-      class="h-header top-0 flex w-full flex-row items-center gap-2 px-[50px]"
-    >
+    <header class="top-0 flex w-full flex-row items-center gap-2 px-12 py-5">
       <Avatar
         class="hover:drop-shadow-accent h-[50px] w-[50px] bg-transparent transition-all duration-300"
       >
@@ -17,7 +15,7 @@ import { Avatar, AvatarImage } from '@/shared/ui/avatar';
     </header>
     <slot />
     <img
-      class="fixed right-2/4 bottom-0 translate-x-[50%] translate-y-[80%] md:visible md:right-0 md:translate-y-[70%]"
+      class="fixed right-2/4 bottom-0 translate-x-[50%] translate-y-[80%] opacity-75 md:visible md:right-0 md:translate-x-[48%] md:translate-y-[65%]"
       :src="world"
     />
   </div>
