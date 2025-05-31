@@ -60,17 +60,19 @@ const messagesGroups = computed<MessageGroup[]>(() => {
     messages: []
   });
   const computeId = (group: MessageGroup): string => {
-    return group.messages.reduce((acc, m) => acc + `|${m.id}|`, '');
+    return group.messages.reduce((acc, m) => acc + `|${m.id}`, '');
+  };
+  const isSameGroupMessages = (prev: Message, current: Message): boolean => {
+    return (
+      current.author === prev.author &&
+      current.createTime.diff(prev?.createTime, 'minute').minutes < 10
+    );
   };
   return messages.value.reduce(
     (acc: MessageGroup[], msg: Message): MessageGroup[] => {
       const currentGroup = acc.at(-1);
       const prev = currentGroup?.messages.at(-1);
-      if (
-        prev &&
-        msg.author === prev.author &&
-        msg.createTime.diff(prev?.createTime, 'minute').minutes < 10
-      ) {
+      if (prev && isSameGroupMessages(prev, msg)) {
         currentGroup?.messages.push(msg);
       } else {
         if (currentGroup) {
