@@ -119,7 +119,7 @@ function onMessageInput(e: Event) {
 </script>
 
 <template>
-  <div v-if="!chat">
+  <div v-if="!chat" class="flex h-full w-full items-center justify-center">
     <h3>
       <strong>Choose one chat, to start chatting</strong>
     </h3>
