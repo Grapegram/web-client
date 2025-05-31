@@ -30,7 +30,7 @@ type ChatStore = {
 export const useChatStore = defineStore('chat', {
   state: (): ChatStore => ({
     chats: mockChats,
-    currentChatId: '1',
+    currentChatId: null,
     pinnedChatsIds: new Set(['47', '3'])
   }),
 
