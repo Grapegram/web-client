@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import MessageGroup from './MessageGroup.vue';
-import { onMounted, ref } from 'vue';
-import { DateTime } from 'luxon';
+import { ref } from 'vue';
 import { computed } from 'vue';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { useTemplateRef } from 'vue';
@@ -15,35 +14,31 @@ import { SendHorizontal } from 'lucide-vue-next';
 import { Button } from '@shared/ui/button';
 import { cn } from '@/shared/lib/utils';
 import ChatHeader from './ChatHeader.vue';
+import { useMessagesStore, type Message } from '../model/messages';
+import { ChatType, useChatStore } from '../model/chat';
 
-type MessageData = {
-  id: string;
-  author: string;
-  data:
-    | {
-        type: 'text';
-        text: string;
-      }
-    | {
-        type: 'img';
-        url: string;
-      };
-  createTime: DateTime;
-};
 type MessageGroup = {
   id: string;
   author: string;
-  messages: MessageData[];
+  messages: Message[];
 };
+
+const messagesStore = useMessagesStore();
+const chatStore = useChatStore();
 
 const currentUserId = ref('1');
 const isScrolled = ref(true);
 const isMessageInputFocuse = ref(false);
-const chatType = ref<'group' | 'direct'>('group');
 const scrollArea = useTemplateRef('scroll-area');
 const MIN_CHAT_SIZE = 1000;
 const { width: messagesContainerWidth } = useElementSize(
   scrollArea as unknown as HTMLElement
+);
+
+const chat = computed(() => chatStore.currentChat);
+const chatType = computed(() => chat.value?.type);
+const messages = computed(() =>
+  messagesStore.getChatMessages(chat.value?.id ?? '')
 );
 
 const messageComponents = {
@@ -58,99 +53,6 @@ const messageComponents = {
   }
 };
 
-const messages = ref<MessageData[]>([
-  {
-    id: '0',
-    author: '0',
-    data: {
-      type: 'text',
-      text: '     message 1 looooooong looooooong \nlooooooong\n\nlooooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooonglooooooonglooooooonglooooooonglooooooonlooooooong looooooong looooooong'
-    },
-    createTime: DateTime.fromISO('2023-04-15T14:30:00')
-  },
-  {
-    id: '33',
-    author: '1',
-    data: {
-      //@ts-expect-error for test unavaliable type
-      type: 'lol'
-    },
-    createTime: DateTime.fromISO('2023-04-15T14:30:00')
-  },
-  {
-    id: '35',
-    author: '1',
-    data: {
-      type: 'text',
-      text: '\'"**Bold** *Italic* \n_Underlined_ ~~Strikethrough~~ [Link](https://example.com)          example.com    `asdf`\nlolllll\n\n\n\n```javascript\nconsole.log\nconsole.log\n```'
-    },
-    createTime: DateTime.fromISO('2023-04-15T14:10:00')
-  },
-  {
-    id: '1',
-    author: '1',
-    data: {
-      type: 'img',
-      url: 'https://get.pxhere.com/photo/animal-pet-kitten-cat-small-mammal-fauna-heal-blue-eye-close-up-nose-whiskers-vertebrate-domestic-lying-tabby-cat-norwegian-forest-cat-ginger-fur-small-to-medium-sized-cats-cat-like-mammal-carnivoran-domestic-short-haired-cat-domestic-long-haired-cat-609263.jpg'
-    },
-    createTime: DateTime.fromISO('2023-04-15T14:10:00')
-  },
-  {
-    id: '13',
-    author: '1',
-    data: {
-      type: 'img',
-      url: 'https://get.pxhere.com/photo/animal-pet-kitten-cat-small-mammal-fauna-heal-blue-eye-close-up-nose-whiskers-vertebrate-domestic-lying-tabby-cat-norwegian-forest-cat-ginger-fur-small-to-medium-sized-cats-cat-like-mammal-carnivoran-domestic-short-haired-cat-domestic-long-haired-cat-609263.jpg'
-    },
-    createTime: DateTime.fromISO('2023-04-15T14:20:00')
-  },
-  {
-    id: '2',
-    author: '1',
-    data: {
-      type: 'text',
-      text: 'message 3'
-    },
-    createTime: DateTime.fromISO('2023-04-15T14:30:00')
-  },
-  {
-    id: '3',
-    author: '1',
-    data: {
-      type: 'text',
-      text: 'message 4'
-    },
-    createTime: DateTime.fromISO('2023-04-15T14:30:00')
-  },
-  {
-    id: '4',
-    author: '0',
-    data: {
-      type: 'text',
-      text: 'message 5'
-    },
-    createTime: DateTime.fromISO('2023-04-15T14:30:00')
-  },
-  {
-    id: '5',
-    author: '1',
-    data: {
-      type: 'text',
-      text: 'message 6'
-    },
-    createTime: DateTime.fromISO('2023-04-15T14:30:00')
-  },
-  {
-    id: '6',
-    author: '1',
-    data: {
-      type: 'text',
-      text: 'message 7'
-    },
-    createTime: DateTime.fromISO('2023-04-15T14:40:00')
-  }
-]);
-
 const messagesGroups = computed<MessageGroup[]>(() => {
   const createMsgGroup = (author: string): MessageGroup => ({
     author: author,
@@ -161,7 +63,7 @@ const messagesGroups = computed<MessageGroup[]>(() => {
     return group.messages.reduce((acc, m) => acc + `|${m.id}|`, '');
   };
   return messages.value.reduce(
-    (acc: MessageGroup[], msg: MessageData): MessageGroup[] => {
+    (acc: MessageGroup[], msg: Message): MessageGroup[] => {
       const currentGroup = acc.at(-1);
       const prev = currentGroup?.messages.at(-1);
       if (
@@ -212,40 +114,15 @@ function onMessageInput(e: Event) {
   el.style.height = '';
   el.style.height = el.scrollHeight + 'px';
 }
-
-const wait = async (delay: number) => {
-  await new Promise(resolve => {
-    setTimeout(resolve, delay);
-  });
-};
-
-async function simulateChatMessaging() {
-  let author = false;
-  await wait(2000);
-  for (let i = 0; i != 300; i++) {
-    if (i % 2 === 0 && Math.random() < 0.3) {
-      author = !author;
-      await wait(500);
-    }
-    messages.value.push({
-      id: '10' + i,
-      author: author ? '0' : '1',
-      data: {
-        type: 'text',
-        text: 'message l ' + i
-      },
-      createTime: DateTime.fromISO('2023-04-15T14:40:00')
-    });
-  }
-}
-
-onMounted(async () => {
-  await simulateChatMessaging();
-});
 </script>
 
 <template>
-  <div class="flex h-full w-full flex-col gap-4 p-4 pb-2">
+  <div v-if="!chat">
+    <h3>
+      <strong>Choose one chat, to start chatting</strong>
+    </h3>
+  </div>
+  <div v-if="chat" class="flex h-full w-full flex-col gap-4 p-4 pb-2">
     <ChatHeader />
     <ScrollArea @scroll="onScroll" ref="scroll-area" class="grow">
       <div class="flex h-full flex-col items-start justify-end gap-2">
@@ -270,12 +147,14 @@ onMounted(async () => {
             "
             :show-avatar="
               messagesContainerWidth < MIN_CHAT_SIZE &&
-              (messageGroup.author === currentUserId || chatType === 'direct')
+              (messageGroup.author === currentUserId ||
+                chatType === ChatType.DIRECT)
                 ? false
                 : true
             "
             :show-name="
-              chatType === 'group' && messageGroup.author !== currentUserId
+              chatType === ChatType.GROUP &&
+              messageGroup.author !== currentUserId
             "
             :messages="messageGroup.messages"
             :message-components="messageComponents"
