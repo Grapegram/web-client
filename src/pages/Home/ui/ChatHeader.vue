@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { EllipsisVertical } from 'lucide-vue-next';
 import ChatAvatar from './ChatAvatar.vue';
-import { useChatStore } from '../model/chat';
+import { useChatStore } from '@/features/base/model/chat';
 import { computed } from 'vue';
 
 const chatStore = useChatStore();

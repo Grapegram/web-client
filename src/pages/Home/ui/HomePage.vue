@@ -6,6 +6,25 @@ import ResizableSidebarLayout, {
 import Sidebar from './Sidebar.vue';
 import Chat from './Chat.vue';
 import Header from './Header.vue';
+import { onMounted } from 'vue';
+import { useChatStore } from '@features/base/model/chat';
+import { useMessagesStore } from '@/features/base/model/messages';
+import { useUserStore } from '@/features/base/model/user';
+
+const chatStore = useChatStore();
+const userStore = useUserStore();
+const messagesStore = useMessagesStore();
+
+onMounted(async () => {
+  await userStore.loadUsers();
+  await chatStore.loadChats();
+  setInterval(async () => {
+    for (const chat of chatStore.chats) {
+      console.log(chat.id);
+      await messagesStore.loadMessages(chat.id);
+    }
+  }, 1000);
+});
 </script>
 
 <template>

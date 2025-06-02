@@ -18,8 +18,8 @@ import { cva } from 'class-variance-authority';
 import { Badge } from '@/shared/ui/badge';
 import { Pin } from 'lucide-vue-next';
 import { toRefs } from '@vueuse/core';
-import { useChatStore, type ChatId } from '../model/chat';
-import { useMessagesStore, type Message } from '../model/messages';
+import { useChatStore, type ChatId } from '@features/base/model/chat';
+import { useMessagesStore, type Message } from '@features/base/model/messages';
 
 const props = defineProps<Props>();
 const { chatId, isActive, isPinned } = toRefs(props);
@@ -28,7 +28,7 @@ const emit = defineEmits(['click']);
 
 const chatStore = useChatStore();
 const messagesStore = useMessagesStore();
-const chat = computed(() => chatStore.getChatById(chatId.value));
+const chat = computed(() => chatStore.getChatById?.(props.chatId));
 const messages = computed(() => messagesStore.getChatMessages(chatId.value));
 const lastMessage = computed(() => messages.value.at(-1));
 // TODO: replace it with find the last message read by the user

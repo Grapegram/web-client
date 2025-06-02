@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import { defineStore } from 'pinia';
 import type { ChatId } from './chat';
 import type { UserId } from './user';
+import { messageService } from '../api/api';
 
 export type MessageId = string;
 
@@ -26,16 +27,39 @@ type MessageStore = {
 
 export const useMessagesStore = defineStore('messages', {
   state: (): MessageStore => ({
-    message: { '0': mockMessages0 }
+    message: {}
   }),
 
   getters: {
     getChatMessages(state) {
       return (chatId: ChatId): Message[] => state.message[chatId] ?? [];
+    },
+
+    getMessageById(state) {
+      return (id: MessageId): Message | null => {
+        return (
+          Object.values(state.message)
+            .flatMap(m => m)
+            .find(m => m.id === id) || null
+        );
+      };
     }
   },
 
-  actions: {}
+  actions: {
+    async loadMessages(chatId: ChatId) {
+      try {
+        const messages = await messageService.loadMessages(chatId);
+        this.message[chatId] = messages;
+      } catch {}
+    },
+
+    async sendMessage(chatId: ChatId, text: string) {
+      try {
+        await messageService.sendMessage(chatId, text);
+      } catch {}
+    }
+  }
 });
 
 // simulateChatMessaging() {

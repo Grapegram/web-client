@@ -18,6 +18,7 @@ import { vAutoAnimate } from '@formkit/auto-animate/vue';
 import { cn } from '@/shared/lib/utils';
 import { ROUTES } from '@/shared/lib/routes';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@features/base/model/user';
 
 const router = useRouter();
 
@@ -28,13 +29,18 @@ const formSchema = toTypedSchema(
   })
 );
 
+const authStore = useAuthStore();
+
 const { handleSubmit, errors } = useForm({
   validationSchema: formSchema
 });
 
-const onSubmit = handleSubmit(values => {
-  console.log(values);
-  router.push(ROUTES.HOME);
+const onSubmit = handleSubmit(async values => {
+  await authStore.login(values.email, values.password).then(isLoggedin => {
+    if (isLoggedin) {
+      router.push(ROUTES.HOME);
+    }
+  });
 });
 </script>
 

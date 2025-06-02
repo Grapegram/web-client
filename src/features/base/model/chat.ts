@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import type { Message } from './messages';
 import type { UserId } from './user';
+import { chatService } from '../api/api';
 
 export type ChatId = string;
 
@@ -29,9 +30,9 @@ type ChatStore = {
 
 export const useChatStore = defineStore('chat', {
   state: (): ChatStore => ({
-    chats: mockChats,
+    chats: [],
     currentChatId: null,
-    pinnedChatsIds: new Set(['47', '3'])
+    pinnedChatsIds: new Set([])
   }),
 
   getters: {
@@ -63,44 +64,11 @@ export const useChatStore = defineStore('chat', {
 
     setChats(chats: Chat[]) {
       this.chats = chats;
+    },
+
+    async loadChats() {
+      const chats = await chatService.loadChats();
+      this.chats = chats ?? [];
     }
   }
 });
-
-const mockChats: Chat[] = [
-  {
-    id: '0',
-    type: ChatType.GROUP,
-    name: 'Grapegram Team',
-    avatarURL: 'url to avatar',
-    partisipents: ['0', '1', '2']
-  },
-  {
-    id: '3',
-    type: ChatType.GROUP,
-    name: 'Team 1',
-    avatarURL: 'url to avatar',
-    partisipents: ['0', '1', '2']
-  },
-  {
-    id: '1',
-    type: ChatType.GROUP,
-    name: 'Kirill',
-    avatarURL: 'url to avatar',
-    partisipents: ['2']
-  },
-  {
-    id: '23',
-    type: ChatType.GROUP,
-    name: 'Andrew',
-    avatarURL: 'url to avatar',
-    partisipents: ['1']
-  },
-  {
-    id: '47',
-    type: ChatType.GROUP,
-    name: 'Test 1',
-    avatarURL: 'url to avatar',
-    partisipents: ['3']
-  }
-];

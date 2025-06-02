@@ -19,5 +19,8 @@ export default defineConfig({
       '@entities': fileURLToPath(new URL('./src/entities', import.meta.url)),
       '@shared': fileURLToPath(new URL('./src/shared', import.meta.url))
     }
+  },
+  server: {
+    port: 5174
   }
 });

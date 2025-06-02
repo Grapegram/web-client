@@ -14,8 +14,8 @@ import { SendHorizontal } from 'lucide-vue-next';
 import { Button } from '@shared/ui/button';
 import { cn } from '@/shared/lib/utils';
 import ChatHeader from './ChatHeader.vue';
-import { useMessagesStore, type Message } from '../model/messages';
-import { ChatType, useChatStore } from '../model/chat';
+import { useMessagesStore, type Message } from '@features/base/model/messages';
+import { ChatType, useChatStore } from '@features/base/model/chat';
 
 type MessageGroup = {
   id: string;
@@ -26,6 +26,7 @@ type MessageGroup = {
 const messagesStore = useMessagesStore();
 const chatStore = useChatStore();
 
+const messageText = ref('');
 const currentUserId = ref('1');
 const isScrolled = ref(true);
 const isMessageInputFocuse = ref(false);
@@ -116,6 +117,16 @@ function onMessageInput(e: Event) {
   el.style.height = '';
   el.style.height = el.scrollHeight + 'px';
 }
+
+function sendMessage() {
+  console.log('sendMessage');
+  if (chat.value?.id) {
+    console.log(messageText.value);
+    messagesStore.sendMessage(chat.value?.id, messageText.value).then(() => {
+      messageText.value = '';
+    });
+  }
+}
 </script>
 
 <template>
@@ -183,8 +194,10 @@ function onMessageInput(e: Event) {
       >
         <MessageInput
           @input="onMessageInput"
+          @change="onMessageInput"
           @focus="isMessageInputFocuse = true"
           @blur="isMessageInputFocuse = false"
+          v-model="messageText"
           class="h-10 max-h-[300px] min-h-0 grow"
         />
       </div>
@@ -192,6 +205,7 @@ function onMessageInput(e: Event) {
         variant="outline"
         size="icon"
         class="group min-h-10 min-w-10 self-end hover:cursor-pointer"
+        @click="sendMessage"
       >
         <SendHorizontal
           class="ease-bounce size-5! transition group-hover:scale-125 group-hover:rotate-[-30deg]"

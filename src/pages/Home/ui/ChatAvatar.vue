@@ -9,11 +9,12 @@ export type AvaratProps = Pick<Props, 'size'> & {
 import type { HTMLAttributes } from 'vue';
 import Avatar, { type Props } from './AvatarWithColorFallback.vue';
 import { computed } from 'vue';
-import { useChatStore, type ChatId } from '../model/chat';
+import { useChatStore, type ChatId } from '@/features/base/model/chat';
 
 const props = defineProps<AvaratProps>();
 
 const chatStore = useChatStore();
+console.log(chatStore);
 const chat = computed(() => chatStore.getChatById(props.chatId));
 const unknownName = 'Unknown';
 </script>

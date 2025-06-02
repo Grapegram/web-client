@@ -3,9 +3,9 @@ import ChatPreview from './ChatPreview.vue';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { inject } from 'vue';
 import { computed } from 'vue';
-import { useChatStore } from '../model/chat';
-import { useMessagesStore } from '../model/messages';
-import type { Chat, ChatData, ChatId } from '../model/chat';
+import { useChatStore } from '@features/base/model/chat';
+import { useMessagesStore } from '@features/base/model/messages';
+import type { Chat, ChatData, ChatId } from '@features/base/model/chat';
 
 const sidebarMode = inject<'compact' | 'expanded'>('sidebarMode');
 

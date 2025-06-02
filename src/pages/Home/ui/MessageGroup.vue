@@ -6,6 +6,7 @@ export type BaseMessage = {
   data: { type: string };
 };
 export type MessageMetadata = {
+  messageId: string;
   side: MessageSide;
   variant: MessageVariants;
   showName: boolean;
@@ -58,7 +59,9 @@ function messageVariantByIdAndLength(i: number): MessageVariants {
 const createMessageMetadata = computed(
   () =>
     (message: TMessage, index: number, side: MessageSide): MessageMetadata => {
+      console.log('ooo', message.id);
       return {
+        messageId: message.id,
         variant: messageVariantByIdAndLength(index),
         side: side,
         showName: props.showName,
@@ -95,7 +98,8 @@ const createMessageMetadata = computed(
         v-for="(message, i) in props.messages"
         :key="message.id"
         :provided="{
-          'message-meta-data': createMessageMetadata(message, i, props.side)
+          'message-meta-data': createMessageMetadata(message, i, props.side),
+          'message-id': message.id
         }"
       >
         <component
