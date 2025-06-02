@@ -6,7 +6,7 @@ import type { Chat, ChatId } from '../model/chat';
 import type { Message } from '../model/messages';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8128',
+  baseURL: 'https://grapegram-api.serveo.net',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
