@@ -182,25 +182,21 @@ function sendMessage() {
       </div>
     </ScrollArea>
     <div class="flex items-center justify-start gap-1">
-      <div
+      <MessageInput
+        @input="onMessageInput"
+        @change="onMessageInput"
+        @focus="isMessageInputFocuse = true"
+        @blur="isMessageInputFocuse = false"
+        v-model="messageText"
         :class="
           cn(
-            'flex grow items-center justify-start rounded border p-1 transition',
+            'flex h-10 max-h-[300px] min-h-0 grow items-center justify-start rounded border transition',
             {
               'border-accent/60': isMessageInputFocuse
             }
           )
         "
-      >
-        <MessageInput
-          @input="onMessageInput"
-          @change="onMessageInput"
-          @focus="isMessageInputFocuse = true"
-          @blur="isMessageInputFocuse = false"
-          v-model="messageText"
-          class="h-10 max-h-[300px] min-h-0 grow"
-        />
-      </div>
+      />
       <Button
         variant="outline"
         size="icon"
