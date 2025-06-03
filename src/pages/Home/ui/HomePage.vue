@@ -24,7 +24,7 @@ onMounted(async () => {
     }
   };
   updateChats();
-  setInterval(updateChats, 1000);
+  setInterval(updateChats, 3000);
 });
 </script>
 
