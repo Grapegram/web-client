@@ -61,24 +61,6 @@
   --layout-gap-size: calc(var(--spacing) * 4);
 }
 
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
-}
-
 @layer base {
   :root {
     /* --gray-50: #f2f2f2;
@@ -217,17 +199,113 @@
 }
 
 @layer base {
+  /*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+
   * {
     @apply border-border scroll-smooth;
     font-family: 'Roboto Mono', system-ui, sans-serif;
+    font-style: normal;
   }
 
   body {
-    @apply bg-background h-screen text-white;
+    @apply bg-background h-full text-white;
   }
 
   #app {
-    @apply relative flex min-h-screen items-center justify-center;
+    @apply relative;
+  }
+
+  .text-h1,
+  .text-h2,
+  .text-h3,
+  .text-h4,
+  .text-h5,
+  .text-h6 {
+    font-family: Rubik;
+    font-weight: 700;
+  }
+
+  .text-h1 {
+    font-size: 60px;
+    line-height: 120%; /* 72px */
+  }
+
+  .text-h2 {
+    font-size: 48px;
+    line-height: 120%; /* 57.6px */
+  }
+
+  .text-h3 {
+    font-size: 40px;
+    line-height: 120%; /* 48px */
+  }
+
+  .text-h4 {
+    font-size: 32px;
+    line-height: 120%; /* 38.4px */
+  }
+
+  .text-h5 {
+    font-size: 28px;
+    line-height: 120%; /* 33.6px */
+  }
+
+  .text-h6 {
+    font-size: 20px;
+    line-height: 120%; /* 24px */
+  }
+
+  .body {
+    /* body */
+    font-weight: 400;
+    line-height: 150%; /* 24px */
+    letter-spacing: 0.48px;
+  }
+
+  .body-medium {
+    /* body-bold */
+    font-weight: 700;
+    line-height: 150%; /* 24px */
+    letter-spacing: 0.48px;
+  }
+
+  .body-sm {
+    /* body-sm */
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 150%; /* 21px */
+    letter-spacing: 0.21px;
+  }
+
+  .body-sm-medium {
+    /* body-sm-medium */
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 150%; /* 21px */
+    letter-spacing: 0.21px;
+  }
+
+  .caption {
+    /* caption */
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 150%; /* 18px */
+    letter-spacing: 0.3px;
   }
 }
 

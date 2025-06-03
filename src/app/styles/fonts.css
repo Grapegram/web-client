@@ -1,9 +1,9 @@
 @font-face {
-  font-family: 'Roboto';
+  font-family: 'Rubik';
   src:
-    url('src/shared/fonts/Roboto-Bold.woff2') format('woff2'),
-    url('src/shared/fonts/Roboto-Bold.woff') format('woff');
-  font-weight: bold;
+    url('src/shared/fonts/Rubik-Bold.woff2') format('woff2'),
+    url('src/shared/fonts/Rubik-Bold.woff') format('woff');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
@@ -11,9 +11,9 @@
 @font-face {
   font-family: 'Roboto';
   src:
-    url('src/shared/fonts/Roboto-Regular.woff2') format('woff2'),
-    url('src/shared/fonts/Roboto-Regular.woff') format('woff');
-  font-weight: normal;
+    url('src/shared/fonts/Roboto-Bold.woff2') format('woff2'),
+    url('src/shared/fonts/Roboto-Bold.woff') format('woff');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
@@ -31,9 +31,9 @@
 @font-face {
   font-family: 'Roboto';
   src:
-    url('src/shared/fonts/Roboto-Light.woff2') format('woff2'),
-    url('src/shared/fonts/Roboto-Light.woff') format('woff');
-  font-weight: 300;
+    url('src/shared/fonts/Roboto-Regular.woff2') format('woff2'),
+    url('src/shared/fonts/Roboto-Regular.woff') format('woff');
+  font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
@@ -41,9 +41,9 @@
 @font-face {
   font-family: 'Roboto';
   src:
-    url('src/shared/fonts/Roboto-Thin.woff2') format('woff2'),
-    url('src/shared/fonts/Roboto-Thin.woff') format('woff');
-  font-weight: 100;
+    url('src/shared/fonts/Roboto-Light.woff2') format('woff2'),
+    url('src/shared/fonts/Roboto-Light.woff') format('woff');
+  font-weight: 300;
   font-style: normal;
   font-display: swap;
 }

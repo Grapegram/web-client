@@ -1,17 +1,24 @@
 <script setup lang="ts">
 import { logo, world } from '@/shared/assets';
+import { ROUTES } from '@/shared/lib/routes';
 import { Avatar, AvatarImage } from '@/shared/ui/avatar';
+import { RouterLink } from 'vue-router';
 </script>
 
 <template>
   <div class="h-dvh max-h-dvh w-full overflow-hidden">
     <header class="top-0 flex w-full flex-row items-center gap-2 px-12 py-5">
-      <Avatar
-        class="hover:drop-shadow-accent h-[50px] w-[50px] bg-transparent transition-all duration-300"
+      <RouterLink
+        :to="ROUTES.DEFAULT"
+        class="flex flex-row items-center justify-center gap-2"
       >
-        <AvatarImage class="object-fill" :src="logo" />
-      </Avatar>
-      <h2><b>Grapegram</b></h2>
+        <Avatar
+          class="hover:drop-shadow-accent h-[50px] w-[50px] bg-transparent transition-all duration-300"
+        >
+          <AvatarImage class="object-fill" :src="logo" />
+        </Avatar>
+        <h5 class="text-h5">Grapegram</h5>
+      </RouterLink>
     </header>
     <slot />
     <img
