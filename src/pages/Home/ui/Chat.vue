@@ -16,6 +16,7 @@ import { cn } from '@/shared/lib/utils';
 import ChatHeader from './ChatHeader.vue';
 import { useMessagesStore, type Message } from '@features/base/model/messages';
 import { ChatType, useChatStore } from '@features/base/model/chat';
+import { useAuthStore } from '@/features/base/model/user';
 
 type MessageGroup = {
   id: string;
@@ -25,9 +26,10 @@ type MessageGroup = {
 
 const messagesStore = useMessagesStore();
 const chatStore = useChatStore();
+const authStore = useAuthStore();
 
 const messageText = ref('');
-const currentUserId = ref('1');
+const currentUserId = computed(() => authStore.user?.id);
 const isScrolled = ref(true);
 const isMessageInputFocuse = ref(false);
 const scrollArea = useTemplateRef('scroll-area');
