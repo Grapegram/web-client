@@ -121,9 +121,7 @@ function onMessageInput(e: Event) {
 }
 
 function sendMessage() {
-  console.log('sendMessage');
   if (chat.value?.id) {
-    console.log(messageText.value);
     messagesStore.sendMessage(chat.value?.id, messageText.value).then(() => {
       messageText.value = '';
     });

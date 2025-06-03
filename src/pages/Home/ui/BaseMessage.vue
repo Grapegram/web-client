@@ -16,6 +16,7 @@ const props = withDefaults(
     withTail?: boolean;
     backgroudColor?: string;
     class?: HTMLAttributes['class'];
+    headerClass?: HTMLAttributes['class'];
     wrapperClass?: HTMLAttributes['class'];
   }>(),
   {
@@ -26,13 +27,15 @@ const props = withDefaults(
 const messageStore = useMessagesStore();
 const userStore = useUserStore();
 
-const metadata = inject<MessageMetadata>('message-meta-data', {
-  messageId: '',
-  side: 'left',
-  showName: false,
-  backgroudColor: undefined,
-  variant: 'standalone'
-});
+const metadata = ref(
+  inject<MessageMetadata>('message-meta-data', {
+    messageId: '',
+    side: 'left',
+    showName: false,
+    backgroudColor: undefined,
+    variant: 'standalone'
+  })
+);
 
 const messageId = ref(inject<string>('message-id', ''));
 
@@ -109,16 +112,16 @@ function messageWrapperVariants({
 
 const messageVariantsClasses = computed(() => {
   return messageVariants({
-    variant: metadata.variant,
-    side: metadata.side,
+    variant: metadata.value.variant,
+    side: metadata.value.side,
     tail: props.withTail
   });
 });
 
 const messageWrapperVariantsClasses = computed(() => {
   return messageWrapperVariants({
-    variant: metadata.variant,
-    side: metadata.side,
+    variant: metadata.value.variant,
+    side: metadata.value.side,
     tail: props.withTail
   });
 });
@@ -126,12 +129,20 @@ const messageWrapperVariantsClasses = computed(() => {
 watch(
   () => metadata,
   () => {
-    console.log(metadata.side);
+    console.log(metadata.value.side);
   }
 );
 
 const backgroudColor = computed(
-  () => props.backgroudColor ?? metadata.backgroudColor ?? '--color-primary'
+  () =>
+    props.backgroudColor ?? metadata.value.backgroudColor ?? '--color-primary'
+);
+
+const showHeader = computed(
+  () =>
+    metadata.value.showName &&
+    (metadata.value.variant === 'first' ||
+      metadata.value.variant === 'standalone')
 );
 </script>
 
@@ -163,12 +174,7 @@ const backgroudColor = computed(
         )
       "
     >
-      <header
-        v-if="
-          metadata.showName &&
-          (metadata.variant === 'first' || metadata.variant === 'standalone')
-        "
-      >
+      <header v-if="showHeader" :class="cn(headerClass)">
         <span class="font-bold" :style="`color: hsl(${colorAspect},70%,55%)`">
           {{ author?.username }}
         </span>

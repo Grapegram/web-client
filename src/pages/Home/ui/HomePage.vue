@@ -18,12 +18,13 @@ const messagesStore = useMessagesStore();
 onMounted(async () => {
   await userStore.loadUsers();
   await chatStore.loadChats();
-  setInterval(async () => {
+  const updateChats = async () => {
     for (const chat of chatStore.chats) {
-      console.log(chat.id);
       await messagesStore.loadMessages(chat.id);
     }
-  }, 1000);
+  };
+  updateChats();
+  setInterval(updateChats, 1000);
 });
 </script>
 

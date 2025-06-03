@@ -14,7 +14,6 @@ import { useChatStore, type ChatId } from '@/features/base/model/chat';
 const props = defineProps<AvaratProps>();
 
 const chatStore = useChatStore();
-console.log(chatStore);
 const chat = computed(() => chatStore.getChatById(props.chatId));
 const unknownName = 'Unknown';
 </script>

@@ -27,7 +27,7 @@ const onImgLoad = () => {
 </script>
 
 <template>
-  <BaseMessage :with-tail="false">
+  <BaseMessage :with-tail="false" headerClass="w-full py-1 pl-4">
     <div class="flex h-full max-h-[700px] w-full">
       <img @load="onImgLoad" :src="props.data.url" />
       <Skeleton class="h-full w-full" v-if="isLoading" />

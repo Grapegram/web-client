@@ -59,7 +59,6 @@ function messageVariantByIdAndLength(i: number): MessageVariants {
 const createMessageMetadata = computed(
   () =>
     (message: TMessage, index: number, side: MessageSide): MessageMetadata => {
-      console.log('ooo', message.id);
       return {
         messageId: message.id,
         variant: messageVariantByIdAndLength(index),

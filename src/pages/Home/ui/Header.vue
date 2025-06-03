@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { AlignJustify } from 'lucide-vue-next';
-import ChatAvatar from './ChatAvatar.vue';
 import ActionBar from './ActionBar.vue';
+import { useAuthStore } from '@/features/base/model/user';
+import { computed } from 'vue';
+import UserAvatar from './UserAvatar.vue';
+
+const authStore = useAuthStore();
+const currentUserId = computed(() => authStore.user?.id);
 </script>
 
 <template>
@@ -10,6 +15,6 @@ import ActionBar from './ActionBar.vue';
   >
     <AlignJustify :size="30" />
     <ActionBar />
-    <ChatAvatar size="sm" class="" chat-id="1" />
+    <UserAvatar size="sm" class="" :user-id="currentUserId ?? ''" />
   </header>
 </template>
