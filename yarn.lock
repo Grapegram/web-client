@@ -53,7 +53,7 @@
     json5 "^2.2.3"
     semver "^6.3.1"
 
-"@babel/generator@^7.28.5":
+"@babel/generator@^7.28.0", "@babel/generator@^7.28.5":
   version "7.28.5"
   resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.28.5.tgz#712722d5e50f44d07bc7ac9fe84438742dd61298"
   integrity sha512-3EwLFhZ38J4VyIP6WNtt2kUdW9dokXA9Cr4IVIFHuCpZ3H8/YFOl5JjZHisrn1fATPBmKKqXzDFvh9fUwHz6CQ==
@@ -261,7 +261,7 @@
     "@babel/types" "^7.28.5"
     debug "^4.3.1"
 
-"@babel/types@^7.27.1", "@babel/types@^7.27.3", "@babel/types@^7.28.2", "@babel/types@^7.28.4", "@babel/types@^7.28.5":
+"@babel/types@^7.27.1", "@babel/types@^7.27.3", "@babel/types@^7.28.0", "@babel/types@^7.28.2", "@babel/types@^7.28.4", "@babel/types@^7.28.5":
   version "7.28.5"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.28.5.tgz#10fc405f60897c35f07e85493c932c7b5ca0592b"
   integrity sha512-qQ5m48eI/MFLQ5PxQj4PFaprjyCTLI37ElWMmNs0K8Lk3dVeOdNpB3ks8jc7yM5CDmVC73eMVk/trk3fgmrUpA==
@@ -750,10 +750,10 @@
   resolved "https://registry.yarnpkg.com/@formkit/auto-animate/-/auto-animate-0.8.4.tgz#2c857102bbf612c0e7bd4a0aac0e05a7f0efd8e7"
   integrity sha512-DHHC01EJ1p70Q0z/ZFRBIY8NDnmfKccQoyoM84Tgb6omLMat6jivCdf272Y8k3nf4Lzdin/Y4R9q8uFtU0GbnA==
 
-"@grapegram/ui-kit@^1.0.0":
-  version "1.0.0"
-  resolved "https://npm.pkg.github.com/download/@grapegram/ui-kit/1.0.0/ea3c1d753b560dc05b66cee5215eeb70cebfb2bb#ea3c1d753b560dc05b66cee5215eeb70cebfb2bb"
-  integrity sha512-P6NkBLseQALx45vQrV8F2y1JxkJ2yBH6dTuc9iwc11G+xw5Cw++Eb9oPU0MKSHLWMdA0SPh5lQ8zW8PP27Lp1A==
+"@grapegram/ui-kit@^1.0.1":
+  version "1.0.1"
+  resolved "https://npm.pkg.github.com/download/@grapegram/ui-kit/1.0.1/007dd35a32c47b93c6c18739b0cf4dead1e60e6c#007dd35a32c47b93c6c18739b0cf4dead1e60e6c"
+  integrity sha512-tWAPR3eu0O8OqHHRTmlpVv7oNAXm8KTwF4gKl9hz06e2pTWv3SMGsDED6TCdilnb6ucsUTUOVqeLgBocH45cHw==
   dependencies:
     "@tailwindcss/vite" "^4.1.11"
     "@vueuse/core" "^14.0.0"
@@ -1163,6 +1163,20 @@
   integrity sha512-vhF7kEU9EXWXh+HdAwKJ2m3xaOnTTmgcdXcF2pim8g4GvI7eRrk2YRuV5nUlZnd/NbCIX4/Ja2OZu5EjJL06Ww==
   dependencies:
     "@tanstack/virtual-core" "3.13.12"
+
+"@trivago/prettier-plugin-sort-imports@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@trivago/prettier-plugin-sort-imports/-/prettier-plugin-sort-imports-6.0.0.tgz#179dd4da55c6d055d76624bfe8b8be78ecddf014"
+  integrity sha512-Xarx55ow0R8oC7ViL5fPmDsg1EBa1dVhyZFVbFXNtPPJyW2w9bJADIla8YFSaNG9N06XfcklA9O9vmw4noNxkQ==
+  dependencies:
+    "@babel/generator" "^7.28.0"
+    "@babel/parser" "^7.28.0"
+    "@babel/traverse" "^7.28.0"
+    "@babel/types" "^7.28.0"
+    javascript-natural-sort "^0.7.1"
+    lodash-es "^4.17.21"
+    minimatch "^9.0.0"
+    parse-imports-exports "^0.2.4"
 
 "@tsconfig/node22@^22.0.0":
   version "22.0.5"
@@ -3080,6 +3094,11 @@ jackspeak@^3.1.2:
   optionalDependencies:
     "@pkgjs/parseargs" "^0.11.0"
 
+javascript-natural-sort@^0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/javascript-natural-sort/-/javascript-natural-sort-0.7.1.tgz#f9e2303d4507f6d74355a73664d1440fb5a0ef59"
+  integrity sha512-nO6jcEfZWQXDhOiBtG2KvKyEptz7RVbpGP4vTD2hLBdmNQSsCiicO2Ioinv6UI4y9ukqnBpy+XZ9H6uLNgJTlw==
+
 jiti@^2.4.2, jiti@^2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/jiti/-/jiti-2.6.1.tgz#178ef2fc9a1a594248c20627cd820187a4d78d92"
@@ -3736,6 +3755,13 @@ parent-module@^1.0.0:
   dependencies:
     callsites "^3.0.0"
 
+parse-imports-exports@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/parse-imports-exports/-/parse-imports-exports-0.2.4.tgz#e3fb3b5e264cfb55c25b5dfcbe7f410f8dc4e7af"
+  integrity sha512-4s6vd6dx1AotCx/RCI2m7t7GCh5bDRUtGNvRfHSP2wbBQdMi67pPe7mtzmgwcaQ8VKK/6IB7Glfyu3qdZJPybQ==
+  dependencies:
+    parse-statements "1.0.11"
+
 parse-json@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/parse-json/-/parse-json-5.2.0.tgz#c76fc66dee54231c962b22bcc8a72cf2f99753cd"
@@ -3750,6 +3776,11 @@ parse-ms@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/parse-ms/-/parse-ms-4.0.0.tgz#c0c058edd47c2a590151a718990533fd62803df4"
   integrity sha512-TXfryirbmq34y8QBwgqCVLi+8oA3oWx2eAnSn62ITyEhEYaWRlVZ2DvMM9eZbMs/RfxPu/PK/aBLyGj4IrqMHw==
+
+parse-statements@1.0.11:
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/parse-statements/-/parse-statements-1.0.11.tgz#8787c5d383ae5746568571614be72b0689584344"
+  integrity sha512-HlsyYdMBnbPQ9Jr/VgJ1YF4scnldvJpJxCVx6KgqPL4dxppsWrJHCIIxQXMJrqGnsRkNPATbeMJ8Yxu7JMsYcA==
 
 parse5@^7.0.0, parse5@^7.2.1:
   version "7.3.0"

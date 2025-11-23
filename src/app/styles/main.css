@@ -1,10 +1,6 @@
+@import '@grapegram/ui-kit/fonts';
 @import 'tailwindcss';
-
-/* Import Tailwind base configuration from UI kit */
+@import '@grapegram/ui-kit/theme';
 @import '@grapegram/ui-kit/tailwind-config';
 
-/* Import UI kit theme variables (CSS custom properties) */
-@import '@grapegram/ui-kit/theme';
-
-/* Import UI kit compiled styles */
 @import '@grapegram/ui-kit/styles';
