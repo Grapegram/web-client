@@ -1,17 +1,33 @@
 <script setup lang="ts">
-import { logo, world } from '@/shared/assets';
-import { Avatar, AvatarImage } from '@/shared/ui/avatar';
+import { computed } from 'vue';
+
+import { useRoute } from 'vue-router';
+
+import { Button } from '@grapegram/ui-kit';
+
+import { world } from '@/shared/assets';
+import { ROUTES } from '@/shared/lib/routes';
+import { Logo } from '@/shared/ui/logo';
+
+const route = useRoute();
+
+const isLoginPage = computed(() => route.path === ROUTES.LOGIN);
+const buttonLabel = computed(() => (isLoginPage.value ? 'Sign up' : 'Log in'));
+const buttonTo = computed(() =>
+  isLoginPage.value ? ROUTES.SIGNUP : ROUTES.LOGIN
+);
 </script>
 
 <template>
   <div class="h-dvh max-h-dvh w-full overflow-hidden">
     <header class="top-0 flex w-full flex-row items-center gap-2 px-12 py-5">
-      <Avatar
-        class="hover:drop-shadow-accent h-[50px] w-[50px] bg-transparent transition-all duration-300"
-      >
-        <AvatarImage class="object-fill" :src="logo" />
-      </Avatar>
-      <h2><b>Grapegram</b></h2>
+      <Logo with-text class="flex-1" />
+
+      <RouterLink :to="buttonTo" class="basis-1/6">
+        <Button variant="outline" class="w-full">
+          {{ buttonLabel }}
+        </Button>
+      </RouterLink>
     </header>
     <slot />
     <img
