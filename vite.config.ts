@@ -1,10 +1,9 @@
-import { fileURLToPath, URL } from 'node:url';
-
-import { defineConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
+import { URL, fileURLToPath } from 'node:url';
+import { defineConfig } from 'vite';
 import vueDevTools from 'vite-plugin-vue-devtools';
-import tailwindcss from '@tailwindcss/vite';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -19,5 +18,6 @@ export default defineConfig({
       '@entities': fileURLToPath(new URL('./src/entities', import.meta.url)),
       '@shared': fileURLToPath(new URL('./src/shared', import.meta.url))
     }
-  }
+  },
+  envDir: 'src/app/env'
 });
