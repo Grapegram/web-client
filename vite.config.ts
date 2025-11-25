@@ -19,5 +19,5 @@ export default defineConfig({
       '@shared': fileURLToPath(new URL('./src/shared', import.meta.url))
     }
   },
-  envDir: 'src/app/env'
+  envDir: './env'
 });
