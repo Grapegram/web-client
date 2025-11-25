@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppRoutes from './router/AppRoutes.vue';
+import AppRoutes from '../router/AppRoutes.vue';
 </script>
 
 <template>

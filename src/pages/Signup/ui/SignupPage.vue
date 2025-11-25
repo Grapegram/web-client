@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { FormLayout } from '@/widgets/FormLayout';
-import { SignupForm } from '@/widgets/Auth';
-import { StandAlongPageLayout } from '@/widgets/StandAlongPageLayout';
+import { SignupForm } from '@/features/auth';
+import { AuthLayout, FormLayout } from '@/shared/ui/layout';
 </script>
 
 <template>
-  <StandAlongPageLayout>
+  <AuthLayout>
     <FormLayout
       class="relative top-6/12 left-6/12 -translate-x-2/4 translate-y-[-63%]"
       title="Join Grapegram"
@@ -13,5 +12,5 @@ import { StandAlongPageLayout } from '@/widgets/StandAlongPageLayout';
     >
       <SignupForm />
     </FormLayout>
-  </StandAlongPageLayout>
+  </AuthLayout>
 </template>
