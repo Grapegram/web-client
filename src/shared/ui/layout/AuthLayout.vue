@@ -7,7 +7,8 @@ import { Button } from '@grapegram/ui-kit';
 
 import { world } from '@/shared/assets';
 import { ROUTES } from '@/shared/lib/routes';
-import { Logo } from '@/shared/ui/logo';
+
+import { Logo } from '../logo';
 
 const route = useRoute();
 
@@ -23,7 +24,7 @@ const buttonTo = computed(() =>
     <header class="top-0 flex w-full flex-row items-center gap-2 px-12 py-5">
       <Logo with-text class="flex-1" />
 
-      <RouterLink :to="buttonTo" class="basis-1/6">
+      <RouterLink :to="buttonTo" class="w-32">
         <Button variant="outline" class="w-full">
           {{ buttonLabel }}
         </Button>
