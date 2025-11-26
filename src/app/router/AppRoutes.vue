@@ -4,15 +4,30 @@ import { useRouter } from 'vue-router';
 
 import 'vue-sonner/style.css';
 
+import { useUserStore } from '@/entities/user';
 import { ROUTES } from '@/shared/lib/routes';
 import { Toaster } from '@/shared/ui/sonner';
 
 const router = useRouter();
-const isAuth = true; // TODO: implement auth
+const userStore = useUserStore();
 
 router.beforeEach((to, _, next) => {
-  if (to.meta.requiresAuth && !isAuth) {
-    next(ROUTES.LOGIN);
+  const isAuthPage = to.path === ROUTES.LOGIN || to.path === ROUTES.SIGNUP;
+
+  if (userStore.isAuthorized && isAuthPage) {
+    next(ROUTES.HOME);
+    return;
+  }
+
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!userStore.isAuthorized) {
+      next({
+        path: ROUTES.LOGIN,
+        query: { redirect: to.fullPath }
+      });
+    } else {
+      next();
+    }
   } else {
     next();
   }

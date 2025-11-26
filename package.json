@@ -38,7 +38,7 @@
     "markdown-it-underline": "^1.0.1",
     "pinia": "^3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",
-    "reka-ui": "^2.1.0",
+    "reka-ui": "^2.6.0",
     "tailwind-merge": "^3.0.2",
     "tailwindcss": "^4.1.17",
     "tailwindcss-animate": "^1.0.7",

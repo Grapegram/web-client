@@ -1,80 +1,71 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+import { RouterLink, useRouter } from 'vue-router';
 
-import { toTypedSchema } from '@vee-validate/zod';
 import { useForm } from 'vee-validate';
-import * as z from 'zod';
+import { toast } from 'vue-sonner';
 
-import { cn } from '@grapegram/ui-kit';
-import { Button, Input, Typography } from '@grapegram/ui-kit';
-import {
-  Field,
-  FieldError,
-  FieldLabel,
-  FieldSeparator
-} from '@grapegram/ui-kit';
+import { Button, Typography } from '@grapegram/ui-kit';
 
-import { GoogleIcon } from '@/shared/icons';
+import type { ApiError } from '@/shared/api';
 import { ROUTES } from '@/shared/lib/routes';
+
+import { loginValidationSchema } from '../lib';
+import { useLoginMutation } from '../model';
+import AuthFormField from './AuthFormField.vue';
 
 const router = useRouter();
 
-const formSchema = toTypedSchema(
-  z.object({
-    email: z.string().email({ message: 'Incorrect email syntax.' }),
-    password: z.string()
-  })
-);
-
+const { mutateAsync } = useLoginMutation();
 const { handleSubmit, errors, defineField } = useForm({
-  validationSchema: formSchema
+  validationSchema: loginValidationSchema
 });
 
-const [email, emailAttrs] = defineField('email');
+const [credential, credentialAttrs] = defineField('credential');
 const [password, passwordAttrs] = defineField('password');
 
 const onSubmit = handleSubmit(values => {
-  console.log(values);
-  router.push(ROUTES.HOME);
+  mutateAsync(values)
+    .then(() => {
+      toast.success('Login successful!');
+      router.push(ROUTES.HOME);
+    })
+    .catch((err: ApiError) => {
+      toast.error('Login failed!', {
+        description: err.detail
+      });
+    });
 });
 </script>
 
 <template>
   <form @submit="onSubmit" class="flex w-full flex-col gap-6">
-    <Field :invalid="!!errors.email">
-      <FieldLabel for="email">Email</FieldLabel>
-      <Input
-        id="email"
-        v-model="email"
-        v-bind="emailAttrs"
-        type="email"
-        placeholder="Your email"
-        :invalid="!!errors.email"
-        :class="cn({ 'border-destructive': errors.email })"
-      />
-      <FieldError v-if="errors.email">{{ errors.email }}</FieldError>
-    </Field>
+    <AuthFormField
+      id="credential"
+      v-model="credential"
+      v-bind="credentialAttrs"
+      label="Login"
+      placeholder="Your email or username"
+      :error="errors.credential"
+    />
 
-    <Field :invalid="!!errors.password">
-      <FieldLabel for="password">Password</FieldLabel>
-      <Input
-        id="password"
-        v-model="password"
-        v-bind="passwordAttrs"
-        type="password"
-        placeholder="Your password"
-        :invalid="!!errors.password"
-        :class="cn({ 'border-destructive': errors.password })"
-      />
-      <FieldError v-if="errors.password">{{ errors.password }}</FieldError>
-    </Field>
+    <AuthFormField
+      id="password"
+      v-model="password"
+      v-bind="passwordAttrs"
+      type="password"
+      label="Password"
+      placeholder="Your password"
+      :error="errors.password"
+    />
 
     <Button variant="secondary" type="submit">Log In</Button>
-    <FieldSeparator> Or continue with </FieldSeparator>
+
+    <!-- TODO: uncomment when google auth will be available -->
+    <!-- <FieldSeparator> Or continue with </FieldSeparator>
     <Button variant="outline" class="w-full">
       <GoogleIcon />
       Login with Google
-    </Button>
+    </Button> -->
 
     <Typography variant="body-sm" class="text-center">
       Don't have an account?
