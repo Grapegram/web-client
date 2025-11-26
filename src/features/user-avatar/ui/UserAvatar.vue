@@ -1,11 +1,11 @@
 <script lang="ts">
 export type AvaratProps = Pick<Props, 'size'> & {
   class?: HTMLAttributes['class'];
-  chatId: string;
+  userId: string;
 };
 
 // TODO: move this type to user module
-type Chat = {
+type User = {
   id: string;
   name: string;
 };
@@ -13,37 +13,26 @@ type Chat = {
 
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue';
-import Avatar, { type Props } from './AvatarWithColorFallback.vue';
 import { computed, ref } from 'vue';
+
+import Avatar, { type Props } from './AvatarWithColorFallback.vue';
 
 const props = defineProps<AvaratProps>();
 
 // TODO: replace with gettig from buisness logic layer
-const chats = ref<Record<string, Chat>>({
+const users = ref<Record<string, User>>({
   '0': {
     id: '0',
-    name: 'Grapegram Team'
-  },
-  '3': {
-    id: '3',
-    name: 'Team 1'
+    name: 'Kirill'
   },
   '1': {
     id: '1',
-    name: 'Kirill'
-  },
-  '23': {
-    id: '23',
-    name: 'Andrew'
-  },
-  '47': {
-    id: '47',
-    name: 'Test 1'
+    name: 'Andrii Ome'
   }
 });
 
 // INFO: maybe move to buisness logic too
-const userName = computed(() => chats.value[props.chatId]?.name ?? 'Unknown');
+const userName = computed(() => users.value[props.userId]?.name ?? 'Unknown');
 </script>
 
 <template>

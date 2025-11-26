@@ -1,28 +1,29 @@
 <script setup lang="ts">
+import { ChatList } from '@/widgets/chat-list';
+
+import ChatView from './ChatView.vue';
+import Header from './Header.vue';
 import ResizableSidebarLayout, {
   Percentage,
   Px
 } from './ResizableSidebarLayout.vue';
-import Sidebar from './Sidebar.vue';
-import Chat from './Chat.vue';
-import Header from './Header.vue';
 </script>
 
 <template>
-  <div class="h-dvh w-dvw">
+  <div class="flex h-dvh w-dvw flex-col">
     <Header />
     <ResizableSidebarLayout
       :collapsed-size="Px(90)"
       :min-size="Px(350)"
       :max-size="Percentage(35)"
-      class="h-[calc(100%-var(--height-header))]!"
+      class="flex-1"
       auto-save-id="main"
     >
       <template #sidebar>
-        <Sidebar />
+        <ChatList />
       </template>
       <template #content>
-        <Chat />
+        <ChatView />
       </template>
     </ResizableSidebarLayout>
   </div>

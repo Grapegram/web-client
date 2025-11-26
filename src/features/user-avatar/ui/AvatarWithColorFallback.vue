@@ -26,13 +26,14 @@ function hashString(str: string, seed: number = 0): number {
 </script>
 
 <script setup lang="ts">
+import { computed } from 'vue';
+
 import {
   Avatar,
-  AvatarImage,
   AvatarFallback,
+  AvatarImage,
   type AvatarVariants
-} from '@shared/ui/avatar';
-import { computed } from 'vue';
+} from '@grapegram/ui-kit';
 
 const props = defineProps<Props>();
 
