@@ -704,7 +704,7 @@
   dependencies:
     typescript "^5.8.3"
 
-"@feature-sliced/steiger-plugin@0.5.7", "@feature-sliced/steiger-plugin@^0.5.4":
+"@feature-sliced/steiger-plugin@0.5.7", "@feature-sliced/steiger-plugin@^0.5.7":
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/@feature-sliced/steiger-plugin/-/steiger-plugin-0.5.7.tgz#1886fd2cc4bf88291dac49d5f8982f4c07841cc1"
   integrity sha512-xENW2fvfU+UyMgcB3S+CCMPrH2Tq/BG1W9IxGp5B8+j0TtbgmbzT3DIj3A2HG4kouVYUjzgWA6JIuHbGo3lDzg==
@@ -745,10 +745,10 @@
     "@floating-ui/utils" "^0.2.10"
     vue-demi ">=0.13.0"
 
-"@grapegram/ui-kit@^1.0.1":
-  version "1.0.1"
-  resolved "https://npm.pkg.github.com/download/@grapegram/ui-kit/1.0.1/007dd35a32c47b93c6c18739b0cf4dead1e60e6c#007dd35a32c47b93c6c18739b0cf4dead1e60e6c"
-  integrity sha512-tWAPR3eu0O8OqHHRTmlpVv7oNAXm8KTwF4gKl9hz06e2pTWv3SMGsDED6TCdilnb6ucsUTUOVqeLgBocH45cHw==
+"@grapegram/ui-kit@^1.1.0":
+  version "1.1.0"
+  resolved "https://npm.pkg.github.com/download/@grapegram/ui-kit/1.1.0/d526db608ebf1b9ab2636f498540eab63a967878#d526db608ebf1b9ab2636f498540eab63a967878"
+  integrity sha512-CeVPsi+1Uc+M4cxFb6bzsE+7tTne2YzGFX/O0EeWlC1ybfbuIq2bmJ5zpkP6rbIlUCAfPycaNbHahhcTMqML4Q==
   dependencies:
     "@tailwindcss/vite" "^4.1.11"
     "@vueuse/core" "^14.0.0"

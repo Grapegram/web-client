@@ -1,51 +1,55 @@
 <script lang="ts">
-type UserId = string;
-export type ChatId = string;
-
-type Message = {
-  author: UserId;
-  data: {
-    type: 'text';
-    text: string;
-  };
-  createTime: DateTime;
-  editTime: DateTime;
-};
-
-export type ChatData = {
-  id: ChatId;
-  type: 'group' | 'direct';
-  name: string;
-  avatar: string;
-  unreaded: number;
-  partisipents: string[];
-  messages: Message[];
-};
+import type { Chat } from '@/entities/chat';
 
 type Variants = 'compact' | 'expanded';
-type Props = ChatData & {
+type Props = {
+  chatId: string;
   class?: string;
   variant?: Variants;
-  isActive: boolean;
+  isActive?: boolean;
   isPinned?: boolean;
 };
 </script>
 
 <script setup lang="ts">
-import { DateTime } from 'luxon';
-import { cn } from '@/shared/lib/utils';
-import ChatAvatar from './ChatAvatar.vue';
 import { computed } from 'vue';
-import { cva } from 'class-variance-authority';
-import { Badge } from '@/shared/ui/badge';
-import { Pin } from 'lucide-vue-next';
-import { toRefs } from '@vueuse/core';
 
-const props = defineProps<Props>();
-const { id, type, name, avatar, unreaded, messages, isActive, isPinned } =
-  toRefs(props);
-const variant = computed<Variants>(() => props.variant ?? 'expanded');
+import { cva } from 'class-variance-authority';
+import { Pin } from 'lucide-vue-next';
+import { DateTime } from 'luxon';
+
+import { useChatStore } from '@/entities/chat';
+import { ChatAvatar } from '@/features/chat-avatar';
+import { cn } from '@/shared/lib/utils';
+import { Badge } from '@/shared/ui/badge';
+
+const props = withDefaults(defineProps<Props>(), {
+  isActive: false,
+  isPinned: false,
+  variant: 'expanded'
+});
+
+// Store
+const chatStore = useChatStore();
+
+// Computed from store
+const chat = computed<Chat | undefined>(() =>
+  chatStore.getChatById(props.chatId)
+);
+
+const messages = computed(() => chatStore.getMessages(props.chatId));
+
 const lastMessage = computed(() => messages.value.at(-1));
+
+// TODO: Implement unread count logic in your store
+// For now, returning 0 as placeholder
+const unreaded = computed(() => 0);
+
+// Get chat avatar - you may want to add this to Chat type
+const avatar = computed(() => {
+  // Placeholder logic - customize based on your avatar system
+  return `https://api.dicebear.com/7.x/initials/svg?seed=${chat.value?.title || ''}`;
+});
 
 function formatDateTime(date: DateTime): string {
   const now = DateTime.now();
@@ -73,23 +77,25 @@ const chatVariants = cva('', {
 
 <template>
   <div
+    v-if="chat"
     :class="
       cn(
         props.class,
-        'h-full w-full py-2',
-        chatVariants({ variant: variant }),
+        'h-full w-full cursor-pointer py-2 transition-colors',
+        chatVariants({ variant: props.variant }),
         {
           'bg-secondary': isActive,
           'hover:bg-secondary': !isActive
         }
       )
     "
+    @click="chatStore.setCurrentChat(chatId)"
   >
     <div class="relative h-auto w-auto">
-      <ChatAvatar class="" :src="avatar" :chat-id="id" />
+      <ChatAvatar class="" :src="avatar" :chat-id="chatId" />
       <Badge
         class="absolute right-0 bottom-0 rounded-full px-2"
-        v-if="variant === 'compact' && unreaded > 0"
+        v-if="props.variant === 'compact' && unreaded > 0"
         variant="secondary"
       >
         {{ unreaded }}
@@ -97,25 +103,27 @@ const chatVariants = cva('', {
     </div>
 
     <div
-      v-if="variant === 'expanded'"
+      v-if="props.variant === 'expanded'"
       class="flex h-full grow flex-col justify-between self-start overflow-hidden py-1"
     >
       <h3 class="truncate">
-        <strong>{{ name }}</strong>
+        <strong>{{ chat.title }}</strong>
       </h3>
       <p class="truncate text-gray-300">
-        {{ lastMessage?.data.text }}
+        {{
+          lastMessage?.text || (lastMessage?.images?.length ? '📷 Photo' : '')
+        }}
       </p>
     </div>
 
     <div
-      v-if="variant === 'expanded'"
+      v-if="props.variant === 'expanded'"
       class="flex h-full flex-col items-end justify-between self-start py-1"
     >
       <div class="flex flex-row items-center gap-1">
         <Pin :size="16" class="rotate-45" v-if="isPinned" />
         <p class="text-gray-300">
-          {{ lastMessage ? formatDateTime(lastMessage?.createTime) : '' }}
+          {{ lastMessage ? formatDateTime(lastMessage.createdAt) : '' }}
         </p>
       </div>
       <Badge
