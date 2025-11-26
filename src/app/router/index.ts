@@ -1,12 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router';
+
 import { HomePage } from '@pages/Home';
 import { LoginPage } from '@pages/Login';
 import { SignupPage } from '@pages/Signup';
+import { VerifyEmailPage } from '@pages/VerifyEmail';
+
 import { ROUTES } from '@/shared/lib/routes';
 
 const publicRoutes = [
   { path: ROUTES.SIGNUP, component: SignupPage },
-  { path: ROUTES.LOGIN, component: LoginPage }
+  { path: ROUTES.LOGIN, component: LoginPage },
+  { path: ROUTES.VERIFY_EMAIL, component: VerifyEmailPage }
 ];
 
 const privateRoutes = [
@@ -14,6 +18,7 @@ const privateRoutes = [
 ];
 
 const routes = [
+  { path: '/', redirect: ROUTES.HOME },
   ...publicRoutes,
   ...privateRoutes,
   { path: ROUTES.NOT_FOUND, redirect: ROUTES.LOGIN }
