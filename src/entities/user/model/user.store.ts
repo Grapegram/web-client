@@ -8,7 +8,6 @@ const guestUser: User = {
   id: 'guest',
   username: 'Guest',
   email: 'guest@example.com',
-  password: '',
   isVerified: false
 };
 

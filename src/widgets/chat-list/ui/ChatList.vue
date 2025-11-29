@@ -10,7 +10,7 @@ import { CreateChatDialog } from '@/features/create-chat';
 import { Button } from '@/shared/ui/button';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 
-import { ChatPreview } from './ChatPreview.vue';
+import ChatPreview from './ChatPreview.vue';
 
 // Store
 const chatStore = useChatStore();

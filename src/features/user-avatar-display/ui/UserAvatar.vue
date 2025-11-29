@@ -21,9 +21,7 @@ const props = defineProps<UserAvatarProps>();
 const userStore = useUserStore();
 
 const user = computed(() => userStore.getUserById(props.userId));
-const displayName = computed(
-  () => user.value?.displayName || user.value?.username || 'Unknown User'
-);
+const displayName = computed(() => user.value?.username || 'Unknown User');
 const avatarSrc = computed(() => user.value?.avatar);
 </script>
 

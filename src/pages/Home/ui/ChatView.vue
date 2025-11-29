@@ -9,10 +9,10 @@ import { SendHorizontal } from 'lucide-vue-next';
 import { DateTime } from 'luxon';
 
 import { useChatStore } from '@/entities/chat';
-import { MessageGroup } from '@/features/message-group';
 import { MessageInput } from '@/features/message-input';
 import { cn } from '@/shared/lib/utils';
 import { ScrollArea } from '@/shared/ui/scroll-area';
+import { MessageGroup } from '@/widgets/message-group';
 
 import ChatHeader from './ChatHeader.vue';
 

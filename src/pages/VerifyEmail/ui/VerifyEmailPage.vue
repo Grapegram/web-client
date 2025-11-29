@@ -8,14 +8,12 @@ import { toast } from 'vue-sonner';
 
 import { Button, Typography } from '@grapegram/ui-kit';
 
-import { useUserStore } from '@/entities/user';
-import { useLoginMutation, useVerifyEmailMutation } from '@/features/auth';
+import { useVerifyEmailMutation } from '@/features/auth';
 import { ROUTES } from '@/shared/lib/routes';
 import { AuthLayout, FormLayout } from '@/shared/ui/layout';
 
 const route = useRoute();
 const router = useRouter();
-const userStore = useUserStore();
 
 const {
   mutateAsync: verifyEmail,
@@ -24,18 +22,10 @@ const {
   isLoading: isVerifying
 } = useVerifyEmailMutation();
 
-const {
-  mutateAsync: login,
-  status: loginStatus,
-  isLoading: isLoggingIn
-} = useLoginMutation();
+const isSuccess = verifyStatus.value === 'success';
+const hasError = verifyStatus.value === 'error';
 
-const isSuccess =
-  verifyStatus.value === 'success' && loginStatus.value !== 'error';
-const hasError =
-  verifyStatus.value === 'error' || loginStatus.value === 'error';
-
-const verifyEmailAndLogin = async () => {
+const verifyEmailHandler = async () => {
   const token = route.query.token as string;
 
   if (!token) {
@@ -46,35 +36,17 @@ const verifyEmailAndLogin = async () => {
 
   try {
     await verifyEmail({ token });
-
-    const { user } = userStore;
-    if (user.email && user.password) {
-      await login({
-        credential: user.email,
-        password: user.password
-      });
-
-      toast.success('Successfully logged in!');
-      router.replace(ROUTES.HOME);
-    } else {
-      router.replace(ROUTES.LOGIN);
-    }
+    toast.success('Email verified successfully!');
+    router.replace(ROUTES.LOGIN);
   } catch (_error) {
-    if (verifyStatus.value === 'error') {
-      toast.error('Email verification failed', {
-        description: verifyError.value?.message
-      });
-    } else if (loginStatus.value === 'error') {
-      toast.error('Verification successful, but login failed', {
-        description: 'Please login manually'
-      });
-      router.replace(ROUTES.LOGIN);
-    }
+    toast.error('Email verification failed', {
+      description: verifyError.value?.message
+    });
   }
 };
 
 onMounted(async () => {
-  await verifyEmailAndLogin();
+  await verifyEmailHandler();
 });
 </script>
 
@@ -89,13 +61,10 @@ onMounted(async () => {
         class="flex min-h-40 w-full flex-col items-center justify-center gap-6 text-center"
       >
         <!-- Pending State -->
-        <div
-          v-if="isVerifying || isLoggingIn"
-          class="flex flex-col items-center gap-4"
-        >
+        <div v-if="isVerifying" class="flex flex-col items-center gap-4">
           <LoaderCircle class="text-primary size-14 animate-spin" />
           <Typography variant="body-sm" class="text-muted-foreground">
-            {{ isLoggingIn ? 'Logging you in...' : 'Verifying your email...' }}
+            Verifying your email...
           </Typography>
         </div>
 

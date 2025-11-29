@@ -21,7 +21,8 @@ async function login(dto: LoginRequest) {
 
 async function register(dto: RegisterRequest) {
   try {
-    await $api.post(`${API_PREFIX}/register`, dto);
+    const data = await $api.post(`${API_PREFIX}/register`, dto);
+    return data;
   } catch (error) {
     throw toApiError(error);
   }

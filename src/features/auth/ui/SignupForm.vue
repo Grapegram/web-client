@@ -16,7 +16,6 @@ import { toast } from 'vue-sonner';
 
 import { Button, Typography } from '@grapegram/ui-kit';
 
-import { useUserStore } from '@/entities/user';
 import type { ApiError } from '@/shared/api';
 import { ROUTES } from '@/shared/lib/routes';
 import {
@@ -40,7 +39,6 @@ const registerSteps = [
 
 const stepIndex = ref(1);
 
-const userStore = useUserStore();
 const { mutateAsync, isLoading } = useRegisterMutation();
 const { handleSubmit, errors, defineField, validateField } = useForm({
   validationSchema: signupValidationSchema
@@ -53,12 +51,6 @@ const [username, usernameAttrs] = defineField('username');
 const onSubmit = handleSubmit(async values => {
   try {
     await mutateAsync(values);
-    userStore.setUser({
-      email: values.email,
-      username: values.username,
-      password: values.password,
-      isVerified: false
-    });
     stepIndex.value = 3;
   } catch (err) {
     toast.error('Registration failed!', {

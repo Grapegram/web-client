@@ -13,6 +13,13 @@ export interface RegisterRequest {
   password: string;
 }
 
+export interface RegisterResponse {
+  id: string;
+  email: string;
+  username: string;
+  isVerified: boolean;
+}
+
 export interface VerifyEmailRequest {
   token: string;
 }

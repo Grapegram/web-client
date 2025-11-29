@@ -143,16 +143,10 @@ const handleAddUser = () => {
 
           <div class="flex min-w-0 flex-1 flex-col">
             <span class="truncate font-medium">
-              {{ user.displayName || user.username }}
+              {{ user.username }}
             </span>
             <span class="text-muted-foreground truncate text-sm">
               @{{ user.username }}
-            </span>
-            <span
-              v-if="user.bio"
-              class="text-muted-foreground truncate text-xs"
-            >
-              {{ user.bio }}
             </span>
           </div>
         </div>
