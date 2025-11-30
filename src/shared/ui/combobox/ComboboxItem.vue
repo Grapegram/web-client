@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { type HTMLAttributes, computed } from 'vue';
+
 import type { ComboboxItemEmits, ComboboxItemProps } from 'reka-ui';
-import { cn } from '@/shared/lib/utils';
 import { ComboboxItem, useForwardPropsEmits } from 'reka-ui';
-import { computed, type HTMLAttributes } from 'vue';
+
+import { cn } from '@/shared/lib/utils';
 
 const props = defineProps<
   ComboboxItemProps & { class?: HTMLAttributes['class'] }

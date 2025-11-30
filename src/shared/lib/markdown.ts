@@ -1,7 +1,7 @@
+import hljs from 'highlight.js';
 import MarkdownIt from 'markdown-it';
 //@ts-expect-error markdown-it-underline has no type declarations
 import underline from 'markdown-it-underline';
-import hljs from 'highlight.js';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function improveInlineParagraph(md: any) {

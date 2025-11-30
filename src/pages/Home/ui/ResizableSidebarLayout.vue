@@ -24,16 +24,18 @@ export const Percentage = (value: number): Unite => ({
 </script>
 
 <script setup lang="ts">
+import { provide } from 'vue';
+import { watchEffect } from 'vue';
+import { ref, useTemplateRef } from 'vue';
+
+import { useElementSize } from '@vueuse/core';
+
 import { cn } from '@shared/lib/utils';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup
 } from '@shared/ui/resizable';
-import { useElementSize } from '@vueuse/core';
-import { provide } from 'vue';
-import { watchEffect } from 'vue';
-import { ref, useTemplateRef } from 'vue';
 
 const props = defineProps<Props>();
 const sidebarContainer = useTemplateRef<HTMLElement>('sidebar-container');

@@ -5,14 +5,17 @@ export type ScrollAreaProps = ScrollAreaRootProps & {
 </script>
 
 <script setup lang="ts">
-import { cn } from '@/shared/lib/utils';
+import { type HTMLAttributes, computed } from 'vue';
+
 import {
   ScrollAreaCorner,
   ScrollAreaRoot,
   type ScrollAreaRootProps,
   ScrollAreaViewport
 } from 'reka-ui';
-import { computed, type HTMLAttributes } from 'vue';
+
+import { cn } from '@/shared/lib/utils';
+
 import ScrollBar from './ScrollBar.vue';
 
 const props = defineProps<ScrollAreaProps>();

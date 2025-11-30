@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { cn } from '@/shared/lib/utils';
+import { type HTMLAttributes, computed } from 'vue';
+
 import { Circle } from 'lucide-vue-next';
 import {
   DropdownMenuItemIndicator,
@@ -8,7 +9,8 @@ import {
   type DropdownMenuRadioItemProps,
   useForwardPropsEmits
 } from 'reka-ui';
-import { computed, type HTMLAttributes } from 'vue';
+
+import { cn } from '@/shared/lib/utils';
 
 const props = defineProps<
   DropdownMenuRadioItemProps & { class?: HTMLAttributes['class'] }

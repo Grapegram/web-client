@@ -1,15 +1,19 @@
 <script setup lang="ts">
-import { cn } from '@/shared/lib/utils';
+import { type HTMLAttributes, type Ref, computed, ref } from 'vue';
+
 import { useEventListener, useMediaQuery, useVModel } from '@vueuse/core';
+
 import { TooltipProvider } from 'reka-ui';
-import { computed, type HTMLAttributes, type Ref, ref } from 'vue';
+
+import { cn } from '@/shared/lib/utils';
+
 import {
-  provideSidebarContext,
   SIDEBAR_COOKIE_MAX_AGE,
   SIDEBAR_COOKIE_NAME,
   SIDEBAR_KEYBOARD_SHORTCUT,
   SIDEBAR_WIDTH,
-  SIDEBAR_WIDTH_ICON
+  SIDEBAR_WIDTH_ICON,
+  provideSidebarContext
 } from './utils';
 
 const props = withDefaults(
