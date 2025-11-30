@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { type HTMLAttributes, computed } from 'vue';
+
 import type { ComboboxTriggerProps } from 'reka-ui';
-import { cn } from '@/shared/lib/utils';
 import { ComboboxTrigger, useForwardProps } from 'reka-ui';
-import { computed, type HTMLAttributes } from 'vue';
+
+import { cn } from '@/shared/lib/utils';
 
 const props = defineProps<
   ComboboxTriggerProps & { class?: HTMLAttributes['class'] }

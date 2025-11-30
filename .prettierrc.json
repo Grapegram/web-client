@@ -1,9 +1,24 @@
 {
   "$schema": "https://json.schemastore.org/prettierrc",
-  "plugins": ["prettier-plugin-tailwindcss"],
+  "plugins": [
+    "@trivago/prettier-plugin-sort-imports",
+    "prettier-plugin-tailwindcss"
+  ],
   "semi": true,
   "singleQuote": true,
   "printWidth": 80,
   "trailingComma": "none",
-  "arrowParens": "avoid"
+  "arrowParens": "avoid",
+  "importOrder": [
+    "^vue$",
+    "^vue-router$",
+    "^pinia$",
+    "^@vue",
+    "<THIRD_PARTY_MODULES>",
+    "^@grapegram/ui-kit$",
+    "^@/(.*)$",
+    "^[./]"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
 }

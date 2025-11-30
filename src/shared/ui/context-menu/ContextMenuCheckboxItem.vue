@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { cn } from '@/shared/lib/utils';
+import { type HTMLAttributes, computed } from 'vue';
+
 import { Check } from 'lucide-vue-next';
 import {
   ContextMenuCheckboxItem,
@@ -8,7 +9,8 @@ import {
   ContextMenuItemIndicator,
   useForwardPropsEmits
 } from 'reka-ui';
-import { computed, type HTMLAttributes } from 'vue';
+
+import { cn } from '@/shared/lib/utils';
 
 const props = defineProps<
   ContextMenuCheckboxItemProps & { class?: HTMLAttributes['class'] }

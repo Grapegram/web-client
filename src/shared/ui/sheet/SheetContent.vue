@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { cn } from '@/shared/lib/utils';
+import { type HTMLAttributes, computed } from 'vue';
+
 import { X } from 'lucide-vue-next';
 import {
   DialogClose,
@@ -10,7 +11,9 @@ import {
   DialogPortal,
   useForwardPropsEmits
 } from 'reka-ui';
-import { computed, type HTMLAttributes } from 'vue';
+
+import { cn } from '@/shared/lib/utils';
+
 import { type SheetVariants, sheetVariants } from '.';
 
 interface SheetContentProps extends DialogContentProps {

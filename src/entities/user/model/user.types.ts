@@ -1,0 +1,8 @@
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  isVerified: boolean;
+  avatar?: string;
+  createdAt?: Date;
+}

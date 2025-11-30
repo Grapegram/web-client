@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue';
+
+import { Input } from '@grapegram/ui-kit';
+
 import { cn } from '@/shared/lib/utils';
-import { Input } from '@/shared/ui/input';
 
 const props = defineProps<{
   class?: HTMLAttributes['class'];

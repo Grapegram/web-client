@@ -11,8 +11,8 @@ Web-client for the Grapegram messenger.
     <a href="https://vuejs.org/" target="_blank">
         <img src="https://img.shields.io/badge/-Vue-black?style=for-the-badge&logoColor=white&logo=vuedotjs&color=212121" alt="Vue" />
     </a>
-    <a href="https://headlessui.dev/" target="_blank">
-        <img src="https://img.shields.io/badge/-Headless UI-black?style=for-the-badge&logoColor=white&logo=headlessui&color=9C36CF" alt="headlessui" />
+    <a href="https://www.shadcn-vue.com/" target="_blank">
+        <img src="https://img.shields.io/badge/-Shadcn UI-black?style=for-the-badge&logoColor=white&logo=shadcnui&color=9C36CF" alt="shadcnui" />
     </a>
     <a href="https://tailwindcss.com/" target="_blank">
         <img src="https://img.shields.io/badge/-Tailwind_CSS-black?style=for-the-badge&logoColor=white&logo=tailwindcss&color=212121" alt="tailwindcss" />
@@ -20,8 +20,8 @@ Web-client for the Grapegram messenger.
     <a href="https://pinia.vuejs.org/" target="_blank">
         <img src="https://img.shields.io/badge/-Pinia-black?style=for-the-badge&logo=redux&logoColor=white&color=9C36CF" alt="Pinia" />
     </a>
-    <a href="https://feature-sliced.github.io/documentation/" target="_blank">
-        <img src="https://img.shields.io/badge/-Feature_Sliced_Design-black?style=for-the-badge&logoColor=white&logo=githubactions&color=212121" alt="Feature Sliced Design" />
+    <a href="https://pinia.vuejs.org/" target="_blank">
+        <img src="https://img.shields.io/badge/-Pinia Colada-black?style=for-the-badge&logo=redux&logoColor=white&color=212121" alt="Pinia" />
     </a>
 </div>
 
@@ -43,12 +43,14 @@ Web-client for the Grapegram messenger.
     <a href="https://github.com/features/actions" target="_blank">
         <img src="https://img.shields.io/badge/-github_actions-black?style=for-the-badge&logoColor=white&logo=githubactions&color=9C36CF" alt="githubactions" />
     </a>
+    <a href="https://feature-sliced.github.io/documentation/" target="_blank">
+        <img src="https://img.shields.io/badge/-Feature_Sliced_Design-black?style=for-the-badge&logoColor=white&logo=githubactions&color=212121" alt="Feature Sliced Design" />
+    </a>
 </div>
 
 ## See live demos
 
-Production: [https://grapegram-web.netlify.app](https://grapegram-web.netlify.app)
-Development: [https://dev-grapegram-web.netlify.app](https://dev-grapegram-web.netlify.app)
+Production: [https://web-client-ulyagram77s-projects.vercel.app](https://web-client-ulyagram77s-projects.vercel.app)
 
 ## Recommended IDE Setup
 
@@ -68,6 +70,13 @@ Move into project folder:
 
 ```bash
 cd ./web-client
+```
+
+To install packages you should get `NPM_TOKEN` from your admin and add it in your terminal session:
+
+```bash
+//.zshrc or .bashrc
+export NPM_TOKEN=your_token_here
 ```
 
 Install all dependencies from `package.json`:
