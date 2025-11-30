@@ -28,12 +28,27 @@ jobs:
 
       - name: Install dependencies
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           if [ -e yarn.lock ]; then
-            yarn install --frozen-lockfile
+          yarn install --frozen-lockfile
           elif [ -e package-lock.json ]; then
-            npm ci
+          npm ci
           else
-            npm i
+          npm i
           fi
+
+      - name: Check formatting
+        run: npm run ci:format
+
+      - name: Check architecture lint
+        run: npm run ci:lint-arch
+
+      - name: Check lint
+        run: npm run ci:lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Unit tests
+        run: npm run test:unit
