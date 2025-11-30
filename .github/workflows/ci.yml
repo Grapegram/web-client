@@ -26,13 +26,6 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@grapegram'
 
-      - name: Configure npm for GitHub Packages
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          echo "@grapegram:registry=https://npm.pkg.github.com/" >> ~/.npmrc
-          echo "//npm.pkg.github.com/:_authToken=${NPM_TOKEN}" >> ~/.npmrc
-
       - name: Install dependencies
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
