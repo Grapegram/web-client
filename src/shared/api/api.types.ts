@@ -3,3 +3,9 @@ export interface ApiError {
   detail: string;
   extra?: Record<string, unknown>;
 }
+
+export type ChatSocket = {
+  ws: WebSocket;
+  chatId: string;
+  authorized: boolean;
+};

@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
+import { toast } from 'vue-sonner';
+
 import { Field, FieldLabel, Input } from '@grapegram/ui-kit';
 
-import { useChatStore } from '@/entities/chat';
+import { useChatStore, useCreateChatMutation } from '@/entities/chat';
+import type { ApiError } from '@/shared/api';
 import { Button } from '@/shared/ui/button';
 import {
   Dialog,
@@ -20,37 +23,33 @@ defineProps<{
 }>();
 
 const chatStore = useChatStore();
+const { mutateAsync, asyncStatus } = useCreateChatMutation();
 
 const open = ref(false);
 const title = ref('');
-const isLoading = ref(false);
 
 const handleCreateChat = async () => {
   if (!title.value.trim()) return;
 
-  isLoading.value = true;
-
   try {
-    // Generate a unique ID for the new chat
-    const chatId = `chat-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const result = await mutateAsync({ title: title.value.trim() });
 
-    // Create the chat in the store
-    chatStore.addChat({
-      id: chatId,
-      title: title.value.trim(),
-      members: [] // Add current user ID here when available
+    if (result) {
+      // Set as current chat
+      chatStore.setCurrentChat(result.chat_id);
+
+      toast.success('Chat created!', {
+        description: `"${result.title}" is ready for messages."`
+      });
+
+      // Reset form and close dialog
+      title.value = '';
+      open.value = false;
+    }
+  } catch (err) {
+    toast.error('Failed to create chat', {
+      description: (err as ApiError).detail
     });
-
-    // Set as current chat
-    chatStore.setCurrentChat(chatId);
-
-    // Reset form and close dialog
-    title.value = '';
-    open.value = false;
-  } catch (error) {
-    console.error('Failed to create chat:', error);
-  } finally {
-    isLoading.value = false;
   }
 };
 
@@ -85,7 +84,7 @@ const handleOpenChange = (newOpen: boolean) => {
           <Input
             v-model="title"
             placeholder="Enter chat title..."
-            :disabled="isLoading"
+            :disabled="asyncStatus === 'loading'"
             @keydown.enter="handleCreateChat"
           />
         </Field>
@@ -95,16 +94,16 @@ const handleOpenChange = (newOpen: boolean) => {
           type="button"
           variant="outline"
           @click="handleCancel"
-          :disabled="isLoading"
+          :disabled="asyncStatus === 'loading'"
         >
           Cancel
         </Button>
         <Button
           type="button"
           @click="handleCreateChat"
-          :disabled="!title.trim() || isLoading"
+          :disabled="!title.trim() || asyncStatus === 'loading'"
         >
-          {{ isLoading ? 'Creating...' : 'Create' }}
+          {{ asyncStatus === 'loading' ? 'Creating...' : 'Create' }}
         </Button>
       </DialogFooter>
     </DialogContent>
