@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useTemplateRef } from 'vue';
 
 import { useElementSize } from '@vueuse/core';
 
 import { Button } from '@shared/ui/button';
+import { useVirtualizer } from '@tanstack/vue-virtual';
 import { SendHorizontal } from 'lucide-vue-next';
 import { DateTime } from 'luxon';
 
@@ -25,13 +26,32 @@ const isScrolled = ref(true);
 const isMessageInputFocuse = ref(false);
 const chatType = ref<'group' | 'direct'>('group');
 const scrollArea = useTemplateRef('scroll-area');
+const scrollViewportRef = ref<HTMLElement | null>(null);
 const MIN_CHAT_SIZE = 1000;
 const { width: messagesContainerWidth } = useElementSize(
   scrollArea as unknown as HTMLElement
 );
 
 // Computed from store
-const messagesGroups = chatStore.currentMessageGroups;
+const messagesGroups = computed(() => {
+  if (!chatStore.currentChatId) return [];
+  return chatStore.getMessageGroups(chatStore.currentChatId);
+});
+
+// Setup virtualizer
+const virtualizer = useVirtualizer(
+  computed(() => ({
+    count: messagesGroups.value.length,
+    getScrollElement: () => scrollViewportRef.value,
+    estimateSize: () => 100, // Estimate initial size, will adjust dynamically
+    overscan: 5, // Render 5 items before and after visible area
+    initialOffset: 0
+  }))
+);
+
+// Get virtual items
+const virtualItems = computed(() => virtualizer.value.getVirtualItems());
+const totalSize = computed(() => virtualizer.value.getTotalSize());
 
 // Scroll handling
 function onScroll(e: Event) {
@@ -46,16 +66,30 @@ function onScroll(e: Event) {
 watch(
   () => chatStore.currentMessages.length,
   () => {
-    if (!scrollArea.value) return;
-    const scrollView = (scrollArea.value.$el as HTMLElement).children[0];
+    if (!scrollViewportRef.value) return;
     if (isScrolled.value) {
-      scrollView.scrollTo({ top: scrollView.scrollHeight, behavior: 'smooth' });
+      scrollViewportRef.value.scrollTo({
+        top: scrollViewportRef.value.scrollHeight,
+        behavior: 'smooth'
+      });
       isScrolled.value = true;
     }
   },
   {
     flush: 'post'
   }
+);
+
+// Update scroll viewport ref when ScrollArea mounts
+watch(
+  scrollArea,
+  newVal => {
+    if (newVal) {
+      scrollViewportRef.value = (newVal.$el as HTMLElement)
+        .children[0] as HTMLElement;
+    }
+  },
+  { immediate: true }
 );
 
 // Message input handling
@@ -189,41 +223,65 @@ onMounted(async () => {
   <div class="flex h-full w-full flex-col gap-4 p-4 pb-2">
     <ChatHeader />
     <ScrollArea @scroll="onScroll" ref="scroll-area" class="grow">
-      <div class="flex h-full flex-col items-start justify-end gap-2">
+      <div
+        class="relative w-full"
+        :style="{
+          height: `${totalSize}px`
+        }"
+      >
         <div
-          :key="messageGroup.id"
-          v-for="messageGroup in messagesGroups"
-          class="relative w-full"
+          v-for="virtualItem in virtualItems"
+          :key="virtualItem.key"
+          :data-index="virtualItem.index"
+          :ref="
+            el => {
+              if (el) {
+                virtualizer.measureElement(el as HTMLElement);
+              }
+            }
+          "
+          class="absolute top-0 left-0 w-full"
+          :style="{
+            transform: `translateY(${virtualItem.start}px)`
+          }"
         >
-          <MessageGroup
-            :user="messageGroup.sender"
-            :class="
-              messagesContainerWidth < MIN_CHAT_SIZE &&
-              messageGroup.sender === currentUserId
-                ? 'float-right'
-                : 'float-left'
-            "
-            :side="
-              messagesContainerWidth < MIN_CHAT_SIZE &&
-              messageGroup.sender === currentUserId
-                ? 'right'
-                : 'left'
-            "
-            :show-avatar="
-              messagesContainerWidth < MIN_CHAT_SIZE &&
-              (messageGroup.sender === currentUserId || chatType === 'direct')
-                ? false
-                : true
-            "
-            :show-header="
-              chatType === 'group' && messageGroup.sender !== currentUserId
-            "
-            :messages="messageGroup.messages"
-            :color="
-              messageGroup.sender === currentUserId ? 'primary' : 'secondary'
-            "
-          >
-          </MessageGroup>
+          <div class="flex h-full flex-col items-start justify-end gap-2 pb-2">
+            <div class="relative w-full">
+              <MessageGroup
+                :user="messagesGroups[virtualItem.index].sender"
+                :class="
+                  messagesContainerWidth < MIN_CHAT_SIZE &&
+                  messagesGroups[virtualItem.index].sender === currentUserId
+                    ? 'float-right'
+                    : 'float-left'
+                "
+                :side="
+                  messagesContainerWidth < MIN_CHAT_SIZE &&
+                  messagesGroups[virtualItem.index].sender === currentUserId
+                    ? 'right'
+                    : 'left'
+                "
+                :show-avatar="
+                  messagesContainerWidth < MIN_CHAT_SIZE &&
+                  (messagesGroups[virtualItem.index].sender === currentUserId ||
+                    chatType === 'direct')
+                    ? false
+                    : true
+                "
+                :show-header="
+                  chatType === 'group' &&
+                  messagesGroups[virtualItem.index].sender !== currentUserId
+                "
+                :messages="messagesGroups[virtualItem.index].messages"
+                :color="
+                  messagesGroups[virtualItem.index].sender === currentUserId
+                    ? 'primary'
+                    : 'secondary'
+                "
+              >
+              </MessageGroup>
+            </div>
+          </div>
         </div>
       </div>
     </ScrollArea>
