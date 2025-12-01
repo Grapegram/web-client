@@ -28,6 +28,8 @@ const chatType = ref<'group' | 'direct'>('group');
 const scrollArea = useTemplateRef('scroll-area');
 const scrollViewportRef = ref<HTMLElement | null>(null);
 const MIN_CHAT_SIZE = 1000;
+type scrollStates = 'idle' | 'scrolled' | 'programmScrolled';
+const scrollState = ref<scrollStates>('idle');
 const { width: messagesContainerWidth } = useElementSize(
   scrollArea as unknown as HTMLElement
 );
@@ -62,18 +64,22 @@ function onScroll(e: Event) {
     10;
 }
 
+function scrollToBottom() {
+  if (!scrollViewportRef.value) return;
+
+  scrollViewportRef.value.scrollTo({
+    top: scrollViewportRef.value.scrollHeight,
+    behavior: 'smooth'
+  });
+
+  isScrolled.value = true;
+}
+
 // Auto-scroll on new messages
 watch(
   () => chatStore.currentMessages.length,
   () => {
-    if (!scrollViewportRef.value) return;
-    if (isScrolled.value) {
-      scrollViewportRef.value.scrollTo({
-        top: scrollViewportRef.value.scrollHeight,
-        behavior: 'smooth'
-      });
-      isScrolled.value = true;
-    }
+    scrollToBottom();
   },
   {
     flush: 'post'
@@ -199,7 +205,7 @@ async function simulateChatMessaging() {
 
   // Simulate incoming messages
   let sender = false;
-  await wait(2000);
+  await wait(5000);
   for (let i = 0; i != 300; i++) {
     if (i % 2 === 0 && Math.random() < 0.3) {
       sender = !sender;
@@ -285,6 +291,41 @@ onMounted(async () => {
         </div>
       </div>
     </ScrollArea>
+
+    <!-- Go to bottom button -->
+    <Transition
+      enter-active-class="transition duration-200 ease-out"
+      enter-from-class="opacity-0 translate-y-2"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition duration-150 ease-in"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 translate-y-2"
+    >
+      <div v-if="!isScrolled" class="absolute right-8 bottom-20 z-10">
+        <Button
+          @click="scrollToBottom"
+          size="icon"
+          class="h-10 w-10 rounded-full shadow-lg"
+          variant="secondary"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 5v14" />
+            <path d="m19 12-7 7-7-7" />
+          </svg>
+        </Button>
+      </div>
+    </Transition>
+
     <div class="flex items-center justify-start gap-1">
       <div
         :class="
