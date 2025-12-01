@@ -17,12 +17,12 @@ export const useUserStore = defineStore(
     // State
     const user = ref<User>(guestUser);
     const token = ref<string | null>(null);
-    const users = ref<Map<string, User>>(new Map());
+    const users = ref<Record<string, User>>({});
 
     // Getters
     const isAuthorized = computed(() => !!token.value);
 
-    const allUsers = computed(() => Array.from(users.value.values()));
+    const allUsers = computed(() => Object.values(users.value));
 
     // Actions
     function setToken(newToken: string) {
@@ -42,19 +42,19 @@ export const useUserStore = defineStore(
     }
 
     function addUser(newUser: User) {
-      users.value.set(newUser.id, newUser);
+      users.value[newUser.id] = newUser;
     }
 
     function addUsers(newUsers: User[]) {
-      newUsers.forEach(u => users.value.set(u.id, u));
+      newUsers.forEach(u => (users.value[u.id] = u));
     }
 
     function getUserById(userId: string): User | undefined {
-      return users.value.get(userId);
+      return users.value[userId];
     }
 
     function removeUser(userId: string) {
-      users.value.delete(userId);
+      delete users.value[userId];
     }
 
     function searchUsers(query: string): User[] {
@@ -69,7 +69,7 @@ export const useUserStore = defineStore(
     }
 
     function clearUsers() {
-      users.value.clear();
+      users.value = {};
     }
 
     return {
