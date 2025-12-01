@@ -25,7 +25,7 @@ export const Percentage = (value: number): Unite => ({
 
 <script setup lang="ts">
 import { provide } from 'vue';
-import { watchEffect } from 'vue';
+import { watch } from 'vue';
 import { ref, useTemplateRef } from 'vue';
 
 import { useElementSize } from '@vueuse/core';
@@ -53,17 +53,21 @@ const onResize = () => {
 };
 provide('sidebarMode', sidebarMode);
 
-watchEffect(() => {
-  const collapsedSizeComp = convertToSidebarUnits(props.collapsedSize);
-  const minSizeComp = convertToSidebarUnits(props.minSize);
-  const maxSizeComp = convertToSidebarUnits(props.maxSize);
-
-  computedSizes.value = [
-    collapsedSizeComp,
-    minSizeComp,
-    Math.max(minSizeComp, maxSizeComp)
-  ];
-});
+watch(
+  () => ({
+    width: width.value,
+    collapsedSize: props.collapsedSize,
+    minSize: props.minSize,
+    maxSize: props.maxSize
+  }),
+  ({ width: currentWidth, collapsedSize, minSize, maxSize }) => {
+    if (currentWidth === 0) return;
+    const collapsedSizeComp = convertToSidebarUnits(collapsedSize);
+    const minSizeComp = convertToSidebarUnits(minSize);
+    const maxSizeComp = convertToSidebarUnits(maxSize);
+    computedSizes.value = [collapsedSizeComp, minSizeComp, maxSizeComp];
+  }
+);
 </script>
 
 <template>
