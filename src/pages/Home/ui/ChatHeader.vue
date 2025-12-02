@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
-import { UserPlus } from 'lucide-vue-next';
+import { EllipsisVertical, ImageIcon, UserPlus } from 'lucide-vue-next';
+import { toast } from 'vue-sonner';
 
-import { useChatStore } from '@/entities/chat';
+import { useChatStore, useUploadChatAvatarMutation } from '@/entities/chat';
 import { useMockData } from '@/entities/user';
+import { AvatarEditorDialog } from '@/features/avatar-editor';
+import type { CroppedImageResult } from '@/features/avatar-editor';
 import { ChatAvatar } from '@/features/chat-avatar';
 import { Button } from '@/shared/ui/button';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/shared/ui/dialog';
-import { UsersList } from '@/widgets/users-list';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/shared/ui/dropdown-menu';
+import { AddUsersDialog } from '@/widgets/add-users-dialog';
 
 const chatStore = useChatStore();
 
@@ -30,28 +30,34 @@ const chatTitle = computed(
 const chatId = computed(() => currentChat.value?.id || '');
 
 const isAddUserDialogOpen = ref(false);
-const selectedUserIds = ref<string[]>([]);
+const isAvatarDialogOpen = ref(false);
 
-const handleSelectUser = (userId: string) => {
-  console.log('User selected:', userId);
-};
+const { mutate: uploadAvatar } = useUploadChatAvatarMutation(chatId.value);
 
-const handleAddUsers = () => {
-  if (selectedUserIds.value.length > 0 && currentChat.value) {
-    console.log('Adding users to chat:', selectedUserIds.value);
+const handleAddUsers = (userIds: string[]) => {
+  if (userIds.length > 0 && currentChat.value) {
+    console.log('Adding users to chat:', userIds);
     // TODO: Implement actual user addition logic
     // This would typically call an API or update the chat store
-
-    // Reset and close
-    selectedUserIds.value = [];
-    isAddUserDialogOpen.value = false;
   }
 };
 
 const handleCancelAddUsers = () => {
-  selectedUserIds.value = [];
-  isAddUserDialogOpen.value = false;
+  console.log('User addition cancelled');
 };
+
+function handleOpenAvatarDialog() {
+  isAvatarDialogOpen.value = true;
+}
+
+async function handleAvatarSave(result: CroppedImageResult) {
+  try {
+    await uploadAvatar(result.file);
+    toast.success('Chat avatar updated successfully!');
+  } catch {
+    toast.error('Failed to upload chat avatar. Please try again.');
+  }
+}
 </script>
 
 <template>
@@ -69,50 +75,40 @@ const handleCancelAddUsers = () => {
     </div>
 
     <div class="flex items-center gap-2">
-      <Dialog v-model:open="isAddUserDialogOpen">
-        <DialogTrigger as-child>
-          <Button
-            v-if="currentChat"
-            variant="ghost"
-            size="icon"
-            :disabled="!currentChat"
-          >
-            <UserPlus :size="24" />
+      <DropdownMenu v-if="currentChat">
+        <DropdownMenuTrigger as-child>
+          <Button variant="ghost" size="icon" :disabled="!currentChat">
+            <EllipsisVertical :size="24" />
           </Button>
-        </DialogTrigger>
-        <DialogContent class="max-h-[80vh] max-w-md">
-          <DialogHeader>
-            <DialogTitle>Add Users to Chat</DialogTitle>
-            <DialogDescription>
-              Select users to add to {{ chatTitle }}
-            </DialogDescription>
-          </DialogHeader>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem @click="handleOpenAvatarDialog">
+            <ImageIcon :size="16" class="mr-2" />
+            Change Avatar
+          </DropdownMenuItem>
+          <DropdownMenuItem @click="isAddUserDialogOpen = true">
+            <UserPlus :size="16" class="mr-2" />
+            Add User
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-          <div class="h-[400px]">
-            <UsersList
-              v-model:selected-user-ids="selectedUserIds"
-              selectable
-              multi-select
-              @select-user="handleSelectUser"
-            />
-          </div>
+      <AddUsersDialog
+        v-model:open="isAddUserDialogOpen"
+        :chat-title="chatTitle"
+        :chat-id="chatId"
+        @add-users="handleAddUsers"
+        @cancel="handleCancelAddUsers"
+      />
 
-          <DialogFooter>
-            <Button variant="outline" @click="handleCancelAddUsers">
-              Cancel
-            </Button>
-            <Button
-              :disabled="selectedUserIds.length === 0"
-              @click="handleAddUsers"
-            >
-              Add
-              {{
-                selectedUserIds.length > 0 ? `(${selectedUserIds.length})` : ''
-              }}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <AvatarEditorDialog
+        v-model:open="isAvatarDialogOpen"
+        title="Edit Chat Avatar"
+        description="Upload and crop the chat avatar"
+        :container-size="400"
+        :output-size="512"
+        @save="handleAvatarSave"
+      />
     </div>
   </header>
 </template>

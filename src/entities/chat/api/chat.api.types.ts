@@ -51,3 +51,7 @@ export interface LoadMessagesResponse {
   offset: 0;
   has_more: true;
 }
+
+export interface UploadChatAvatarResponse {
+  avatar: string;
+}

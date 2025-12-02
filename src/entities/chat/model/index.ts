@@ -8,6 +8,7 @@ export {
   useArchiveChatMutation,
   useUnarchiveChatMutation
 } from './archiveChat.mutation';
+export { useUploadChatAvatarMutation } from './uploadChatAvatar.mutation';
 
 // Queries
 export { useLoadMessagesQuery } from './loadMessages.query';

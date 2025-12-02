@@ -214,9 +214,16 @@ export const useChatStore = defineStore(
       );
     };
 
-    const getUnreadCount = (chatId?: string): number => {
+    const getUnreadCount = (_chatId?: string): number => {
       // TODO: Implement unread count based on read_by field
       return 0;
+    };
+
+    const updateChatAvatar = (chatId: string, avatarUrl: string) => {
+      const chat = chats.value.get(chatId);
+      if (chat) {
+        chats.value.set(chatId, { ...chat, avatar: avatarUrl });
+      }
     };
 
     return {
@@ -250,7 +257,8 @@ export const useChatStore = defineStore(
       getChatById,
       searchChats,
       getUnreadCount,
-      getMessageGroups
+      getMessageGroups,
+      updateChatAvatar
     };
   },
   {

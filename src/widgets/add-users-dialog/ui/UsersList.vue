@@ -138,7 +138,7 @@ const handleAddUser = () => {
               })
             "
           >
-            <UserAvatar :user-id="user.id" size="base" />
+            <UserAvatar atar :user-id="user.id" size="base" />
           </div>
 
           <div class="flex min-w-0 flex-1 flex-col">

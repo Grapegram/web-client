@@ -9,7 +9,8 @@ import type {
   CreateChatRequest,
   CreateChatResponse,
   LoadMessagesResponse,
-  UnarchiveChatRequest
+  UnarchiveChatRequest,
+  UploadChatAvatarResponse
 } from './chat.api.types';
 
 const API_PREFIX = '/chats';
@@ -81,11 +82,33 @@ async function loadMessages(chatId: string, limit?: number, offset?: number) {
   }
 }
 
+async function uploadAvatar(chatId: string, file: File) {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await $api.put<UploadChatAvatarResponse>(
+      `${API_PREFIX}/${chatId}/avatar`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    toApiError(error);
+  }
+}
+
 export const ChatApi = {
   create,
   changeTitle,
   archive,
   unarchive,
   addMember,
-  loadMessages
+  loadMessages,
+  uploadAvatar
 };

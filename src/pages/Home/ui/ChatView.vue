@@ -204,20 +204,20 @@ async function simulateChatMessaging() {
   });
 
   // Simulate incoming messages
-  let sender = false;
-  await wait(5000);
-  for (let i = 0; i != 300; i++) {
-    if (i % 2 === 0 && Math.random() < 0.3) {
-      sender = !sender;
-      await wait(500);
-    }
-    chatStore.addMessage(chatId, {
-      id: '10' + i,
-      sender: sender ? '0' : '1',
-      text: 'message l ' + i,
-      createdAt: DateTime.now()
-    });
-  }
+  // let sender = false;
+  // await wait(5000);
+  // for (let i = 0; i != 300; i++) {
+  //   if (i % 2 === 0 && Math.random() < 0.3) {
+  //     sender = !sender;
+  //     await wait(500);
+  //   }
+  //   chatStore.addMessage(chatId, {
+  //     id: '10' + i,
+  //     sender: sender ? '0' : '1',
+  //     text: 'message l ' + i,
+  //     createdAt: DateTime.now()
+  //   });
+  // }
 }
 
 onMounted(async () => {
