@@ -4,26 +4,29 @@ import { useTemplateRef } from 'vue';
 
 import { useElementSize } from '@vueuse/core';
 
-import { Button } from '@shared/ui/button';
 import { useVirtualizer } from '@tanstack/vue-virtual';
-import { SendHorizontal } from 'lucide-vue-next';
 import { DateTime } from 'luxon';
 
 import { useChatStore } from '@/entities/chat';
-import { MessageInput } from '@/features/message-input';
-import { cn } from '@/shared/lib/utils';
+import { useMessageStore, useSendMessageMutation } from '@/entities/message';
+import { Button } from '@/shared/ui/button';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { MessageGroup } from '@/widgets/message-group';
 
 import ChatHeader from './ChatHeader.vue';
+import MessageInputBar from './MessageInputBar.vue';
 
 // Store
 const chatStore = useChatStore();
+const messageStore = useMessageStore();
+
+// Mutations
+const { mutate: sendMessage, isPending: isSending } = useSendMessageMutation();
 
 // Refs
 const currentUserId = ref('1');
 const isScrolled = ref(true);
-const isMessageInputFocuse = ref(false);
+
 const chatType = ref<'group' | 'direct'>('group');
 const scrollArea = useTemplateRef('scroll-area');
 const scrollViewportRef = ref<HTMLElement | null>(null);
@@ -37,7 +40,11 @@ const { width: messagesContainerWidth } = useElementSize(
 // Computed from store
 const messagesGroups = computed(() => {
   if (!chatStore.currentChatId) return [];
-  return chatStore.getMessageGroups(chatStore.currentChatId);
+  return messageStore.getMessageGroups(chatStore.currentChatId);
+});
+const messagesCount = computed(() => {
+  if (!chatStore.currentChatId) return 0;
+  return messageStore.getMessages(chatStore.currentChatId).length;
 });
 
 // Setup virtualizer
@@ -77,9 +84,9 @@ function scrollToBottom() {
 
 // Auto-scroll on new messages
 watch(
-  () => chatStore.currentMessages.length,
-  () => {
-    scrollToBottom();
+  messagesCount,
+  count => {
+    if (!isScrolled.value && count > 0) scrollToBottom();
   },
   {
     flush: 'post'
@@ -99,10 +106,56 @@ watch(
 );
 
 // Message input handling
-function onMessageInput(e: Event) {
-  const el = e.target as HTMLElement;
-  el.style.height = '';
-  el.style.height = el.scrollHeight + 'px';
+async function onSendMessage(data: { text: string; images: string[] }) {
+  if (!chatStore.currentChatId) {
+    console.error('No chat selected');
+    return;
+  }
+
+  try {
+    // Convert base64 images to File objects
+    const imageFiles: File[] = [];
+
+    for (let i = 0; i < data.images.length; i++) {
+      const base64 = data.images[i];
+
+      // Extract base64 data and mime type
+      const matches = base64.match(/^data:([^;]+);base64,(.+)$/);
+      if (!matches) continue;
+
+      const mimeType = matches[1];
+      const base64Data = matches[2];
+
+      // Convert base64 to blob
+      const byteString = atob(base64Data);
+      const arrayBuffer = new ArrayBuffer(byteString.length);
+      const uint8Array = new Uint8Array(arrayBuffer);
+
+      for (let j = 0; j < byteString.length; j++) {
+        uint8Array[j] = byteString.charCodeAt(j);
+      }
+
+      const blob = new Blob([arrayBuffer], { type: mimeType });
+
+      // Create File from Blob
+      const extension = mimeType.split('/')[1] || 'jpg';
+      const file = new File([blob], `image-${i}.${extension}`, {
+        type: mimeType
+      });
+      imageFiles.push(file);
+    }
+
+    // Send the message
+    await sendMessage({
+      chat_id: chatStore.currentChatId,
+      text: data.text || undefined,
+      images: imageFiles.length > 0 ? imageFiles : undefined
+    });
+
+    console.log('Message sent successfully');
+  } catch (error) {
+    console.error('Failed to send message:', error);
+  }
 }
 
 // Utility functions for demo/testing
@@ -200,7 +253,7 @@ async function simulateChatMessaging() {
 
   // Add initial messages to store
   initialMessages.forEach(msg => {
-    chatStore.addMessage(chatId, msg);
+    messageStore.addMessage(chatId, msg);
   });
 
   // Simulate incoming messages
@@ -326,33 +379,6 @@ onMounted(async () => {
       </div>
     </Transition>
 
-    <div class="flex items-center justify-start gap-1">
-      <div
-        :class="
-          cn(
-            'flex grow items-center justify-start rounded border p-1 transition',
-            {
-              'border-accent/60': isMessageInputFocuse
-            }
-          )
-        "
-      >
-        <MessageInput
-          @input="onMessageInput"
-          @focus="isMessageInputFocuse = true"
-          @blur="isMessageInputFocuse = false"
-          class="h-10 max-h-[300px] min-h-0 grow"
-        />
-      </div>
-      <Button
-        variant="outline"
-        size="icon"
-        class="group min-h-10 min-w-10 self-end hover:cursor-pointer"
-      >
-        <SendHorizontal
-          class="ease-bounce size-5! transition group-hover:scale-125 group-hover:rotate-[-30deg]"
-        />
-      </Button>
-    </div>
+    <MessageInputBar @send="onSendMessage" />
   </div>
 </template>

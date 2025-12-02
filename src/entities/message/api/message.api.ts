@@ -5,6 +5,7 @@ import type {
   AddMessageReactionRequest,
   DeleteMessageRequest,
   EditMessageRequest,
+  LoadMessagesResponse,
   SendMessageRequest,
   SendMessageResponse
 } from './message.api.types';
@@ -13,7 +14,28 @@ const API_PREFIX = '/messages';
 
 async function send(dto: SendMessageRequest) {
   try {
-    const response = await $api.post<SendMessageResponse>(`${API_PREFIX}`, dto);
+    const formData = new FormData();
+    formData.append('chat_id', dto.chat_id);
+
+    if (dto.text) {
+      formData.append('text', dto.text);
+    }
+
+    if (dto.images && dto.images.length > 0) {
+      dto.images.forEach(image => {
+        formData.append('images', image);
+      });
+    }
+
+    const response = await $api.post<SendMessageResponse>(
+      `${API_PREFIX}`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
     return response.data;
   } catch (error) {
     throw toApiError(error);
@@ -47,4 +69,23 @@ async function addReaction(dto: AddMessageReactionRequest) {
   }
 }
 
-export const MessageApi = { send, edit, remove, addReaction };
+async function loadMessages(chatId: string, limit?: number, offset?: number) {
+  try {
+    const response = await $api.post<LoadMessagesResponse>(
+      `chats/${chatId}/messages`,
+      null,
+      {
+        params: {
+          limit,
+          offset
+        }
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    toApiError(error);
+  }
+}
+
+export const MessageApi = { send, edit, remove, addReaction, loadMessages };

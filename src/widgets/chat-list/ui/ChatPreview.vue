@@ -19,6 +19,7 @@ import { Pin } from 'lucide-vue-next';
 import { DateTime } from 'luxon';
 
 import { useChatStore } from '@/entities/chat';
+import { useMessageStore } from '@/entities/message';
 import { ChatAvatar } from '@/features/chat-avatar';
 import { cn } from '@/shared/lib/utils';
 import { Badge } from '@/shared/ui/badge';
@@ -31,13 +32,14 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Store
 const chatStore = useChatStore();
+const messageStore = useMessageStore();
 
 // Computed from store
 const chat = computed<Chat | undefined>(() =>
   chatStore.getChatById(props.chatId)
 );
 
-const messages = computed(() => chatStore.getMessages(props.chatId));
+const messages = computed(() => messageStore.getMessages(props.chatId));
 
 const lastMessage = computed(() => messages.value.at(-1));
 
