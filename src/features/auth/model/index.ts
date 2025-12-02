@@ -1,5 +1,6 @@
 export { AuthApi } from '../api/auth.api';
 
+export { useAuthStore } from './auth.store';
 export { useLoginMutation } from './login.mutation';
 export { useRegisterMutation } from './register.mutation';
 export { useVerifyEmailMutation } from './verifyEmail.mutation';

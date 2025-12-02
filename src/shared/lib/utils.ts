@@ -19,3 +19,16 @@ export function toApiError(error: unknown): ApiError {
     extra: {}
   };
 }
+
+export function getTokenFromStorage(): string | null {
+  try {
+    const authStoreData = localStorage.getItem('auth');
+    if (!authStoreData) return null;
+
+    const parsedData = JSON.parse(authStoreData);
+    return parsedData.token || null;
+  } catch (error) {
+    console.error('Failed to get token from localStorage:', error);
+    return null;
+  }
+}
