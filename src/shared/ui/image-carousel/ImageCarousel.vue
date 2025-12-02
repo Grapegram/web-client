@@ -170,7 +170,7 @@ if (typeof window !== 'undefined') {
   >
     <div
       v-if="open"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-xs"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-xs"
       @click="close"
     >
       <!-- Close Button -->
