@@ -25,6 +25,21 @@ const chatTitle = computed(
 );
 const chatId = computed(() => currentChat.value?.id || '');
 
+const chatUsers = computed(() =>
+  currentChat.value?.members
+    .map(m => usersStore.getById(m.user_id))
+    .filter(Boolean)
+);
+const membersCount = computed(() => currentChat.value?.members.length ?? 0);
+const onlineMembersCount = computed(
+  () => chatUsers.value?.filter(user => user?.isOnline).length || 0
+);
+const chatStatusString = computed(
+  () =>
+    (membersCount.value === 1 ? '1 member' : `${membersCount.value} members`) +
+    (onlineMembersCount.value > 0 ? `, ${onlineMembersCount.value} online` : '')
+);
+
 const isAddUserDialogOpen = ref(false);
 const isAvatarDialogOpen = ref(false);
 
@@ -58,16 +73,14 @@ async function handleAvatarSave(result: CroppedImageResult) {
 
 <template>
   <header
-    class="h-header bg-card border-border flex flex-row items-center justify-between gap-3 rounded border p-3"
+    class="h-header bg-card border-border flex flex-row items-center justify-between gap-3 rounded-lg border p-3"
   >
     <ChatAvatar size="sm" class="" :chat-id="chatId" />
     <div class="flex grow flex-col items-start justify-center">
-      <span
-        ><strong>{{ chatTitle }}</strong></span
-      >
-      <span v-if="!currentChat" class="text-muted-foreground"
-        >Select a chat to start messaging</span
-      >
+      <span>
+        <strong>{{ chatTitle }}</strong>
+      </span>
+      <span class="text-muted-foreground text-sm">{{ chatStatusString }}</span>
     </div>
 
     <div class="flex items-center gap-2">
