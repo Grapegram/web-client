@@ -6,7 +6,7 @@ import { Search, UserPlus } from 'lucide-vue-next';
 import { Input } from '@grapegram/ui-kit';
 
 import { useUserStore } from '@/entities/user';
-import { UserAvatar } from '@/features/user-avatar-display';
+import { UserAvatar } from '@/features/user-avatar';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { ScrollArea } from '@/shared/ui/scroll-area';
