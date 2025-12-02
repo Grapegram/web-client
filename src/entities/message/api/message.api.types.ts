@@ -2,7 +2,8 @@ import type { Message } from '../model';
 
 export interface SendMessageRequest {
   chat_id: string;
-  text: string;
+  text?: string;
+  images?: File[];
 }
 
 export interface SendMessageResponse {
