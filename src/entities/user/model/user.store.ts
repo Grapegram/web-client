@@ -17,23 +17,12 @@ export const useUserStore = defineStore(
   () => {
     // State
     const user = ref<User>(GUEST_USER);
-    const token = ref<string | null>(null);
     const users = ref<Record<string, User>>({});
 
     // Getters
-    const isAuthorized = computed(() => !!token.value);
-
     const allUsers = computed(() => Object.values(users.value));
 
     // Actions
-    function setToken(newToken: string) {
-      token.value = newToken;
-    }
-
-    function clearToken() {
-      token.value = null;
-    }
-
     function setUser(newUser: User) {
       user.value = newUser;
     }
@@ -77,14 +66,15 @@ export const useUserStore = defineStore(
       users.value = {};
     }
 
+    function reset() {
+      user.value = GUEST_USER;
+      users.value = {};
+    }
+
     return {
       user,
-      token,
       users,
-      isAuthorized,
       allUsers,
-      setToken,
-      clearToken,
       setUser,
       setVerified,
       updateAvatar,
@@ -93,12 +83,14 @@ export const useUserStore = defineStore(
       getUserById,
       removeUser,
       searchUsers,
-      clearUsers
+      clearUsers,
+      reset
     };
   },
   {
     persist: {
-      storage: localStorage
+      storage: localStorage,
+      pick: ['user', 'users']
     }
   }
 );

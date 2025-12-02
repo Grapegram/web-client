@@ -1,25 +1,13 @@
 import axios from 'axios';
 
+import { getTokenFromStorage } from '../lib';
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 const $api = axios.create({
   baseURL: API_URL
   // withCredentials: true
 });
-
-// Helper function to get token from localStorage
-function getTokenFromStorage(): string | null {
-  try {
-    const userStoreData = localStorage.getItem('user');
-    if (!userStoreData) return null;
-
-    const parsedData = JSON.parse(userStoreData);
-    return parsedData.token || null;
-  } catch (error) {
-    console.error('Failed to get token from localStorage:', error);
-    return null;
-  }
-}
 
 $api.interceptors.request.use(config => {
   const token = getTokenFromStorage();
@@ -28,5 +16,18 @@ $api.interceptors.request.use(config => {
   }
   return config;
 });
+
+$api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response?.status === 401) {
+      // Token is invalid or expired on server side
+      // The auth store will be checked by router on next navigation
+      // Or we can dispatch a custom event
+      window.dispatchEvent(new CustomEvent('auth:unauthorized'));
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default $api;

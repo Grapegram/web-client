@@ -71,7 +71,7 @@ const handleOpenChange = (newOpen: boolean) => {
     <DialogTrigger :as-child="asChild">
       <slot />
     </DialogTrigger>
-    <DialogContent class="sm:max-w-[425px]">
+    <DialogContent class="sm:max-w-106.25">
       <DialogHeader>
         <DialogTitle>Create New Chat</DialogTitle>
         <DialogDescription>
