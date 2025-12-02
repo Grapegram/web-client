@@ -3,6 +3,5 @@ export interface User {
   username: string;
   email: string;
   isVerified: boolean;
-  avatar?: string;
-  createdAt?: Date;
+  avatar: string | null;
 }

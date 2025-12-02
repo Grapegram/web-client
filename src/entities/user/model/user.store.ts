@@ -4,10 +4,11 @@ import { defineStore } from 'pinia';
 
 import type { User } from './user.types';
 
-const guestUser: User = {
+const GUEST_USER: User = {
   id: 'guest',
   username: 'Guest',
   email: 'guest@example.com',
+  avatar: null,
   isVerified: false
 };
 
@@ -15,7 +16,7 @@ export const useUserStore = defineStore(
   'user',
   () => {
     // State
-    const user = ref<User>(guestUser);
+    const user = ref<User>(GUEST_USER);
     const token = ref<string | null>(null);
     const users = ref<Record<string, User>>({});
 
@@ -39,6 +40,10 @@ export const useUserStore = defineStore(
 
     function setVerified(isVerified: boolean) {
       user.value.isVerified = isVerified;
+    }
+
+    function updateAvatar(avatarUrl: string) {
+      user.value.avatar = avatarUrl;
     }
 
     function addUser(newUser: User) {
@@ -82,6 +87,7 @@ export const useUserStore = defineStore(
       clearToken,
       setUser,
       setVerified,
+      updateAvatar,
       addUser,
       addUsers,
       getUserById,
