@@ -68,5 +68,5 @@ router.beforeEach((to, _, next) => {
 
 <template>
   <RouterView />
-  <Toaster position="bottom-left" />
+  <Toaster position="top-center" />
 </template>

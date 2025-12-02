@@ -9,3 +9,6 @@ export {
   useUnarchiveChatMutation
 } from './archiveChat.mutation';
 export { useUploadChatAvatarMutation } from './uploadChatAvatar.mutation';
+
+// Queries
+export { useGetChatsQuery } from './getChats.query';

@@ -8,6 +8,7 @@ import type {
   ChangeChatTitleRequest,
   CreateChatRequest,
   CreateChatResponse,
+  GetChatsListResponse,
   UnarchiveChatRequest,
   UploadChatAvatarResponse
 } from './chat.api.types';
@@ -83,11 +84,21 @@ async function uploadAvatar(chatId: string, file: File) {
   }
 }
 
+async function getAll() {
+  try {
+    const response = await $api.get<GetChatsListResponse>(`${API_PREFIX}`);
+    return response.data;
+  } catch (error) {
+    toApiError(error);
+  }
+}
+
 export const ChatApi = {
   create,
   changeTitle,
   archive,
   unarchive,
   addMember,
-  uploadAvatar
+  uploadAvatar,
+  getAll
 };

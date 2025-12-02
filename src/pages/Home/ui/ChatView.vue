@@ -21,7 +21,7 @@ const chatStore = useChatStore();
 const messageStore = useMessageStore();
 
 // Mutations
-const { mutate: sendMessage, isPending: isSending } = useSendMessageMutation();
+const { mutate: sendMessage } = useSendMessageMutation();
 
 // Refs
 const currentUserId = ref('1');
@@ -166,16 +166,6 @@ const wait = async (delay: number) => {
 };
 
 async function simulateChatMessaging() {
-  // Initialize a demo chat if needed
-  if (!chatStore.currentChat) {
-    chatStore.addChat({
-      id: 'demo-chat-1',
-      title: 'Demo Chat',
-      members: ['0', '1']
-    });
-    chatStore.setCurrentChat('demo-chat-1');
-  }
-
   const chatId = chatStore.currentChatId;
   if (!chatId) return;
 
