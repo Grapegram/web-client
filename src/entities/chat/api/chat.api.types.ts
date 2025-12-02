@@ -33,25 +33,6 @@ export interface AddMemberResponse {
   role: string;
 }
 
-export interface LoadMessagesResponse {
-  messages: [
-    {
-      id: string;
-      chat_id: string;
-      sender_id: string;
-      text: string;
-      is_deleted: true;
-      reactions: Record<string, number>;
-      read_by: string[];
-    }
-  ];
-
-  total_count: 0;
-  limit: 0;
-  offset: 0;
-  has_more: true;
-}
-
 export interface UploadChatAvatarResponse {
   avatar: string;
 }

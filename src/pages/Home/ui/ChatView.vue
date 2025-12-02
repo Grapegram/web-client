@@ -10,6 +10,7 @@ import { SendHorizontal } from 'lucide-vue-next';
 import { DateTime } from 'luxon';
 
 import { useChatStore } from '@/entities/chat';
+import { useMessageStore } from '@/entities/message';
 import { MessageInput } from '@/features/message-input';
 import { cn } from '@/shared/lib/utils';
 import { ScrollArea } from '@/shared/ui/scroll-area';
@@ -19,6 +20,7 @@ import ChatHeader from './ChatHeader.vue';
 
 // Store
 const chatStore = useChatStore();
+const messageStore = useMessageStore();
 
 // Refs
 const currentUserId = ref('1');
@@ -37,7 +39,11 @@ const { width: messagesContainerWidth } = useElementSize(
 // Computed from store
 const messagesGroups = computed(() => {
   if (!chatStore.currentChatId) return [];
-  return chatStore.getMessageGroups(chatStore.currentChatId);
+  return messageStore.getMessageGroups(chatStore.currentChatId);
+});
+const messagesCount = computed(() => {
+  if (!chatStore.currentChatId) return 0;
+  return messageStore.getMessages(chatStore.currentChatId).length;
 });
 
 // Setup virtualizer
@@ -77,9 +83,9 @@ function scrollToBottom() {
 
 // Auto-scroll on new messages
 watch(
-  () => chatStore.currentMessages.length,
-  () => {
-    scrollToBottom();
+  messagesCount,
+  count => {
+    if (!isScrolled.value && count > 0) scrollToBottom();
   },
   {
     flush: 'post'
@@ -200,7 +206,7 @@ async function simulateChatMessaging() {
 
   // Add initial messages to store
   initialMessages.forEach(msg => {
-    chatStore.addMessage(chatId, msg);
+    messageStore.addMessage(chatId, msg);
   });
 
   // Simulate incoming messages

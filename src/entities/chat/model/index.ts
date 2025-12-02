@@ -1,4 +1,4 @@
-export type { Chat, ChatMember, MessageGroup } from './chat.types';
+export type { Chat, ChatMember } from './chat.types';
 export { useChatStore } from './chat.store';
 
 // Mutations
@@ -9,6 +9,3 @@ export {
   useUnarchiveChatMutation
 } from './archiveChat.mutation';
 export { useUploadChatAvatarMutation } from './uploadChatAvatar.mutation';
-
-// Queries
-export { useLoadMessagesQuery } from './loadMessages.query';

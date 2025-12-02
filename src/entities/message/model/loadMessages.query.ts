@@ -1,6 +1,6 @@
 import { useQuery } from '@pinia/colada';
 
-import { ChatApi } from '../api/chat.api';
+import { MessageApi } from '../api';
 
 export const useLoadMessagesQuery = (
   chatId: string,
@@ -14,7 +14,7 @@ export const useLoadMessagesQuery = (
       options?.offset ?? null
     ],
     query: async () => {
-      const result = await ChatApi.loadMessages(
+      const result = await MessageApi.loadMessages(
         chatId,
         options?.limit,
         options?.offset

@@ -5,6 +5,7 @@ import type {
   AddMessageReactionRequest,
   DeleteMessageRequest,
   EditMessageRequest,
+  LoadMessagesResponse,
   SendMessageRequest,
   SendMessageResponse
 } from './message.api.types';
@@ -47,4 +48,23 @@ async function addReaction(dto: AddMessageReactionRequest) {
   }
 }
 
-export const MessageApi = { send, edit, remove, addReaction };
+async function loadMessages(chatId: string, limit?: number, offset?: number) {
+  try {
+    const response = await $api.post<LoadMessagesResponse>(
+      `chats/${chatId}/messages`,
+      null,
+      {
+        params: {
+          limit,
+          offset
+        }
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    toApiError(error);
+  }
+}
+
+export const MessageApi = { send, edit, remove, addReaction, loadMessages };
