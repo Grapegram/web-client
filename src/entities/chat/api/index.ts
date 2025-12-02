@@ -7,6 +7,5 @@ export type {
   ArchiveChatRequest,
   UnarchiveChatRequest,
   AddMemberRequest,
-  AddMemberResponse,
-  LoadMessagesResponse
+  AddMemberResponse
 } from './chat.api.types';

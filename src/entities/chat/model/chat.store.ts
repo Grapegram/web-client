@@ -110,6 +110,16 @@ export const useChatStore = defineStore(
       }
     };
 
+    const setChats = (fetchedChats: Chat[]) => {
+      chats.value = new Map(fetchedChats.map(chat => [chat.id, chat]));
+
+      chatOrder.value = fetchedChats.map(c => c.id);
+
+      if (!currentChatId.value) {
+        currentChatId.value = chatOrder.value[0] ?? null;
+      }
+    };
+
     return {
       // State
       chats,
@@ -133,13 +143,14 @@ export const useChatStore = defineStore(
       getChatById,
       searchChats,
       getUnreadCount,
-      updateChatAvatar
+      updateChatAvatar,
+      setChats
     };
   },
   {
     persist: {
       storage: localStorage,
-      key: 'grapegram_chats',
+      key: 'chats',
       pick: ['chatOrder', 'currentChatId']
     }
   }

@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { computed, inject } from 'vue';
+import { computed, inject, watch } from 'vue';
 
 import { Plus } from 'lucide-vue-next';
 
 import { cn } from '@grapegram/ui-kit';
 
-import { useChatStore } from '@/entities/chat';
+import { useChatStore, useGetChatsQuery } from '@/entities/chat';
 import { CreateChatDialog } from '@/features/create-chat';
 import { Button } from '@/shared/ui/button';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 
 import ChatPreview from './ChatPreview.vue';
+import ChatPreviewSkeleton from './ChatPreviewSkeleton.vue';
 
-// Store
+const { data: chats, isLoading } = useGetChatsQuery();
 const chatStore = useChatStore();
 
-// Injected props
 const sidebarMode = inject<'compact' | 'expanded'>('sidebarMode', 'expanded');
 
 // TODO: Add isPinned property to Chat type in the store
@@ -26,7 +26,6 @@ const pinnedChatsIds = computed(() => {
   return [] as string[];
 });
 
-// Computed
 const pinnedChats = computed(() => {
   return chatStore.orderedChats.filter(chat =>
     pinnedChatsIds.value.includes(chat.id)
@@ -40,27 +39,41 @@ const unpinnedChats = computed(() => {
 });
 
 const activeChatId = computed(() => chatStore.currentChatId);
+
+watch(chats, newChats => {
+  if (newChats) {
+    chatStore.setChats(newChats.chats);
+  }
+});
 </script>
 
 <template>
   <div class="bg-card flex h-full grow flex-col">
     <ScrollArea class="h-full w-full flex-1">
-      <ChatPreview
-        v-for="chat in pinnedChats"
-        :key="chat.id"
-        :chat-id="chat.id"
-        :variant="sidebarMode"
-        :is-active="activeChatId === chat.id"
-        is-pinned
-      />
-      <ChatPreview
-        v-for="chat in unpinnedChats"
-        :key="chat.id"
-        :chat-id="chat.id"
-        :variant="sidebarMode"
-        :is-active="activeChatId === chat.id"
-      />
+      <template v-if="isLoading">
+        <ChatPreviewSkeleton v-for="i in 15" :key="i" />
+      </template>
+
+      <template v-else>
+        <ChatPreview
+          v-for="chat in pinnedChats"
+          :key="chat.id"
+          :chat-id="chat.id"
+          :variant="sidebarMode"
+          :is-active="activeChatId === chat.id"
+          is-pinned
+        />
+
+        <ChatPreview
+          v-for="chat in unpinnedChats"
+          :key="chat.id"
+          :chat-id="chat.id"
+          :variant="sidebarMode"
+          :is-active="activeChatId === chat.id"
+        />
+      </template>
     </ScrollArea>
+
     <div
       :class="cn('border-border flex items-center justify-center border-t p-3')"
     >

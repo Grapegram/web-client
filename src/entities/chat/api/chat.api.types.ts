@@ -1,3 +1,5 @@
+import type { Chat } from '../model';
+
 export interface CreateChatRequest {
   title: string;
 }
@@ -35,4 +37,8 @@ export interface AddMemberResponse {
 
 export interface UploadChatAvatarResponse {
   avatar: string;
+}
+
+export interface GetChatsListResponse {
+  chats: Chat[];
 }
