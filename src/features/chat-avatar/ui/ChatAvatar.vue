@@ -26,6 +26,7 @@ const chatName = computed(() => chat.value?.title ?? 'Unknown');
   <Avatar
     :alt="chatName"
     :name="chatName"
+    :src="chat?.avatar || ''"
     :class="props.class"
     :size="props.size"
   />

@@ -47,7 +47,7 @@ const isAddUserDialogOpen = ref(false);
 const isAvatarDialogOpen = ref(false);
 const isChatInfoDialogOpen = ref(false);
 
-const { mutate: uploadAvatar } = useUploadChatAvatarMutation(chatId.value);
+const { mutate: uploadAvatar } = useUploadChatAvatarMutation();
 
 const handleAddUsers = (userIds: string[]) => {
   if (userIds.length > 0 && currentChat.value) {
@@ -67,7 +67,7 @@ function handleOpenAvatarDialog() {
 
 async function handleAvatarSave(result: CroppedImageResult) {
   try {
-    await uploadAvatar(result.file);
+    await uploadAvatar({ chatId: chatId.value, file: result.file });
     toast.success('Chat avatar updated successfully!');
   } catch {
     toast.error('Failed to upload chat avatar. Please try again.');
