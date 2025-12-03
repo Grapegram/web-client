@@ -42,3 +42,12 @@ export interface UploadChatAvatarResponse {
 export interface GetChatsListResponse {
   chats: Chat[];
 }
+
+export interface CreateDirectChatRequest {
+  other_user_id: string;
+}
+
+export interface CreateDirectChatResponse {
+  chat_id: string;
+  title: string;
+}
