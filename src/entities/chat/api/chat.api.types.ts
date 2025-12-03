@@ -46,3 +46,12 @@ export interface GetChatsListResponse {
 export interface DeleteChatRequest {
   chat_id: string;
 }
+
+export interface CreateDirectChatRequest {
+  other_user_id: string;
+}
+
+export interface CreateDirectChatResponse {
+  chat_id: string;
+  title: string;
+}

@@ -3,6 +3,7 @@ export { useChatStore } from './chat.store';
 
 // Mutations
 export { useCreateChatMutation } from './createChat.mutation';
+export { useCreateDirectChatMutation } from './createDirectChat.mutation';
 export { useChangeChatTitleMutation } from './changeChatTitle.mutation';
 export {
   useArchiveChatMutation,

@@ -8,6 +8,8 @@ import type {
   ChangeChatTitleRequest,
   CreateChatRequest,
   CreateChatResponse,
+  CreateDirectChatRequest,
+  CreateDirectChatResponse,
   DeleteChatRequest,
   GetChatsListResponse,
   UnarchiveChatRequest,
@@ -103,9 +105,22 @@ async function getAll() {
   }
 }
 
+async function createDirect(dto: CreateDirectChatRequest) {
+  try {
+    const response = await $api.post<CreateDirectChatResponse>(
+      `${API_PREFIX}/direct`,
+      dto
+    );
+    return response.data;
+  } catch (error) {
+    toApiError(error);
+  }
+}
+
 export const ChatApi = {
   create,
   remove,
+  createDirect,
   changeTitle,
   archive,
   unarchive,

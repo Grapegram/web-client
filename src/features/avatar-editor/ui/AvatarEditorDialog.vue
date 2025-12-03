@@ -20,6 +20,7 @@ interface Props {
   maxFileSize?: number;
   outputSize?: number;
   outputQuality?: number;
+  initialFile?: File | null;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -29,7 +30,8 @@ const props = withDefaults(defineProps<Props>(), {
   containerSize: 400,
   maxFileSize: 10 * 1024 * 1024,
   outputSize: 512,
-  outputQuality: 0.92
+  outputQuality: 0.92,
+  initialFile: null
 });
 
 const emit = defineEmits<{
@@ -71,6 +73,7 @@ function handleError(_error: string): void {
         :max-file-size="maxFileSize"
         :output-size="outputSize"
         :output-quality="outputQuality"
+        :initial-file="initialFile"
         @image-cropped="handleImageCropped"
         @cancel="handleCancel"
         @error="handleError"
