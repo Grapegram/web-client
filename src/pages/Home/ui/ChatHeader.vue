@@ -34,12 +34,13 @@ const chatTitle = computed(
 );
 const chatId = computed(() => currentChat.value?.id || '');
 
-const chatUsers = computed(() =>
-  currentChat.value?.members
-    .map(m => usersStore.getUserById(m.user_id))
-    .filter(Boolean)
+const chatUsers = computed(
+  () =>
+    currentChat.value?.members
+      ?.map(m => usersStore.getUserById(m.user_id))
+      .filter(Boolean) || []
 );
-const membersCount = computed(() => currentChat.value?.members.length ?? 0);
+const membersCount = computed(() => currentChat.value?.members?.length ?? 0);
 const onlineMembersCount = computed(
   () => chatUsers.value?.filter(user => user?.isOnline).length || 0
 );
