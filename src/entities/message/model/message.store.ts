@@ -88,7 +88,11 @@ export const useMessageStore = defineStore('message', () => {
 
   const addMessage = (message: Message) => {
     const chatMessages = messages.value[message.chat_id] ?? [];
-    messages.value[message.chat_id] = [...chatMessages, message];
+    // Check for duplicates before adding
+    const exists = chatMessages.some(m => m.id === message.id);
+    if (!exists) {
+      messages.value[message.chat_id] = [...chatMessages, message];
+    }
   };
 
   const updateMessage = (

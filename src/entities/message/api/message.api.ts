@@ -69,15 +69,18 @@ async function addReaction(dto: AddMessageReactionRequest) {
   }
 }
 
-async function loadMessages(chatId: string, limit?: number, offset?: number) {
+async function loadMessages(
+  chatId: string,
+  limit?: number,
+  from_message_id?: string
+) {
   try {
-    const response = await $api.post<LoadMessagesResponse>(
+    const response = await $api.get<LoadMessagesResponse>(
       `chats/${chatId}/messages`,
-      null,
       {
         params: {
           limit,
-          offset
+          from_message_id
         }
       }
     );

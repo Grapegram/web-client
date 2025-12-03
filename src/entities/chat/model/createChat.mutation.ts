@@ -2,20 +2,25 @@ import { useMutation } from '@pinia/colada';
 
 import { ChatApi } from '../api/chat.api';
 import { useChatStore } from './chat.store';
+import { ChatType } from './chat.types';
 
-export const useCreateChatMutation = () =>
-  useMutation({
+export const useCreateChatMutation = () => {
+  const chatStore = useChatStore();
+
+  return useMutation({
     mutation: ChatApi.create,
     onSuccess: data => {
       if (!data) return;
 
-      const chatStore = useChatStore();
-      chatStore.addChat({
+      const newChat = {
         id: data.chat_id,
         title: data.title,
-        is_archived: false,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      });
+        type: ChatType.GROUP,
+        members: [],
+        avatar: undefined
+      };
+
+      chatStore.addChat(newChat);
     }
   });
+};

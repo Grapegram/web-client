@@ -1,8 +1,19 @@
 <script lang="ts">
 import type { Message } from '@/entities/message';
 
+// Support both full Message and last_message from Chat
+type LastMessageData =
+  | Message
+  | {
+      id: string;
+      text?: string;
+      sender_id: string;
+      sent_at: string;
+      has_images: boolean;
+    };
+
 type Props = {
-  message?: Message;
+  message?: LastMessageData;
   senderName?: string;
   showSenderPrefix?: boolean;
   placeholder?: string;
@@ -31,7 +42,11 @@ const formattedMessage = computed(() => {
   // Determine message content
   if (props.message.text) {
     content = props.message.text;
-  } else if (props.message.images?.length) {
+  } else if ('has_images' in props.message && props.message.has_images) {
+    // last_message format with has_images flag
+    content = '📷 Photo';
+  } else if ('images' in props.message && props.message.images?.length) {
+    // Full Message format with images array
     content = '📷 Photo';
   } else {
     return props.placeholder;

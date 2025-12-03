@@ -4,6 +4,13 @@ export interface Chat {
   title: string;
   avatar?: string;
   members: ChatMember[];
+  last_message?: {
+    id: string;
+    text?: string;
+    sender_id: string;
+    sent_at: string;
+    has_images: boolean;
+  };
 }
 
 export const enum ChatType {

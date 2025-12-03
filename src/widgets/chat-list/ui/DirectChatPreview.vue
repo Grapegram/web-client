@@ -19,7 +19,7 @@ import { cva } from 'class-variance-authority';
 import { Pin } from 'lucide-vue-next';
 import { DateTime } from 'luxon';
 
-import { useMessageStore } from '@/entities/message';
+import { useLoadLastMessageQuery } from '@/entities/message';
 import { useUserStore } from '@/entities/user';
 import { ChatAvatar } from '@/features/chat-avatar';
 import { cn } from '@/shared/lib/utils';
@@ -35,8 +35,10 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 // Stores
-const messageStore = useMessageStore();
 const userStore = useUserStore();
+
+// Load last message for this chat
+const { data: lastMessage } = useLoadLastMessageQuery(props.chat.id);
 
 // Get the other user in the direct chat (not the current user)
 const mate = computed(() => {
@@ -49,10 +51,6 @@ const mate = computed(() => {
 
   return userStore.getUserById(otherMember.user_id);
 });
-
-const messages = computed(() => messageStore.getMessages(props.chat.id));
-
-const lastMessage = computed(() => messages.value.at(-1));
 
 function formatDateTime(dateString: string): string {
   const date = DateTime.fromISO(dateString);
@@ -126,7 +124,7 @@ const chatVariants = cva('', {
         />
       </div>
       <LastMessage
-        :message="lastMessage"
+        :message="lastMessage ?? undefined"
         :show-sender-prefix="false"
         placeholder="No messages yet"
       />
