@@ -3,7 +3,6 @@ import { ChatList } from '@/widgets/chat-list';
 
 import { init } from '../lib/initData';
 import ChatView from './ChatView.vue';
-import Header from './Header.vue';
 import ResizableSidebarLayout, {
   Percentage,
   Px
@@ -14,7 +13,6 @@ init();
 
 <template>
   <div class="flex h-dvh w-dvw flex-col">
-    <Header />
     <ResizableSidebarLayout
       :collapsed-size="Px(90)"
       :min-size="Px(350)"

@@ -9,6 +9,7 @@ import { useChatStore } from '@/entities/chat';
 import { CreateChatDialog } from '@/features/create-chat';
 import { Button } from '@/shared/ui/button';
 import { ScrollArea } from '@/shared/ui/scroll-area';
+import { UserProfileSection } from '@/widgets/user-profile-section';
 
 import ChatPreview from './ChatPreview.vue';
 import ChatPreviewSkeleton from './ChatPreviewSkeleton.vue';
@@ -44,6 +45,8 @@ const activeChatId = computed(() => chatStore.currentChatId);
 
 <template>
   <div class="bg-card flex h-full grow flex-col">
+    <UserProfileSection />
+
     <ScrollArea class="h-full w-full flex-1">
       <template v-if="isLoading">
         <ChatPreviewSkeleton v-for="i in 15" :key="i" />
