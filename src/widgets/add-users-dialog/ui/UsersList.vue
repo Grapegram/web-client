@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 
 import { Search, UserPlus } from 'lucide-vue-next';
 
 import { Input } from '@grapegram/ui-kit';
 
-import { useGetUsersQuery, useUserStore } from '@/entities/user';
+import { useUserStore } from '@/entities/user';
 import { UserAvatar } from '@/features/user-avatar';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
@@ -34,18 +34,9 @@ const emit = defineEmits<{
   'update:selectedUserIds': [userIds: string[]];
 }>();
 
-const { data: users, isPending } = useGetUsersQuery();
 const userStore = useUserStore();
 
-// Watch for users data and update store
-watch(
-  () => users.value,
-  newUsers => {
-    if (newUsers) {
-      userStore.addUsers(newUsers.users);
-    }
-  }
-);
+const isPending = computed(() => userStore.allUsers.length === 0);
 
 const searchQuery = ref('');
 

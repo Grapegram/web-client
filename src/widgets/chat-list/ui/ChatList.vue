@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, inject, watch } from 'vue';
+import { computed, inject } from 'vue';
 
 import { Plus } from 'lucide-vue-next';
 
 import { cn } from '@grapegram/ui-kit';
 
-import { useChatStore, useGetChatsQuery } from '@/entities/chat';
+import { useChatStore } from '@/entities/chat';
 import { CreateChatDialog } from '@/features/create-chat';
 import { Button } from '@/shared/ui/button';
 import { ScrollArea } from '@/shared/ui/scroll-area';
@@ -13,10 +13,11 @@ import { ScrollArea } from '@/shared/ui/scroll-area';
 import ChatPreview from './ChatPreview.vue';
 import ChatPreviewSkeleton from './ChatPreviewSkeleton.vue';
 
-const { data: chats, isLoading } = useGetChatsQuery();
 const chatStore = useChatStore();
 
 const sidebarMode = inject<'compact' | 'expanded'>('sidebarMode', 'expanded');
+
+const isLoading = computed(() => chatStore.orderedChats.length === 0);
 
 // TODO: Add isPinned property to Chat type in the store
 // For now, using a local ref as temporary solution
@@ -39,12 +40,6 @@ const unpinnedChats = computed(() => {
 });
 
 const activeChatId = computed(() => chatStore.currentChatId);
-
-watch(chats, newChats => {
-  if (newChats) {
-    chatStore.setChats(newChats.chats);
-  }
-});
 </script>
 
 <template>
