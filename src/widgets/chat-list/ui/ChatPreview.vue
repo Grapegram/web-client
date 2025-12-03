@@ -1,6 +1,4 @@
 <script lang="ts">
-import type { Chat } from '@/entities/chat';
-
 type Variants = 'compact' | 'expanded';
 type Props = {
   chatId: string;
@@ -14,15 +12,10 @@ type Props = {
 <script setup lang="ts">
 import { computed } from 'vue';
 
-import { cva } from 'class-variance-authority';
-import { Pin } from 'lucide-vue-next';
-import { DateTime } from 'luxon';
+import { ChatType, useChatStore } from '@/entities/chat';
 
-import { useChatStore } from '@/entities/chat';
-import { useMessageStore } from '@/entities/message';
-import { ChatAvatar } from '@/features/chat-avatar';
-import { cn } from '@/shared/lib/utils';
-import { Badge } from '@/shared/ui/badge';
+import DirectChatPreview from './DirectChatPreview.vue';
+import GroupChatPreview from './GroupChatPreview.vue';
 
 const props = withDefaults(defineProps<Props>(), {
   isActive: false,
@@ -32,102 +25,38 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Store
 const chatStore = useChatStore();
-const messageStore = useMessageStore();
 
 // Computed from store
-const chat = computed<Chat | undefined>(() =>
-  chatStore.getChatById(props.chatId)
-);
-
-const messages = computed(() => messageStore.getMessages(props.chatId));
-
-const lastMessage = computed(() => messages.value.at(-1));
+const chat = computed(() => chatStore.getChatById(props.chatId));
 
 // TODO: Implement unread count logic in your store
 // For now, returning 0 as placeholder
-const unreaded = computed(() => 0);
+const unreaded = computed(() => chatStore.getUnreadCount(props.chatId));
 
-function formatDateTime(date: DateTime): string {
-  const now = DateTime.now();
-  if (date.hasSame(now, 'day')) {
-    return date.toFormat('HH:mm');
-  }
-  if (date >= now.startOf('week')) {
-    return date.toFormat('ccc');
-  }
-  return date.toFormat('dd.MM.yy');
-}
-
-const chatVariants = cva('', {
-  variants: {
-    variant: {
-      expanded: 'px-3 flex flex-row items-center gap-3',
-      compact: 'flex flex-row items-start justify-center'
-    }
-  },
-  defaultVariants: {
-    variant: 'expanded'
-  }
-});
+const isDirectChat = computed(() => chat.value?.type === ChatType.DIRECT);
+const isGroupChat = computed(() => chat.value?.type === ChatType.GROUP);
 </script>
 
 <template>
-  <div
-    v-if="chat"
-    :class="
-      cn(
-        props.class,
-        'h-full w-full cursor-pointer py-2 transition-colors',
-        chatVariants({ variant: props.variant }),
-        {
-          'bg-secondary': isActive,
-          'hover:bg-secondary': !isActive
-        }
-      )
-    "
-    @click="chatStore.setCurrentChat(chatId)"
-  >
-    <div class="relative h-auto w-auto">
-      <ChatAvatar :chat-id="chatId" />
-      <Badge
-        class="absolute right-0 bottom-0 rounded-full px-2"
-        v-if="props.variant === 'compact' && unreaded > 0"
-        variant="secondary"
-      >
-        {{ unreaded }}
-      </Badge>
-    </div>
+  <div v-if="chat" @click="chatStore.setCurrentChat(chatId)">
+    <DirectChatPreview
+      v-if="isDirectChat"
+      :chat="chat"
+      :class="props.class"
+      :variant="props.variant"
+      :is-active="isActive"
+      :is-pinned="isPinned"
+      :unreaded="unreaded"
+    />
 
-    <div
-      v-if="props.variant === 'expanded'"
-      class="flex h-full grow flex-col justify-between self-start overflow-hidden py-1"
-    >
-      <h3 class="truncate">
-        <strong>{{ chat.title }}</strong>
-      </h3>
-      <p class="truncate text-gray-300">
-        {{
-          lastMessage?.text || (lastMessage?.images?.length ? '📷 Photo' : '')
-        }}
-      </p>
-    </div>
-
-    <div
-      v-if="props.variant === 'expanded'"
-      class="flex h-full flex-col items-end justify-between self-start py-1"
-    >
-      <div class="flex flex-row items-center gap-1">
-        <Pin :size="16" class="rotate-45" v-if="isPinned" />
-        <p class="text-gray-300">
-          {{ lastMessage ? formatDateTime(lastMessage.createdAt) : '' }}
-        </p>
-      </div>
-      <Badge
-        :class="cn('rounded-full px-2', { 'opacity-0': unreaded === 0 })"
-        variant="secondary"
-      >
-        {{ unreaded }}
-      </Badge>
-    </div>
+    <GroupChatPreview
+      v-else-if="isGroupChat"
+      :chat="chat"
+      :class="props.class"
+      :variant="props.variant"
+      :is-active="isActive"
+      :is-pinned="isPinned"
+      :unreaded="unreaded"
+    />
   </div>
 </template>
