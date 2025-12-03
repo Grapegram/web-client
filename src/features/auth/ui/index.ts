@@ -1,5 +1,6 @@
 import LoginForm from './LoginForm.vue';
 import LogoutButton from './LogoutButton.vue';
+import LogoutButtonWithText from './LogoutButtonWithText.vue';
 import SignupForm from './SignupForm.vue';
 
-export { LoginForm, SignupForm, LogoutButton };
+export { LoginForm, SignupForm, LogoutButton, LogoutButtonWithText };

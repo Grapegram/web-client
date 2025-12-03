@@ -13,6 +13,7 @@ import {
 import { toast } from 'vue-sonner';
 
 import { useUploadAvatarMutation, useUserStore } from '@/entities/user';
+import { LogoutButtonWithText } from '@/features/auth';
 import { AvatarEditorDialog } from '@/features/avatar-editor';
 import type { CroppedImageResult } from '@/features/avatar-editor';
 import { UserAvatar } from '@/features/user-avatar';
@@ -238,6 +239,7 @@ function handleAvatarEditorCancel() {
               <Settings :size="16" class="mr-2" />
               Edit Profile
             </Button>
+            <LogoutButtonWithText class="w-full" />
           </div>
         </div>
       </ScrollArea>
