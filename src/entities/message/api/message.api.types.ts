@@ -29,8 +29,6 @@ export interface AddMessageReactionRequest {
 
 export interface LoadMessagesResponse {
   messages: Message[];
-  total_count: 0;
-  limit: 0;
-  offset: 0;
-  has_more: true;
+  limit: number;
+  has_more: boolean;
 }

@@ -111,13 +111,43 @@ export const useChatStore = defineStore(
     };
 
     const setChats = (fetchedChats: Chat[]) => {
-      chats.value = new Map(fetchedChats.map(chat => [chat.id, chat]));
+      // Get current chats that are in chatOrder
+      const existingChatsMap = new Map(chats.value);
 
-      chatOrder.value = fetchedChats.map(c => c.id);
+      // Get list of chat IDs that are currently in store but not in fetched list
+      // (these are likely newly created chats that haven't been synced yet)
+      const fetchedIds = new Set(fetchedChats.map(c => c.id));
+      const localOnlyChats: Chat[] = [];
 
-      if (!currentChatId.value) {
-        currentChatId.value = chatOrder.value[0] ?? null;
+      chatOrder.value.forEach(id => {
+        if (!fetchedIds.has(id) && existingChatsMap.has(id)) {
+          const chat = existingChatsMap.get(id);
+          if (chat) {
+            localOnlyChats.push(chat);
+          }
+        }
+      });
+
+      // Create new map with all chats (local-only + fetched)
+      const newChatsMap = new Map<string, Chat>();
+      localOnlyChats.forEach(chat => newChatsMap.set(chat.id, chat));
+      fetchedChats.forEach(chat => newChatsMap.set(chat.id, chat));
+
+      chats.value = newChatsMap;
+
+      // Set order: local-only chats first, then fetched chats
+      const localOnlyIds = localOnlyChats.map(c => c.id);
+      chatOrder.value = [...localOnlyIds, ...fetchedChats.map(c => c.id)];
+
+      if (!currentChatId.value && chatOrder.value.length > 0) {
+        currentChatId.value = chatOrder.value[0];
       }
+    };
+
+    const getLastMessageTime = (_chatId: string): string | null => {
+      // This should be populated from message store
+      // For now return null, will be computed in the component
+      return null;
     };
 
     return {
@@ -144,7 +174,8 @@ export const useChatStore = defineStore(
       searchChats,
       getUnreadCount,
       updateChatAvatar,
-      setChats
+      setChats,
+      getLastMessageTime
     };
   },
   {

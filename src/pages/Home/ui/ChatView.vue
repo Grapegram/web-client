@@ -1,14 +1,18 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useTemplateRef } from 'vue';
 
 import { useElementSize } from '@vueuse/core';
 
 import { useVirtualizer } from '@tanstack/vue-virtual';
-import { DateTime } from 'luxon';
 
 import { useChatStore } from '@/entities/chat';
-import { useMessageStore, useSendMessageMutation } from '@/entities/message';
+import {
+  useLoadMessagesQuery,
+  useMessageStore,
+  useSendMessageMutation
+} from '@/entities/message';
+import { useUserStore } from '@/entities/user';
 import { Button } from '@/shared/ui/button';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { MessageGroup } from '@/widgets/message-group';
@@ -19,42 +23,99 @@ import MessageInputBar from './MessageInputBar.vue';
 // Store
 const chatStore = useChatStore();
 const messageStore = useMessageStore();
+const userStore = useUserStore();
 
 // Mutations
 const { mutate: sendMessage } = useSendMessageMutation();
 
 // Refs
-const currentUserId = ref('1');
 const isScrolled = ref(true);
-
-const chatType = ref<'group' | 'direct'>('group');
 const scrollArea = useTemplateRef('scroll-area');
 const scrollViewportRef = ref<HTMLElement | null>(null);
 const MIN_CHAT_SIZE = 1000;
-type scrollStates = 'idle' | 'scrolled' | 'programmScrolled';
-const scrollState = ref<scrollStates>('idle');
 const { width: messagesContainerWidth } = useElementSize(
   scrollArea as unknown as HTMLElement
 );
 
-// Computed from store
+// Pagination
+const MESSAGES_PER_PAGE = 50;
+const fromMessageId = ref<string | undefined>(undefined);
+const isLoadingMore = ref(false);
+
+// Load messages query
+const { data: messagesData, refetch: refetchMessages } = useLoadMessagesQuery(
+  computed(() => chatStore.currentChatId || ''),
+  computed(() => ({
+    limit: MESSAGES_PER_PAGE,
+    from_message_id: fromMessageId.value
+  }))
+);
+
+// Watch for loaded messages and add to store
+watch(
+  messagesData,
+  data => {
+    if (data && chatStore.currentChatId) {
+      const chatId = chatStore.currentChatId;
+
+      // API returns messages newest-first, we need oldest-first for display
+      // So we reverse the array
+      const reversedMessages = [...(data.messages || [])].reverse();
+
+      // If no from_message_id, this is initial load - replace messages
+      if (!fromMessageId.value) {
+        messageStore.setMessages(chatId, reversedMessages);
+        // Scroll to bottom after initial load
+        setTimeout(() => {
+          if (scrollViewportRef.value) {
+            scrollViewportRef.value.scrollTop =
+              scrollViewportRef.value.scrollHeight;
+          }
+        }, 100);
+      } else {
+        // Loading older messages - prepend them (avoid duplicates)
+        const existingMessages = messageStore.getMessages(chatId);
+        const existingIds = new Set(existingMessages.map(m => m.id));
+        const newUniqueMessages = reversedMessages.filter(
+          m => !existingIds.has(m.id)
+        );
+        // Prepend older messages to the beginning
+        const allMessages = [...newUniqueMessages, ...existingMessages];
+        messageStore.setMessages(chatId, allMessages);
+      }
+    }
+  },
+  { immediate: true }
+);
+
 const messagesGroups = computed(() => {
   if (!chatStore.currentChatId) return [];
   return messageStore.getMessageGroups(chatStore.currentChatId);
 });
+
 const messagesCount = computed(() => {
   if (!chatStore.currentChatId) return 0;
   return messageStore.getMessages(chatStore.currentChatId).length;
 });
 
-// Setup virtualizer
+const currentUserId = computed(() => userStore.user.id);
+
+const chatType = computed(() => {
+  const chat = chatStore.currentChat;
+  return chat?.type === 'direct' ? 'direct' : 'group';
+});
+
+const hasMore = computed(() => {
+  return messagesData.value?.has_more ?? false;
+});
+
+// Setup virtualizer with reversed layout
 const virtualizer = useVirtualizer(
   computed(() => ({
     count: messagesGroups.value.length,
     getScrollElement: () => scrollViewportRef.value,
-    estimateSize: () => 100, // Estimate initial size, will adjust dynamically
-    overscan: 5, // Render 5 items before and after visible area
-    initialOffset: 0
+    estimateSize: () => 100,
+    overscan: 5
   }))
 );
 
@@ -66,30 +127,89 @@ const totalSize = computed(() => virtualizer.value.getTotalSize());
 function onScroll(e: Event) {
   if (!e.target) return;
   const view = e.target as HTMLElement;
-  isScrolled.value =
-    view.scrollHeight - (view.scrollTop + view.getBoundingClientRect().height) <
-    10;
+
+  // Check if scrolled to bottom (newest messages)
+  const isAtBottom =
+    view.scrollHeight - (view.scrollTop + view.clientHeight) < 10;
+  isScrolled.value = isAtBottom;
+
+  // Check if scrolled to top - load more older messages
+  if (view.scrollTop < 100 && hasMore.value && !isLoadingMore.value) {
+    loadMoreMessages();
+  }
 }
 
-function scrollToBottom() {
+function scrollToBottom(smooth = true) {
   if (!scrollViewportRef.value) return;
 
+  // Scroll to the actual bottom (newest messages)
   scrollViewportRef.value.scrollTo({
     top: scrollViewportRef.value.scrollHeight,
-    behavior: 'smooth'
+    behavior: smooth ? 'smooth' : 'instant'
   });
 
   isScrolled.value = true;
 }
 
-// Auto-scroll on new messages
+// Load more messages when scrolling to top (older messages)
+async function loadMoreMessages() {
+  if (isLoadingMore.value || !hasMore.value) return;
+
+  isLoadingMore.value = true;
+  const previousScrollHeight = scrollViewportRef.value?.scrollHeight || 0;
+  const previousScrollTop = scrollViewportRef.value?.scrollTop || 0;
+
+  // Get the oldest message ID to use as from_message_id
+  const messages = messageStore.getMessages(chatStore.currentChatId || '');
+  if (messages.length > 0) {
+    // The oldest message is at index 0 (messages are sorted oldest to newest)
+    const oldestMessage = messages[0];
+    fromMessageId.value = oldestMessage.id;
+
+    await refetchMessages();
+
+    // Maintain scroll position after loading older messages at the top
+    setTimeout(() => {
+      if (scrollViewportRef.value) {
+        const newScrollHeight = scrollViewportRef.value.scrollHeight;
+        const scrollHeightDiff = newScrollHeight - previousScrollHeight;
+        // Keep visual position by adjusting scrollTop by the height difference
+        scrollViewportRef.value.scrollTop =
+          previousScrollTop + scrollHeightDiff;
+      }
+      isLoadingMore.value = false;
+    }, 100);
+  } else {
+    isLoadingMore.value = false;
+  }
+}
+
+// Watch for new messages and scroll to bottom if already at bottom
+const previousMessagesCount = ref(0);
+watch(messagesCount, newCount => {
+  if (newCount > previousMessagesCount.value && isScrolled.value) {
+    setTimeout(() => scrollToBottom(), 100);
+  }
+  previousMessagesCount.value = newCount;
+});
+
+// Reset pagination when chat changes
 watch(
-  messagesCount,
-  count => {
-    if (!isScrolled.value && count > 0) scrollToBottom();
-  },
-  {
-    flush: 'post'
+  () => chatStore.currentChatId,
+  (newChatId, oldChatId) => {
+    if (newChatId !== oldChatId) {
+      fromMessageId.value = undefined;
+      isScrolled.value = true;
+      isLoadingMore.value = false;
+      previousMessagesCount.value = 0;
+
+      // Clear messages for the old chat when switching
+      if (oldChatId) {
+        messageStore.clearMessages(oldChatId);
+      }
+
+      // No need for manual scroll here - the watch on messagesData will handle it
+    }
   }
 );
 
@@ -108,7 +228,6 @@ watch(
 // Message input handling
 async function onSendMessage(data: { text: string; images: string[] }) {
   if (!chatStore.currentChatId) {
-    console.error('No chat selected');
     return;
   }
 
@@ -152,127 +271,41 @@ async function onSendMessage(data: { text: string; images: string[] }) {
       images: imageFiles.length > 0 ? imageFiles : undefined
     });
 
-    console.log('Message sent successfully');
-  } catch (error) {
-    console.error('Failed to send message:', error);
+    // Scroll to bottom after sending
+    setTimeout(() => scrollToBottom(), 100);
+  } catch (_error) {
+    // Error is handled by the mutation
   }
 }
-
-// Utility functions for demo/testing
-const wait = async (delay: number) => {
-  await new Promise(resolve => {
-    setTimeout(resolve, delay);
-  });
-};
-
-async function simulateChatMessaging() {
-  const chatId = chatStore.currentChatId;
-  if (!chatId) return;
-
-  // Add initial demo messages
-  const initialMessages = [
-    {
-      id: '0',
-      sender: '0',
-      text: '     message 1 looooooong looooooong \nlooooooong\n\nlooooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooong looooooonglooooooonglooooooonglooooooonglooooooonlooooooong looooooong looooooong',
-      createdAt: DateTime.fromISO('2023-04-15T14:30:00')
-    },
-    {
-      id: '33',
-      sender: '1',
-      text: 'lol',
-      createdAt: DateTime.fromISO('2023-04-15T14:30:00')
-    },
-    {
-      id: '35',
-      sender: '1',
-      text: '\'"**Bold** *Italic* \n_Underlined_ ~~Strikethrough~~ [Link](https://example.com)          example.com    `asdf`\nlolllll\n\n\n\n```javascript\nconsole.log\nconsole.log\n```',
-      createdAt: DateTime.fromISO('2023-04-15T14:10:00')
-    },
-    {
-      id: '1',
-      sender: '1',
-      text: null,
-      images: [
-        'https://get.pxhere.com/photo/animal-pet-kitten-cat-small-mammal-fauna-heal-blue-eye-close-up-nose-whiskers-vertebrate-domestic-lying-tabby-cat-norwegian-forest-cat-ginger-fur-small-to-medium-sized-cats-cat-like-mammal-carnivoran-domestic-short-haired-cat-domestic-long-haired-cat-609263.jpg'
-      ],
-      createdAt: DateTime.fromISO('2023-04-15T14:10:00')
-    },
-    {
-      id: '13',
-      sender: '1',
-      text: null,
-      images: [
-        'https://get.pxhere.com/photo/animal-pet-kitten-cat-small-mammal-fauna-heal-blue-eye-close-up-nose-whiskers-vertebrate-domestic-lying-tabby-cat-norwegian-forest-cat-ginger-fur-small-to-medium-sized-cats-cat-like-mammal-carnivoran-domestic-short-haired-cat-domestic-long-haired-cat-609263.jpg',
-        'https://get.pxhere.com/photo/animal-pet-kitten-cat-small-mammal-fauna-heal-blue-eye-close-up-nose-whiskers-vertebrate-domestic-lying-tabby-cat-norwegian-forest-cat-ginger-fur-small-to-medium-sized-cats-cat-like-mammal-carnivoran-domestic-short-haired-cat-domestic-long-haired-cat-609263.jpg',
-        'https://get.pxhere.com/photo/animal-pet-kitten-cat-small-mammal-fauna-heal-blue-eye-close-up-nose-whiskers-vertebrate-domestic-lying-tabby-cat-norwegian-forest-cat-ginger-fur-small-to-medium-sized-cats-cat-like-mammal-carnivoran-domestic-short-haired-cat-domestic-long-haired-cat-609263.jpg'
-      ],
-      createdAt: DateTime.fromISO('2023-04-15T14:20:00')
-    },
-    {
-      id: '2',
-      sender: '1',
-      text: 'message 3',
-      createdAt: DateTime.fromISO('2023-04-15T14:30:00')
-    },
-    {
-      id: '3',
-      sender: '1',
-      text: 'message 4',
-      createdAt: DateTime.fromISO('2023-04-15T14:30:00')
-    },
-    {
-      id: '4',
-      sender: '0',
-      text: 'message 5',
-      createdAt: DateTime.fromISO('2023-04-15T14:30:00')
-    },
-    {
-      id: '5',
-      sender: '1',
-      text: 'message 6',
-      createdAt: DateTime.fromISO('2023-04-15T14:30:00')
-    },
-    {
-      id: '6',
-      sender: '1',
-      text: 'message 7',
-      createdAt: DateTime.fromISO('2023-04-15T14:40:00')
-    }
-  ];
-
-  // Add initial messages to store
-  initialMessages.forEach(msg => {
-    messageStore.addMessage(chatId, msg);
-  });
-
-  // Simulate incoming messages
-  // let sender = false;
-  // await wait(5000);
-  // for (let i = 0; i != 300; i++) {
-  //   if (i % 2 === 0 && Math.random() < 0.3) {
-  //     sender = !sender;
-  //     await wait(500);
-  //   }
-  //   chatStore.addMessage(chatId, {
-  //     id: '10' + i,
-  //     sender: sender ? '0' : '1',
-  //     text: 'message l ' + i,
-  //     createdAt: DateTime.now()
-  //   });
-  // }
-}
-
-onMounted(async () => {
-  await simulateChatMessaging();
-});
 </script>
 
 <template>
   <div class="flex h-full w-full flex-col gap-4 p-4 pb-2">
     <ChatHeader />
-    <ScrollArea @scroll="onScroll" ref="scroll-area" class="grow">
+    <ScrollArea
+      v-if="chatStore.currentChatId"
+      :key="chatStore.currentChatId"
+      @scroll="onScroll"
+      ref="scroll-area"
+      class="grow"
+    >
+      <!-- Loading indicator for more messages (at the top when scrolling up) -->
+      <div v-if="isLoadingMore" class="flex justify-center py-2">
+        <div
+          class="border-primary h-6 w-6 animate-spin rounded-full border-2 border-t-transparent"
+        />
+      </div>
+
+      <!-- Empty state -->
       <div
+        v-if="!messagesGroups || messagesGroups.length === 0"
+        class="text-muted-foreground flex h-full items-center justify-center"
+      >
+        <p>No messages yet. Start the conversation!</p>
+      </div>
+
+      <div
+        v-else
         class="relative w-full"
         :style="{
           height: `${totalSize}px`
@@ -280,7 +313,7 @@ onMounted(async () => {
       >
         <div
           v-for="virtualItem in virtualItems"
-          :key="virtualItem.key"
+          :key="String(virtualItem.key)"
           :data-index="virtualItem.index"
           :ref="
             el => {
@@ -295,35 +328,42 @@ onMounted(async () => {
           }"
         >
           <div class="flex h-full flex-col items-start justify-end gap-2 pb-2">
-            <div class="relative w-full">
+            <div
+              v-if="
+                messagesGroups[virtualItem.index] &&
+                messagesGroups[virtualItem.index].messages.length > 0
+              "
+              class="relative w-full"
+            >
               <MessageGroup
-                :user="messagesGroups[virtualItem.index].sender"
+                :user="messagesGroups[virtualItem.index].sender_id"
                 :class="
                   messagesContainerWidth < MIN_CHAT_SIZE &&
-                  messagesGroups[virtualItem.index].sender === currentUserId
+                  messagesGroups[virtualItem.index].sender_id === currentUserId
                     ? 'float-right'
                     : 'float-left'
                 "
                 :side="
                   messagesContainerWidth < MIN_CHAT_SIZE &&
-                  messagesGroups[virtualItem.index].sender === currentUserId
+                  messagesGroups[virtualItem.index].sender_id === currentUserId
                     ? 'right'
                     : 'left'
                 "
                 :show-avatar="
                   messagesContainerWidth < MIN_CHAT_SIZE &&
-                  (messagesGroups[virtualItem.index].sender === currentUserId ||
+                  (messagesGroups[virtualItem.index].sender_id ===
+                    currentUserId ||
                     chatType === 'direct')
                     ? false
                     : true
                 "
                 :show-header="
                   chatType === 'group' &&
-                  messagesGroups[virtualItem.index].sender !== currentUserId
+                  messagesGroups[virtualItem.index].sender_id !== currentUserId
                 "
                 :messages="messagesGroups[virtualItem.index].messages"
                 :color="
-                  messagesGroups[virtualItem.index].sender === currentUserId
+                  messagesGroups[virtualItem.index].sender_id === currentUserId
                     ? 'primary'
                     : 'secondary'
                 "

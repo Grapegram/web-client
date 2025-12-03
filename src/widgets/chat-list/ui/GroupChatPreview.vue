@@ -19,7 +19,7 @@ import { cva } from 'class-variance-authority';
 import { Pin, Users } from 'lucide-vue-next';
 import { DateTime } from 'luxon';
 
-import { useMessageStore } from '@/entities/message';
+import { useLoadLastMessageQuery } from '@/entities/message';
 import { useUserStore } from '@/entities/user';
 import { ChatAvatar } from '@/features/chat-avatar';
 import { cn } from '@/shared/lib/utils';
@@ -35,12 +35,10 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 // Stores
-const messageStore = useMessageStore();
 const userStore = useUserStore();
 
-const messages = computed(() => messageStore.getMessages(props.chat.id));
-
-const lastMessage = computed(() => messages.value.at(-1));
+// Load last message for this chat
+const { data: lastMessage } = useLoadLastMessageQuery(props.chat.id);
 
 // Get sender name for last message
 const lastMessageSender = computed(() => {
@@ -112,7 +110,7 @@ const chatVariants = cva('', {
         </h3>
       </div>
       <LastMessage
-        :message="lastMessage"
+        :message="lastMessage ?? undefined"
         :sender-name="lastMessageSender"
         :show-sender-prefix="true"
         placeholder="No messages yet"

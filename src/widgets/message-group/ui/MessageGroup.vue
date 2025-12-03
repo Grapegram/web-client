@@ -5,7 +5,7 @@ import type {
   MessageVariants
 } from '@grapegram/ui-kit';
 
-import type { Message } from '@/entities/chat';
+import type { Message } from '@/entities/message';
 
 export type MessageGroupProps = {
   side: MessageSide;
@@ -36,11 +36,16 @@ function messageVariantByIdAndLength(i: number): MessageVariants {
   return 'middle';
 }
 
-const user = computed(() => ({
-  id: props.messages[0].sender,
-  username: props.messages[0].sender,
-  color: '#f00'
-}));
+const user = computed(() => {
+  if (!props.messages || props.messages.length === 0) {
+    return { id: '', username: 'Unknown', color: '#f00' };
+  }
+  return {
+    id: props.messages[0].sender_id,
+    username: props.messages[0].sender_id,
+    color: '#f00'
+  };
+});
 </script>
 
 <template>
@@ -75,7 +80,7 @@ const user = computed(() => ({
         :side="props.side"
         :color="props.color"
         :content="{ text: message.text, images: message.images || [] }"
-        :timestamp="message.createdAt.toJSDate()"
+        :timestamp="new Date(message.sent_at)"
         status="sent"
       />
     </div>
