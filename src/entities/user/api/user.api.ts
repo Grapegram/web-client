@@ -2,6 +2,7 @@ import $api from '@/shared/api';
 import { toApiError } from '@/shared/lib/utils';
 
 import type {
+  GetMeResponse,
   GetUsersListResponse,
   UploadAvatarResponse
 } from './user.api.types';
@@ -39,7 +40,17 @@ async function getAll() {
   }
 }
 
+async function getMe() {
+  try {
+    const response = await $api.get<GetMeResponse>(`${API_PREFIX}/me`);
+    return response.data;
+  } catch (error) {
+    toApiError(error);
+  }
+}
+
 export const UserApi = {
   uploadAvatar,
-  getAll
+  getAll,
+  getMe
 };

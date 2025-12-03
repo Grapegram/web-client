@@ -47,12 +47,6 @@ const lastMessage = computed(() => messages.value.at(-1));
 // For now, returning 0 as placeholder
 const unreaded = computed(() => 0);
 
-// Get chat avatar - you may want to add this to Chat type
-const avatar = computed(() => {
-  // Placeholder logic - customize based on your avatar system
-  return `https://api.dicebear.com/7.x/initials/svg?seed=${chat.value?.title || ''}`;
-});
-
 function formatDateTime(date: DateTime): string {
   const now = DateTime.now();
   if (date.hasSame(now, 'day')) {
@@ -94,7 +88,7 @@ const chatVariants = cva('', {
     @click="chatStore.setCurrentChat(chatId)"
   >
     <div class="relative h-auto w-auto">
-      <ChatAvatar class="" :src="avatar" :chat-id="chatId" />
+      <ChatAvatar :chat-id="chatId" />
       <Badge
         class="absolute right-0 bottom-0 rounded-full px-2"
         v-if="props.variant === 'compact' && unreaded > 0"

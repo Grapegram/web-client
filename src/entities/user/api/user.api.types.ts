@@ -7,3 +7,5 @@ export interface UploadAvatarResponse {
 export interface GetUsersListResponse {
   users: User[];
 }
+
+export type GetMeResponse = User;

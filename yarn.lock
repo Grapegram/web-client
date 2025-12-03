@@ -4442,7 +4442,7 @@ std-env@^3.9.0:
   resolved "https://registry.yarnpkg.com/std-env/-/std-env-3.10.0.tgz#d810b27e3a073047b2b5e40034881f5ea6f9c83b"
   integrity sha512-5GS12FdOZNliM5mAOxFRg7Ir0pWz8MdpYm6AY6VPkGpbA7ZzmbzNcBJQ0GPvvyWgcY7QAhCgf9Uy89I03faLkg==
 
-steiger@^0.5.5:
+steiger@^0.5.11:
   version "0.5.11"
   resolved "https://registry.yarnpkg.com/steiger/-/steiger-0.5.11.tgz#b675028e554770fa2ffe0a378357cccf60281b64"
   integrity sha512-Sv6ovPX8tVlUufvAvGSUnwDQLupccYjcgfK5pbqECGP5KCe9M257U0IbRdjuLfUXfey4FprZWQQtnIz3qOPpWA==

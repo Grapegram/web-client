@@ -5,6 +5,7 @@ import { EllipsisVertical, ImageIcon, UserPlus } from 'lucide-vue-next';
 import { toast } from 'vue-sonner';
 
 import { useChatStore, useUploadChatAvatarMutation } from '@/entities/chat';
+import { useUserStore } from '@/entities/user';
 import { AvatarEditorDialog } from '@/features/avatar-editor';
 import type { CroppedImageResult } from '@/features/avatar-editor';
 import { ChatAvatar } from '@/features/chat-avatar';
@@ -16,8 +17,10 @@ import {
   DropdownMenuTrigger
 } from '@/shared/ui/dropdown-menu';
 import { AddUsersDialog } from '@/widgets/add-users-dialog';
+import { ChatInfoDialog } from '@/widgets/chat-info-dialog';
 
 const chatStore = useChatStore();
+const usersStore = useUserStore();
 
 const currentChat = computed(() => chatStore.currentChat);
 const chatTitle = computed(
@@ -25,10 +28,26 @@ const chatTitle = computed(
 );
 const chatId = computed(() => currentChat.value?.id || '');
 
+const chatUsers = computed(() =>
+  currentChat.value?.members
+    .map(m => usersStore.getUserById(m.user_id))
+    .filter(Boolean)
+);
+const membersCount = computed(() => currentChat.value?.members.length ?? 0);
+const onlineMembersCount = computed(
+  () => chatUsers.value?.filter(user => user?.isOnline).length || 0
+);
+const chatStatusString = computed(
+  () =>
+    (membersCount.value === 1 ? '1 member' : `${membersCount.value} members`) +
+    (onlineMembersCount.value > 0 ? `, ${onlineMembersCount.value} online` : '')
+);
+
 const isAddUserDialogOpen = ref(false);
 const isAvatarDialogOpen = ref(false);
+const isChatInfoDialogOpen = ref(false);
 
-const { mutate: uploadAvatar } = useUploadChatAvatarMutation(chatId.value);
+const { mutate: uploadAvatar } = useUploadChatAvatarMutation();
 
 const handleAddUsers = (userIds: string[]) => {
   if (userIds.length > 0 && currentChat.value) {
@@ -48,26 +67,35 @@ function handleOpenAvatarDialog() {
 
 async function handleAvatarSave(result: CroppedImageResult) {
   try {
-    await uploadAvatar(result.file);
+    await uploadAvatar({ chatId: chatId.value, file: result.file });
     toast.success('Chat avatar updated successfully!');
   } catch {
     toast.error('Failed to upload chat avatar. Please try again.');
+  }
+}
+
+function handleAvatarClick() {
+  if (currentChat.value) {
+    isChatInfoDialogOpen.value = true;
   }
 }
 </script>
 
 <template>
   <header
-    class="h-header bg-card border-border flex flex-row items-center justify-between gap-3 rounded border p-3"
+    class="h-header bg-card border-border flex flex-row items-center justify-between gap-3 rounded-lg border p-3"
   >
-    <ChatAvatar size="sm" class="" :chat-id="chatId" />
+    <ChatAvatar
+      size="sm"
+      class="cursor-pointer transition-opacity hover:opacity-80"
+      :chat-id="chatId"
+      @click="handleAvatarClick"
+    />
     <div class="flex grow flex-col items-start justify-center">
-      <span
-        ><strong>{{ chatTitle }}</strong></span
-      >
-      <span v-if="!currentChat" class="text-muted-foreground"
-        >Select a chat to start messaging</span
-      >
+      <span>
+        <strong>{{ chatTitle }}</strong>
+      </span>
+      <span class="text-muted-foreground text-sm">{{ chatStatusString }}</span>
     </div>
 
     <div class="flex items-center gap-2">
@@ -105,6 +133,8 @@ async function handleAvatarSave(result: CroppedImageResult) {
         :output-size="512"
         @save="handleAvatarSave"
       />
+
+      <ChatInfoDialog v-model:open="isChatInfoDialogOpen" :chat-id="chatId" />
     </div>
   </header>
 </template>
