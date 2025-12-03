@@ -1,22 +1,43 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
-import { AtSign, Calendar, Crown, Shield, User, Users } from 'lucide-vue-next';
+import {
+  AtSign,
+  Calendar,
+  CameraIcon,
+  Crown,
+  ImageIcon,
+  Shield,
+  User,
+  Users
+} from 'lucide-vue-next';
+import { toast } from 'vue-sonner';
 
-import { useChatStore } from '@/entities/chat';
+import { useChatStore, useUploadChatAvatarMutation } from '@/entities/chat';
 import type { ChatMember } from '@/entities/chat';
 import { useUserStore } from '@/entities/user';
+import { AvatarEditorDialog } from '@/features/avatar-editor';
+import type { CroppedImageResult } from '@/features/avatar-editor';
 import { ChatAvatar } from '@/features/chat-avatar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Badge } from '@/shared/ui/badge';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle
 } from '@/shared/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/shared/ui/dropdown-menu';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { Separator } from '@/shared/ui/separator';
+import { CameraCapture } from '@/widgets/camera-capture';
+import type { CapturedPhoto } from '@/widgets/camera-capture';
 import { UserProfileDialog } from '@/widgets/user-profile-dialog';
 
 interface Props {
@@ -31,9 +52,14 @@ const isOpen = defineModel<boolean>('open', { default: false });
 
 const isUserProfileOpen = ref(false);
 const selectedUserId = ref<string>('');
+const isCameraDialogOpen = ref(false);
+const isFileDialogOpen = ref(false);
+const capturedFile = ref<File | null>(null);
 
 const chatStore = useChatStore();
 const userStore = useUserStore();
+
+const { mutate: uploadChatAvatar } = useUploadChatAvatarMutation();
 
 const chat = computed(() =>
   props.chatId ? chatStore.getChatById(props.chatId) : null
@@ -65,6 +91,15 @@ const createdAt = computed(() => {
   // Get the earliest joined_at date (assuming the first member is the creator)
   const dates = members.value.map(m => new Date(m.joined_at));
   return new Date(Math.min(...dates.map(d => d.getTime())));
+});
+
+const currentUserMember = computed(() => {
+  return members.value.find(m => m.user_id === userStore.user?.id);
+});
+
+const canEditChatAvatar = computed(() => {
+  const role = currentUserMember.value?.role;
+  return role === 'owner' || role === 'admin';
 });
 
 function getRoleIcon(role: ChatMember['role']) {
@@ -113,6 +148,38 @@ function handleUserClick(userId: string) {
   selectedUserId.value = userId;
   isUserProfileOpen.value = true;
 }
+
+function handleOpenCamera() {
+  capturedFile.value = null;
+  isCameraDialogOpen.value = true;
+}
+
+function handleOpenFile() {
+  capturedFile.value = null;
+  isFileDialogOpen.value = true;
+}
+
+function handleCameraCapture(photo: CapturedPhoto) {
+  capturedFile.value = photo.file;
+  isCameraDialogOpen.value = false;
+  isFileDialogOpen.value = true;
+}
+
+async function handleAvatarSave(result: CroppedImageResult) {
+  if (!props.chatId) return;
+
+  try {
+    await uploadChatAvatar({ chatId: props.chatId, file: result.file });
+    toast.success('Chat avatar updated successfully!');
+    capturedFile.value = null;
+  } catch {
+    toast.error('Failed to upload chat avatar. Please try again.');
+  }
+}
+
+function handleAvatarEditorCancel() {
+  capturedFile.value = null;
+}
 </script>
 
 <template>
@@ -126,7 +193,34 @@ function handleUserClick(userId: string) {
         <div class="space-y-4 p-4 pt-0">
           <!-- Chat Avatar and Title -->
           <div class="flex flex-col items-center gap-2 text-center">
-            <ChatAvatar :chat-id="chatId" size="lg" class="size-20" />
+            <div v-if="canEditChatAvatar" class="relative">
+              <DropdownMenu>
+                <DropdownMenuTrigger as-child>
+                  <button
+                    type="button"
+                    class="group relative cursor-pointer rounded-full transition-opacity hover:opacity-80 focus:outline-none"
+                  >
+                    <ChatAvatar :chat-id="chatId" size="lg" class="size-20" />
+                    <div
+                      class="bg-background/80 absolute inset-0 flex items-center justify-center rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+                    >
+                      <CameraIcon :size="24" class="text-foreground" />
+                    </div>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center">
+                  <DropdownMenuItem @click="handleOpenCamera">
+                    <CameraIcon class="mr-2 size-4" />
+                    Take Photo
+                  </DropdownMenuItem>
+                  <DropdownMenuItem @click="handleOpenFile">
+                    <ImageIcon class="mr-2 size-4" />
+                    Upload Image
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            <ChatAvatar v-else :chat-id="chatId" size="lg" class="size-20" />
             <div>
               <h2 class="text-lg font-bold">{{ chatTitle }}</h2>
               <p class="text-muted-foreground text-xs">
@@ -255,6 +349,39 @@ function handleUserClick(userId: string) {
     <UserProfileDialog
       v-model:open="isUserProfileOpen"
       :user-id="selectedUserId"
+    />
+
+    <!-- Camera Dialog -->
+    <Dialog v-model:open="isCameraDialogOpen">
+      <DialogContent class="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Take a Photo</DialogTitle>
+          <DialogDescription>
+            Capture a photo with your camera for the chat avatar
+          </DialogDescription>
+        </DialogHeader>
+
+        <CameraCapture
+          :auto-start="true"
+          :facing-mode="'user'"
+          :capture-quality="0.95"
+          :width="400"
+          :height="400"
+          @captured="handleCameraCapture"
+        />
+      </DialogContent>
+    </Dialog>
+
+    <!-- File Upload & Editor Dialog -->
+    <AvatarEditorDialog
+      v-model:open="isFileDialogOpen"
+      title="Edit Chat Avatar"
+      description="Upload and crop the chat avatar"
+      :container-size="400"
+      :output-size="512"
+      :initial-file="capturedFile"
+      @save="handleAvatarSave"
+      @cancel="handleAvatarEditorCancel"
     />
   </Dialog>
 </template>

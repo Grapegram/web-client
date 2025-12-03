@@ -1,34 +1,19 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
-import { EllipsisVertical, ImageIcon, Trash, UserPlus } from 'lucide-vue-next';
-import { toast } from 'vue-sonner';
+import { ChatType, useChatStore } from '@/entities/chat';
 
-import { Button } from '@grapegram/ui-kit';
-
-import {
-  useChatStore,
-  useDeleteChatMutation,
-  useUploadChatAvatarMutation
-} from '@/entities/chat';
-import { useUserStore } from '@/entities/user';
-import { AvatarEditorDialog } from '@/features/avatar-editor';
-import type { CroppedImageResult } from '@/features/avatar-editor';
-import { ChatAvatar } from '@/features/chat-avatar';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '@/shared/ui/dropdown-menu';
-import { AddUsersDialog } from '@/widgets/add-users-dialog';
-import { ChatInfoDialog } from '@/widgets/chat-info-dialog';
+import DirectChatHeader from './DirectChatHeader.vue';
+import GroupChatHeader from './GroupChatHeader.vue';
 
 const chatStore = useChatStore();
-const usersStore = useUserStore();
 
 const currentChat = computed(() => chatStore.currentChat);
+
+const isDirectChat = computed(
+  () => currentChat.value?.type === ChatType.DIRECT
+);
+const isGroupChat = computed(() => currentChat.value?.type === ChatType.GROUP);
 const chatTitle = computed(
   () => currentChat.value?.title || 'No chat selected'
 );
@@ -101,64 +86,16 @@ async function handleDeleteChat() {
 </script>
 
 <template>
+  <div v-if="currentChat">
+    <DirectChatHeader v-if="isDirectChat" :chat="currentChat" />
+    <GroupChatHeader v-else-if="isGroupChat" :chat="currentChat" />
+  </div>
   <header
+    v-else
     class="h-header bg-card border-border flex flex-row items-center justify-between gap-3 rounded-lg border p-3"
   >
-    <ChatAvatar
-      size="sm"
-      class="cursor-pointer transition-opacity hover:opacity-80"
-      :chat-id="chatId"
-      @click="handleAvatarClick"
-    />
     <div class="flex grow flex-col items-start justify-center">
-      <span>
-        <strong>{{ chatTitle }}</strong>
-      </span>
-      <span class="text-muted-foreground text-sm">{{ chatStatusString }}</span>
-    </div>
-
-    <div class="flex items-center gap-2">
-      <DropdownMenu v-if="currentChat">
-        <DropdownMenuTrigger as-child>
-          <Button variant="ghost" size="icon" :disabled="!currentChat">
-            <EllipsisVertical :size="24" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem @click="handleOpenAvatarDialog">
-            <ImageIcon class="mr-2" />
-            Change Avatar
-          </DropdownMenuItem>
-          <DropdownMenuItem @click="isAddUserDialogOpen = true">
-            <UserPlus class="mr-2" />
-            Add User
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem @click="handleDeleteChat">
-            <Trash class="mr-2" />
-            Delete Chat
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <AddUsersDialog
-        v-model:open="isAddUserDialogOpen"
-        :chat-title="chatTitle"
-        :chat-id="chatId"
-        @add-users="handleAddUsers"
-        @cancel="handleCancelAddUsers"
-      />
-
-      <AvatarEditorDialog
-        v-model:open="isAvatarDialogOpen"
-        title="Edit Chat Avatar"
-        description="Upload and crop the chat avatar"
-        :container-size="400"
-        :output-size="512"
-        @save="handleAvatarSave"
-      />
-
-      <ChatInfoDialog v-model:open="isChatInfoDialogOpen" :chat-id="chatId" />
+      <span class="text-muted-foreground italic">No chat selected</span>
     </div>
   </header>
 </template>
