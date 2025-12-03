@@ -90,7 +90,7 @@ export const useUserStore = defineStore(
   {
     persist: {
       storage: localStorage,
-      pick: ['user', 'users']
+      pick: ['user']
     }
   }
 );
