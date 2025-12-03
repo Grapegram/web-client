@@ -6,12 +6,6 @@ import { LogOut } from 'lucide-vue-next';
 import { Button } from '@grapegram/ui-kit';
 
 import { ROUTES } from '@/shared/lib/routes';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from '@/shared/ui/tooltip';
 
 import { useAuthStore } from '../model';
 
@@ -25,13 +19,7 @@ function handleLogout() {
 </script>
 
 <template>
-  <TooltipProvider>
-    <Tooltip>
-      <TooltipTrigger as-child>
-        <Button variant="ghost" size="icon" @click="handleLogout">
-          <LogOut /> </Button
-      ></TooltipTrigger>
-      <TooltipContent>Log Out from account</TooltipContent>
-    </Tooltip>
-  </TooltipProvider>
+  <Button variant="ghost" size="icon" @click="handleLogout">
+    <LogOut />
+  </Button>
 </template>
