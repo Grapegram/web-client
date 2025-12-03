@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import { AtSign, Calendar, Crown, Shield, User, Users } from 'lucide-vue-next';
 
@@ -17,6 +17,7 @@ import {
 } from '@/shared/ui/dialog';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { Separator } from '@/shared/ui/separator';
+import { UserProfileDialog } from '@/widgets/user-profile-dialog';
 
 interface Props {
   chatId?: string;
@@ -27,6 +28,9 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const isOpen = defineModel<boolean>('open', { default: false });
+
+const isUserProfileOpen = ref(false);
+const selectedUserId = ref<string>('');
 
 const chatStore = useChatStore();
 const userStore = useUserStore();
@@ -104,6 +108,11 @@ function getUserInitials(username: string) {
     .toUpperCase()
     .slice(0, 2);
 }
+
+function handleUserClick(userId: string) {
+  selectedUserId.value = userId;
+  isUserProfileOpen.value = true;
+}
 </script>
 
 <template>
@@ -176,7 +185,11 @@ function getUserInitials(username: string) {
                 :key="member.id"
                 class="hover:bg-accent flex items-center gap-2 rounded-lg p-2 transition-colors"
               >
-                <div class="relative">
+                <button
+                  type="button"
+                  class="relative cursor-pointer rounded-full transition-opacity hover:opacity-80"
+                  @click="handleUserClick(user.id)"
+                >
                   <Avatar class="size-8">
                     <AvatarImage
                       v-if="user.avatar"
@@ -191,7 +204,7 @@ function getUserInitials(username: string) {
                     v-if="user.isOnline"
                     class="absolute right-0 bottom-0 size-2 rounded-full border border-white bg-green-500"
                   />
-                </div>
+                </button>
 
                 <div class="flex-1 overflow-hidden">
                   <div class="flex items-center gap-1">
@@ -238,5 +251,10 @@ function getUserInitials(username: string) {
         </div>
       </ScrollArea>
     </DialogContent>
+
+    <UserProfileDialog
+      v-model:open="isUserProfileOpen"
+      :user-id="selectedUserId"
+    />
   </Dialog>
 </template>

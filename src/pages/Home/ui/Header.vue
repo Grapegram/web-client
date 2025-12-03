@@ -25,10 +25,12 @@ import {
 import { Logo } from '@/shared/ui/logo';
 import { CameraCapture } from '@/widgets/camera-capture';
 import type { CapturedPhoto } from '@/widgets/camera-capture';
+import { UserProfileDialog } from '@/widgets/user-profile-dialog';
 
 const userStore = useUserStore();
 const isCameraDialogOpen = ref(false);
 const isFileDialogOpen = ref(false);
+const isProfileDialogOpen = ref(false);
 const capturedFile = ref<File | null>(null);
 
 const { mutate: uploadAvatar, asyncStatus } = useUploadAvatarMutation();
@@ -64,19 +66,31 @@ function handleFileDialogClose() {
   isFileDialogOpen.value = false;
   capturedFile.value = null;
 }
+
+function handleAvatarClick() {
+  isProfileDialogOpen.value = true;
+}
 </script>
 
 <template>
   <header class="bg-card flex h-18 flex-row items-center gap-2 border-b px-5">
     <Logo class="flex-1" with-text />
     <div class="flex items-center gap-2">
+      <button
+        type="button"
+        class="cursor-pointer rounded-full transition-opacity hover:opacity-80 focus:outline-none"
+        @click="handleAvatarClick"
+      >
+        <UserAvatar :user-id="userStore.user.id" size="sm" />
+      </button>
+
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
           <button
             type="button"
-            class="rounded-full transition-opacity hover:opacity-80 focus:outline-none"
+            class="hover:bg-accent rounded-lg p-2 transition-colors focus:outline-none"
           >
-            <UserAvatar :user-id="userStore.user.id" size="sm" />
+            <ImageIcon class="size-5" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -146,5 +160,10 @@ function handleFileDialogClose() {
 
       <LogoutButton />
     </div>
+
+    <UserProfileDialog
+      v-model:open="isProfileDialogOpen"
+      :user-id="userStore.user.id"
+    />
   </header>
 </template>
