@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue';
+
 import { ChatList } from '@/widgets/chat-list';
 
 import { init } from '../lib/initData';
@@ -9,6 +11,9 @@ import ResizableSidebarLayout, {
 } from './ResizableSidebarLayout.vue';
 
 init();
+
+const chatListRef = ref<InstanceType<typeof ChatList>>();
+const canCollapseSidebar = computed(() => !chatListRef.value?.isChatsEmpty);
 </script>
 
 <template>
@@ -17,11 +22,12 @@ init();
       :collapsed-size="Px(90)"
       :min-size="Px(350)"
       :max-size="Percentage(35)"
+      :can-collapse-sidebar="canCollapseSidebar"
       class="flex-1"
       auto-save-id="main"
     >
       <template #sidebar>
-        <ChatList />
+        <ChatList ref="chatListRef" />
       </template>
       <template #content>
         <ChatView />

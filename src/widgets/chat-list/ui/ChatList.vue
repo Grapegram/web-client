@@ -5,13 +5,14 @@ import { Plus } from 'lucide-vue-next';
 
 import { cn } from '@grapegram/ui-kit';
 
-import { useChatStore } from '@/entities/chat';
+import { useChatStore, useGetChatsQuery } from '@/entities/chat';
 import { useGetUsersQuery } from '@/entities/user';
 import { CreateChatDialog } from '@/features/create-chat';
 import { Button } from '@/shared/ui/button';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { UserProfileDialog } from '@/widgets/user-profile-dialog';
 
+import ChatListEmpty from './ChatListEmpty.vue';
 import ChatPreview from './ChatPreview.vue';
 import ChatPreviewSkeleton from './ChatPreviewSkeleton.vue';
 import SidebarHeader from './SidebarHeader.vue';
@@ -21,7 +22,8 @@ const chatStore = useChatStore();
 
 const sidebarMode = inject<'compact' | 'expanded'>('sidebarMode', 'expanded');
 
-const isLoading = computed(() => chatStore.orderedChats.length === 0);
+// Fetch chats
+const { isPending: isLoadingChats } = useGetChatsQuery();
 
 // User search state
 const isSearchMode = ref(false);
@@ -54,6 +56,7 @@ const unpinnedChats = computed(() => {
 });
 
 const activeChatId = computed(() => chatStore.currentChatId);
+const isChatsEmpty = computed(() => chatStore.orderedChats.length === 0);
 
 function handleSearchFocus() {
   isSearchMode.value = true;
@@ -74,6 +77,10 @@ function handleUserClick(userId: string) {
   selectedUserId.value = userId;
   isUserProfileDialogOpen.value = true;
 }
+
+defineExpose({
+  isChatsEmpty
+});
 </script>
 
 <template>
@@ -95,12 +102,15 @@ function handleUserClick(userId: string) {
             @user-click="handleUserClick"
           />
         </div>
-
         <!-- Chat List -->
         <div v-else key="chats" class="absolute inset-0">
           <ScrollArea class="h-full w-full">
-            <template v-if="isLoading">
+            <template v-if="isLoadingChats">
               <ChatPreviewSkeleton v-for="i in 15" :key="i" />
+            </template>
+
+            <template v-else-if="isChatsEmpty">
+              <ChatListEmpty />
             </template>
 
             <template v-else>

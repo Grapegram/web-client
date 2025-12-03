@@ -1,17 +1,22 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
-import { Search, UserPlus } from 'lucide-vue-next';
+import { SearchIcon, UserPlus } from 'lucide-vue-next';
 
-import { Input } from '@grapegram/ui-kit';
 
 import { useUserStore } from '@/entities/user';
 import { UserAvatar } from '@/features/user-avatar';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput
+} from '@/shared/ui/input-group';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 
 import UserSkeleton from './UserSkeleton.vue';
+import UsersListEmpty from './UsersListEmpty.vue';
 
 interface UsersListProps {
   class?: string;
@@ -94,17 +99,12 @@ const handleAddUser = () => {
       </div>
 
       <!-- Search input -->
-      <div class="relative">
-        <Search
-          :size="18"
-          class="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
-        />
-        <Input
-          v-model="searchQuery"
-          placeholder="Search users..."
-          class="pl-9"
-        />
-      </div>
+      <InputGroup>
+        <InputGroupInput placeholder="Search users..." v-model="searchQuery" />
+        <InputGroupAddon>
+          <SearchIcon />
+        </InputGroupAddon>
+      </InputGroup>
     </div>
 
     <!-- Users list -->
@@ -117,11 +117,8 @@ const handleAddUser = () => {
         <p>No users found</p>
       </div>
 
-      <div
-        v-else-if="filteredUsers.length === 0"
-        class="text-muted-foreground p-4 text-center"
-      >
-        <p>No users match your search</p>
+      <div v-else-if="filteredUsers.length === 0" class="mt-10">
+        <UsersListEmpty />
       </div>
 
       <div v-else class="flex flex-col gap-1">

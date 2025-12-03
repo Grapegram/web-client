@@ -44,7 +44,7 @@ function handleSearchQueryChange(query: string) {
 </script>
 
 <template>
-  <div class="border-border flex flex-col gap-2 border-b p-5">
+  <div class="border-border flex flex-col gap-2 border-b p-3">
     <div
       :class="
         cn('flex items-center gap-5', {
@@ -55,11 +55,11 @@ function handleSearchQueryChange(query: string) {
     >
       <Button
         variant="ghost"
-        class="h-min w-min"
         size="icon"
         @click="handleAvatarClick"
+        class="size-12"
       >
-        <Settings class="min-h-5 min-w-5" />
+        <Settings class="size-5" />
       </Button>
 
       <Transition name="fade-slide-down">

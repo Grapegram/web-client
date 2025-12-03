@@ -18,6 +18,8 @@ import { ScrollArea } from '@/shared/ui/scroll-area';
 import { MessageGroup } from '@/widgets/message-group';
 
 import ChatHeader from './ChatHeader.vue';
+import ChatViewEmpty from './ChatViewEmpty.vue';
+import ChatViewMessagesEmpty from './ChatViewMessagesEmpty.vue';
 import MessageInputBar from './MessageInputBar.vue';
 
 // Store
@@ -280,7 +282,14 @@ async function onSendMessage(data: { text: string; images: string[] }) {
 </script>
 
 <template>
-  <div class="flex h-full w-full flex-col gap-4 p-4 pb-2">
+  <div
+    v-if="!chatStore.currentChatId"
+    class="flex h-full w-full items-center justify-center"
+  >
+    <ChatViewEmpty />
+  </div>
+
+  <div v-else class="flex h-full w-full flex-col gap-4 p-4 pb-2">
     <ChatHeader />
     <ScrollArea
       v-if="chatStore.currentChatId"
@@ -297,11 +306,8 @@ async function onSendMessage(data: { text: string; images: string[] }) {
       </div>
 
       <!-- Empty state -->
-      <div
-        v-if="!messagesGroups || messagesGroups.length === 0"
-        class="text-muted-foreground flex h-full items-center justify-center"
-      >
-        <p>No messages yet. Start the conversation!</p>
+      <div v-if="!messagesGroups || messagesGroups.length === 0" class="mt-80">
+        <ChatViewMessagesEmpty />
       </div>
 
       <div
