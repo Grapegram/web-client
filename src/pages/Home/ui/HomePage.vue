@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ChatList } from '@/widgets/chat-list';
 
+import DataInit from '../lib/DataInit.vue';
 import ChatView from './ChatView.vue';
 import Header from './Header.vue';
 import ResizableSidebarLayout, {
@@ -10,6 +11,7 @@ import ResizableSidebarLayout, {
 </script>
 
 <template>
+  <DataInit />
   <div class="flex h-dvh w-dvw flex-col">
     <Header />
     <ResizableSidebarLayout
