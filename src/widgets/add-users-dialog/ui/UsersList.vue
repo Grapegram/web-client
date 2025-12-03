@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import { Search, UserPlus } from 'lucide-vue-next';
 
 import { Input } from '@grapegram/ui-kit';
 
-import { useUserStore } from '@/entities/user';
+import { useGetUsersQuery, useUserStore } from '@/entities/user';
 import { UserAvatar } from '@/features/user-avatar';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { ScrollArea } from '@/shared/ui/scroll-area';
+
+import UserSkeleton from './UserSkeleton.vue';
 
 interface UsersListProps {
   class?: string;
@@ -32,7 +34,19 @@ const emit = defineEmits<{
   'update:selectedUserIds': [userIds: string[]];
 }>();
 
+const { data: users, isPending } = useGetUsersQuery();
 const userStore = useUserStore();
+
+// Watch for users data and update store
+watch(
+  () => users.value,
+  newUsers => {
+    if (newUsers) {
+      userStore.addUsers(newUsers.users);
+    }
+  }
+);
+
 const searchQuery = ref('');
 
 const filteredUsers = computed(() => {
@@ -104,7 +118,11 @@ const handleAddUser = () => {
 
     <!-- Users list -->
     <ScrollArea class="flex-1">
-      <div v-if="!hasUsers" class="text-muted-foreground p-4 text-center">
+      <div v-if="isPending" class="flex flex-col gap-1">
+        <UserSkeleton v-for="i in 5" :key="i" />
+      </div>
+
+      <div v-else-if="!hasUsers" class="text-muted-foreground p-4 text-center">
         <p>No users found</p>
       </div>
 
