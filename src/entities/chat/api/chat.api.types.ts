@@ -43,6 +43,10 @@ export interface GetChatsListResponse {
   chats: Chat[];
 }
 
+export interface DeleteChatRequest {
+  chat_id: string;
+}
+
 export interface CreateDirectChatRequest {
   other_user_id: string;
 }

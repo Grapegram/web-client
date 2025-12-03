@@ -1,19 +1,25 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
-import { EllipsisVertical, ImageIcon, UserPlus } from 'lucide-vue-next';
+import { EllipsisVertical, ImageIcon, Trash, UserPlus } from 'lucide-vue-next';
 import { toast } from 'vue-sonner';
 
-import { useChatStore, useUploadChatAvatarMutation } from '@/entities/chat';
+import { Button } from '@grapegram/ui-kit';
+
+import {
+  useChatStore,
+  useDeleteChatMutation,
+  useUploadChatAvatarMutation
+} from '@/entities/chat';
 import { useUserStore } from '@/entities/user';
 import { AvatarEditorDialog } from '@/features/avatar-editor';
 import type { CroppedImageResult } from '@/features/avatar-editor';
 import { ChatAvatar } from '@/features/chat-avatar';
-import { Button } from '@/shared/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/shared/ui/dropdown-menu';
 import { AddUsersDialog } from '@/widgets/add-users-dialog';
@@ -48,6 +54,7 @@ const isAvatarDialogOpen = ref(false);
 const isChatInfoDialogOpen = ref(false);
 
 const { mutate: uploadAvatar } = useUploadChatAvatarMutation();
+const { mutateAsync: deleteChat } = useDeleteChatMutation();
 
 const handleAddUsers = (userIds: string[]) => {
   if (userIds.length > 0 && currentChat.value) {
@@ -79,6 +86,17 @@ function handleAvatarClick() {
     isChatInfoDialogOpen.value = true;
   }
 }
+
+async function handleDeleteChat() {
+  if (!currentChat.value) return;
+
+  try {
+    await deleteChat({ chat_id: currentChat.value.id });
+    toast.success('Chat deleted successfully!');
+  } catch {
+    toast.error('Failed to delete chat. Please try again.');
+  }
+}
 </script>
 
 <template>
@@ -107,12 +125,17 @@ function handleAvatarClick() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem @click="handleOpenAvatarDialog">
-            <ImageIcon :size="16" class="mr-2" />
+            <ImageIcon class="mr-2" />
             Change Avatar
           </DropdownMenuItem>
           <DropdownMenuItem @click="isAddUserDialogOpen = true">
-            <UserPlus :size="16" class="mr-2" />
+            <UserPlus class="mr-2" />
             Add User
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem @click="handleDeleteChat">
+            <Trash class="mr-2" />
+            Delete Chat
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

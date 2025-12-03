@@ -10,6 +10,7 @@ import type {
   CreateChatResponse,
   CreateDirectChatRequest,
   CreateDirectChatResponse,
+  DeleteChatRequest,
   GetChatsListResponse,
   UnarchiveChatRequest,
   UploadChatAvatarResponse
@@ -20,6 +21,15 @@ const API_PREFIX = '/chats';
 async function create(dto: CreateChatRequest) {
   try {
     const response = await $api.post<CreateChatResponse>(`${API_PREFIX}`, dto);
+    return response.data;
+  } catch (error) {
+    toApiError(error);
+  }
+}
+
+async function remove(dto: DeleteChatRequest) {
+  try {
+    const response = await $api.delete(`${API_PREFIX}`, { data: dto });
     return response.data;
   } catch (error) {
     toApiError(error);
@@ -109,6 +119,7 @@ async function createDirect(dto: CreateDirectChatRequest) {
 
 export const ChatApi = {
   create,
+  remove,
   createDirect,
   changeTitle,
   archive,
