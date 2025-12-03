@@ -5,7 +5,6 @@ import { EllipsisVertical, ImageIcon, UserPlus } from 'lucide-vue-next';
 import { toast } from 'vue-sonner';
 
 import { useChatStore, useUploadChatAvatarMutation } from '@/entities/chat';
-import { useMockData } from '@/entities/user';
 import { AvatarEditorDialog } from '@/features/avatar-editor';
 import type { CroppedImageResult } from '@/features/avatar-editor';
 import { ChatAvatar } from '@/features/chat-avatar';
@@ -19,9 +18,6 @@ import {
 import { AddUsersDialog } from '@/widgets/add-users-dialog';
 
 const chatStore = useChatStore();
-
-// Initialize mock data for testing
-useMockData();
 
 const currentChat = computed(() => chatStore.currentChat);
 const chatTitle = computed(
