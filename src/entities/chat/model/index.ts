@@ -1,4 +1,5 @@
 export type { Chat, ChatMember } from './chat.types';
+export { ChatType } from './chat.types';
 export { useChatStore } from './chat.store';
 
 // Mutations

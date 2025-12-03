@@ -1,8 +1,14 @@
 export interface Chat {
   id: string;
+  type: ChatType;
   title: string;
   avatar?: string;
   members: ChatMember[];
+}
+
+export const enum ChatType {
+  DIRECT = 'direct',
+  GROUP = 'group'
 }
 
 export interface ChatMember {
