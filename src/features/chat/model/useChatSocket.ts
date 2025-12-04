@@ -1,12 +1,13 @@
 import { computed, ref } from 'vue';
 
 import {
-  type ChatAddedEvent,
+  ChatApi,
+  type ChatDeletedEvent,
+  type MemberAddedEvent,
   type MessageDeletedEvent,
   type MessageEditedEvent,
   type MessageSentEvent,
-  useChatStore,
-  useFetchChatByIdMutation
+  useChatStore
 } from '@/entities/chat';
 import { useMessageStore } from '@/entities/message';
 import type { Message } from '@/entities/message';
@@ -133,13 +134,12 @@ export function useConcreteChatSocket(chatId: string, token: string) {
 }
 
 export function useChatSocket(userId: string, token: string) {
+  const chatStore = useChatStore();
   const userStore = useUserStore();
   const socket = new PrivateSocketClient(`ws/chat-events/${userId}`, token);
 
   const isConnected = ref(false);
   const isAuthorized = ref(false);
-
-  const { mutate: fetchChatById } = useFetchChatByIdMutation();
 
   let pingInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -166,10 +166,15 @@ export function useChatSocket(userId: string, token: string) {
   // === HANDLERS ===
 
   const handleChatAdded = async (payload?: unknown) => {
-    const data = payload as ChatAddedEvent;
+    const data = payload as MemberAddedEvent;
+    const chat = await ChatApi.getById(data.chat_id);
+    if (!chat) return;
+    chatStore.addChat(chat);
+  };
 
-    // Fetch the full chat data and update the store
-    fetchChatById(data.chat_id);
+  const handleChatDeleted = async (payload?: unknown) => {
+    const data = payload as ChatDeletedEvent;
+    chatStore.removeChat(data.chat_id);
   };
 
   const handleUserOnline = (payload?: unknown) => {
@@ -190,6 +195,7 @@ export function useChatSocket(userId: string, token: string) {
 
   const connect = () => {
     socket.emitter.on('member_added', handleChatAdded);
+    socket.emitter.on('chat_deleted', handleChatDeleted);
     socket.emitter.on('user_online', handleUserOnline);
     socket.emitter.on('user_offline', handleUserOffline);
 
@@ -203,6 +209,7 @@ export function useChatSocket(userId: string, token: string) {
     stopPing();
 
     socket.emitter.off('member_added', handleChatAdded);
+    socket.emitter.off('chat_deleted', handleChatDeleted);
     socket.emitter.off('user_online', handleUserOnline);
     socket.emitter.off('user_offline', handleUserOffline);
     socket.emitter.off('authorized', startPing);

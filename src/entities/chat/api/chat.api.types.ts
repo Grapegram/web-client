@@ -56,6 +56,4 @@ export interface CreateDirectChatResponse {
   title: string;
 }
 
-export interface GetChatByIdResponse {
-  chat: Chat;
-}
+export type GetChatByIdResponse = Chat;
