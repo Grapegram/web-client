@@ -19,14 +19,17 @@ export type MessageGroupProps = {
 
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import { Message as MessageComponent } from '@grapegram/ui-kit';
 
 import { UserAvatar } from '@/features/user-avatar';
 import { cn } from '@/shared/lib/utils';
+import { UserProfileDialog } from '@/widgets/user-profile-dialog';
 
 const props = defineProps<MessageGroupProps>();
+
+const isUserProfileDialogOpen = ref(false);
 
 function messageVariantByIdAndLength(i: number): MessageVariants {
   const length = props.messages.length;
@@ -46,6 +49,10 @@ const user = computed(() => {
     color: '#f00'
   };
 });
+
+function handleAvatarClick() {
+  isUserProfileDialogOpen.value = true;
+}
 </script>
 
 <template>
@@ -53,13 +60,14 @@ const user = computed(() => {
     <UserAvatar
       v-if="props.showAvatar"
       :class="
-        cn('sticky top-[calc(100%-40px)]', {
+        cn('sticky top-[calc(100%-40px)] cursor-pointer', {
           'float-left mr-3': props.side === 'left',
           'float-right ml-3': props.side === 'right'
         })
       "
       size="sm"
       :user-id="user.id"
+      @click="handleAvatarClick"
     />
     <div
       :class="
@@ -84,5 +92,11 @@ const user = computed(() => {
         status="sent"
       />
     </div>
+
+    <!-- User Profile Dialog -->
+    <UserProfileDialog
+      v-model:open="isUserProfileDialogOpen"
+      :user-id="user.id"
+    />
   </div>
 </template>
