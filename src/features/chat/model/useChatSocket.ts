@@ -1,70 +1,53 @@
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 
+import {
+  type ChatAddedEvent,
+  type MessageDeletedEvent,
+  type MessageEditedEvent,
+  type MessageSentEvent,
+  useChatStore,
+  useFetchChatByIdMutation
+} from '@/entities/chat';
 import { useMessageStore } from '@/entities/message';
 import type { Message } from '@/entities/message';
-import { ChatSocketClient } from '@/shared/api';
-import type {
-  MessageDeletedEvent,
-  MessageEditedEvent,
-  MessageReactionAddedEvent,
-  MessageReactionRemovedEvent,
-  MessageReadEvent,
-  MessageSentEvent
-} from '@/shared/api';
+import {
+  type UserOfflineEvent,
+  type UserOnlineEvent,
+  type UserTypingStartedEvent,
+  type UserTypingStoppedEvent,
+  useUserStore
+} from '@/entities/user';
+import { GLOBAL_EVENT_EMITTER, PrivateSocketClient } from '@/shared/api';
 
-/**
- * Composable for managing WebSocket connection and real-time message updates
- *
- * Handles:
- * - WebSocket connection lifecycle
- * - Real-time message events (sent, edited, deleted)
- * - Message reactions (added, removed)
- * - Message read status
- * - Connection state tracking
- *
- * @param chatId - ID of the chat to connect to
- * @param token - JWT authentication token
- *
- * @returns {Object} Socket connection and state
- * @returns {ChatSocketClient} socket - WebSocket client instance
- * @returns {Ref<boolean>} isConnected - Connection status
- * @returns {Ref<boolean>} isAuthorized - Authorization status
- * @returns {ComputedRef<Message[]>} messages - Reactive messages for the chat
- * @returns {ComputedRef<MessageGroup[]>} messageGroups - Grouped messages for display
- *
- * @example
- * ```vue
- * <script setup lang="ts">
- * import { useChatSocket } from 'features/chat';
- *
- * const chatId = 'your-chat-id';
- * const token = 'your-jwt-token';
- *
- * const { isConnected, isAuthorized, messages, messageGroups } = useChatSocket(chatId, token);
- * </script>
- *
- * <template>
- *   <div>
- *     <p>Connected: {{ isConnected }}</p>
- *     <p>Authorized: {{ isAuthorized }}</p>
- *     <div v-for="group in messageGroups" :key="group.id">
- *       <!-- Render message group -->
- *     </div>
- *   </div>
- * </template>
- * ```
- */
-export function useChatSocket(chatId: string, token: string) {
+export function useConcreteChatSocket(chatId: string, token: string) {
+  const chatStore = useChatStore();
+  const userStore = useUserStore();
   const store = useMessageStore();
-  const socket = new ChatSocketClient(chatId, token);
+
+  const socket = new PrivateSocketClient(`ws/chat/${chatId}`, token);
 
   const isConnected = ref(false);
   const isAuthorized = ref(false);
 
+  const sendStartTypingEvent = () => {
+    socket.send({
+      action: 'start_typing',
+      chat_id: chatId,
+      user_id: userStore.user.id
+    });
+  };
+
+  const sendStopTypingEvent = () => {
+    socket.send({
+      action: 'stop_typing',
+      chat_id: chatId,
+      user_id: userStore.user.id
+    });
+  };
+
   // === HANDLERS ===
 
   const handleMessageSent = (payload?: unknown) => {
-    console.log('sended');
     const data = payload as MessageSentEvent;
     const message: Message = {
       id: data.message_id,
@@ -94,96 +77,144 @@ export function useChatSocket(chatId: string, token: string) {
     store.removeMessage(data.chat_id, data.message_id);
   };
 
-  const handleMessageReactionAdded = (payload?: unknown) => {
-    const data = payload as MessageReactionAddedEvent;
-    store.addReaction(
-      data.chat_id,
-      data.message_id,
-      data.reaction,
-      data.user_id
-    );
+  const handleUserTypingStarted = (payload?: unknown) => {
+    const data = payload as UserTypingStartedEvent;
+
+    // Set member typing status in the chat
+    chatStore.setMemberTyping(data.chat_id, data.user_id, true);
   };
 
-  const handleMessageReactionRemoved = (payload?: unknown) => {
-    const data = payload as MessageReactionRemovedEvent;
-    store.removeReaction(
-      data.chat_id,
-      data.message_id,
-      data.reaction,
-      data.user_id
-    );
-  };
+  const handleUserTypingStopped = (payload?: unknown) => {
+    const data = payload as UserTypingStoppedEvent;
 
-  const handleMessageRead = (payload?: unknown) => {
-    const data = payload as MessageReadEvent;
-    store.markAsRead(data.chat_id, data.message_id, data.user_id);
-  };
-
-  const handleConnected = () => {
-    console.log('connected to chat socket');
-    isConnected.value = true;
-  };
-
-  const handleDisconnected = () => {
-    console.log('disconnected from chat socket');
-    isConnected.value = false;
-    isAuthorized.value = false;
-  };
-
-  const handleAuthorized = () => {
-    console.log('authorized on chat socket');
-    isAuthorized.value = true;
-  };
-
-  const handleUnauthorized = () => {
-    console.log('unauthorized on chat socket');
-    isAuthorized.value = false;
+    // Remove member typing status in the chat
+    chatStore.setMemberTyping(data.chat_id, data.user_id, false);
   };
 
   // === LIFECYCLE ===
 
-  onMounted(() => {
-    // Message events
-    socket.emitter.on('MessageSent', handleMessageSent);
-    socket.emitter.on('MessageEdited', handleMessageEdited);
-    socket.emitter.on('MessageDeleted', handleMessageDeleted);
-    socket.emitter.on('MessageReactionAdded', handleMessageReactionAdded);
-    socket.emitter.on('MessageReactionRemoved', handleMessageReactionRemoved);
-    socket.emitter.on('MessageRead', handleMessageRead);
-
-    // Connection events
-    socket.emitter.on('connected', handleConnected);
-    socket.emitter.on('disconnected', handleDisconnected);
-    socket.emitter.on('authorized', handleAuthorized);
-    socket.emitter.on('unauthorized', handleUnauthorized);
-
-    // Connect to WebSocket
+  const connect = () => {
+    GLOBAL_EVENT_EMITTER.on('start_typing', (payload?: unknown) => {
+      const e_chat_id = payload as string;
+      if (e_chat_id !== chatId) return;
+      sendStartTypingEvent();
+    });
+    GLOBAL_EVENT_EMITTER.on('stop_typing', (payload?: unknown) => {
+      const e_chat_id = payload as string;
+      if (e_chat_id !== chatId) return;
+      sendStopTypingEvent();
+    });
+    socket.emitter.on('message_sent', handleMessageSent);
+    socket.emitter.on('message_edited', handleMessageEdited);
+    socket.emitter.on('message_deleted', handleMessageDeleted);
+    socket.emitter.on('user_typing_started', handleUserTypingStarted);
+    socket.emitter.on('user_typing_stopped', handleUserTypingStopped);
     socket.connect();
-  });
+  };
 
-  onBeforeUnmount(() => {
-    // Cleanup: remove all event listeners
-    socket.emitter.off('MessageSent', handleMessageSent);
-    socket.emitter.off('MessageEdited', handleMessageEdited);
-    socket.emitter.off('MessageDeleted', handleMessageDeleted);
-    socket.emitter.off('MessageReactionAdded', handleMessageReactionAdded);
-    socket.emitter.off('MessageReactionRemoved', handleMessageReactionRemoved);
-    socket.emitter.off('MessageRead', handleMessageRead);
-
-    socket.emitter.off('connected', handleConnected);
-    socket.emitter.off('disconnected', handleDisconnected);
-    socket.emitter.off('authorized', handleAuthorized);
-    socket.emitter.off('unauthorized', handleUnauthorized);
-
-    // Disconnect socket
+  const disconnect = () => {
+    socket.emitter.off('message_sent', handleMessageSent);
+    socket.emitter.off('message_edited', handleMessageEdited);
+    socket.emitter.off('message_deleted', handleMessageDeleted);
+    socket.emitter.off('user_typing_started', handleUserTypingStarted);
+    socket.emitter.off('user_typing_stopped', handleUserTypingStopped);
     socket.disconnect();
-  });
+  };
 
   return {
     socket,
     isConnected,
     isAuthorized,
+    connect,
+    disconnect,
     messages: computed(() => store.getMessages(chatId)),
     messageGroups: computed(() => store.getMessageGroups(chatId))
+  };
+}
+
+export function useChatSocket(userId: string, token: string) {
+  const userStore = useUserStore();
+  const socket = new PrivateSocketClient(`ws/chat-events/${userId}`, token);
+
+  const isConnected = ref(false);
+  const isAuthorized = ref(false);
+
+  const { mutate: fetchChatById } = useFetchChatByIdMutation();
+
+  let pingInterval: ReturnType<typeof setInterval> | null = null;
+
+  // === PING ===
+
+  const startPing = () => {
+    // Clear existing interval if any
+    if (pingInterval) {
+      clearInterval(pingInterval);
+    }
+    // Send ping every 30 seconds
+    pingInterval = setInterval(() => {
+      socket.send({ action: 'ping' });
+    }, 30000);
+  };
+
+  const stopPing = () => {
+    if (pingInterval) {
+      clearInterval(pingInterval);
+      pingInterval = null;
+    }
+  };
+
+  // === HANDLERS ===
+
+  const handleChatAdded = async (payload?: unknown) => {
+    const data = payload as ChatAddedEvent;
+
+    // Fetch the full chat data and update the store
+    fetchChatById(data.chat_id);
+  };
+
+  const handleUserOnline = (payload?: unknown) => {
+    const data = payload as UserOnlineEvent;
+
+    // Update user online status
+    userStore.setUserOnline(data.user_id);
+  };
+
+  const handleUserOffline = (payload?: unknown) => {
+    const data = payload as UserOfflineEvent;
+
+    // Update user offline status
+    userStore.setUserOffline(data.user_id);
+  };
+
+  // === LIFECYCLE ===
+
+  const connect = () => {
+    socket.emitter.on('chat_added', handleChatAdded);
+    socket.emitter.on('user_online', handleUserOnline);
+    socket.emitter.on('user_offline', handleUserOffline);
+
+    // Start ping when authorized
+    socket.emitter.on('authorized', startPing);
+
+    socket.connect();
+  };
+
+  const disconnect = () => {
+    stopPing();
+
+    socket.emitter.off('chat_added', handleChatAdded);
+    socket.emitter.off('user_online', handleUserOnline);
+    socket.emitter.off('user_offline', handleUserOffline);
+    socket.emitter.off('authorized', startPing);
+
+    socket.disconnect();
+  };
+
+  return {
+    socket,
+    isConnected,
+    isAuthorized,
+    connect,
+    disconnect
   };
 }
