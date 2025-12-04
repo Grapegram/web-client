@@ -189,7 +189,7 @@ export function useChatSocket(userId: string, token: string) {
   // === LIFECYCLE ===
 
   const connect = () => {
-    socket.emitter.on('chat_added', handleChatAdded);
+    socket.emitter.on('member_added', handleChatAdded);
     socket.emitter.on('user_online', handleUserOnline);
     socket.emitter.on('user_offline', handleUserOffline);
 
@@ -202,7 +202,7 @@ export function useChatSocket(userId: string, token: string) {
   const disconnect = () => {
     stopPing();
 
-    socket.emitter.off('chat_added', handleChatAdded);
+    socket.emitter.off('member_added', handleChatAdded);
     socket.emitter.off('user_online', handleUserOnline);
     socket.emitter.off('user_offline', handleUserOffline);
     socket.emitter.off('authorized', startPing);
