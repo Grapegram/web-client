@@ -8,6 +8,7 @@ import { Button } from '@grapegram/ui-kit';
 
 import type { Chat } from '@/entities/chat';
 import {
+  ChatApi,
   useChatStore,
   useDeleteChatMutation,
   useUploadChatAvatarMutation
@@ -82,16 +83,18 @@ const { mutate: uploadAvatar } = useUploadChatAvatarMutation();
 const { mutateAsync: deleteChat } = useDeleteChatMutation();
 
 const handleAddUsers = (userIds: string[]) => {
-  if (userIds.length > 0) {
-    console.log('Adding users to chat:', userIds);
-    // TODO: Implement actual user addition logic
-    // This would typically call an API or update the chat store
-  }
+  Promise.allSettled(
+    userIds.map(userId =>
+      ChatApi.addMember({
+        chat_id: props.chat.id,
+        user_id: userId,
+        role: 'member'
+      })
+    )
+  );
 };
 
-const handleCancelAddUsers = () => {
-  console.log('User addition cancelled');
-};
+const handleCancelAddUsers = () => {};
 
 function handleOpenAvatarDialog() {
   isAvatarDialogOpen.value = true;
