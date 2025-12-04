@@ -4,6 +4,12 @@ import { defineStore } from 'pinia';
 
 import type { Chat } from './chat.types';
 
+interface DraftMessage {
+  text: string;
+  images: string[];
+  message_id?: string;
+}
+
 export const useChatStore = defineStore(
   'chat',
   () => {
@@ -11,6 +17,7 @@ export const useChatStore = defineStore(
     const chats = ref<Map<string, Chat>>(new Map());
     const chatOrder = ref<string[]>([]);
     const currentChatId = ref<string | null>(null);
+    const draftMessages = ref<Record<string, DraftMessage>>({});
 
     // Computed
     const orderedChats = computed(() => {
@@ -182,11 +189,41 @@ export const useChatStore = defineStore(
       return member?.is_typing === true;
     };
 
+    const setDraftMessage = (
+      chatId: string,
+      text: string,
+      images: string[] = [],
+      messageId?: string
+    ) => {
+      if (text.trim() === '' && images.length === 0) {
+        delete draftMessages.value[chatId];
+      } else {
+        draftMessages.value[chatId] = {
+          text,
+          images,
+          message_id: messageId
+        };
+      }
+    };
+
+    const getDraftMessage = (chatId: string): DraftMessage | undefined => {
+      return draftMessages.value[chatId];
+    };
+
+    const clearDraftMessage = (chatId: string) => {
+      delete draftMessages.value[chatId];
+    };
+
+    const clearAllDraftMessages = () => {
+      draftMessages.value = {};
+    };
+
     return {
       // State
       chats,
       chatOrder,
       currentChatId,
+      draftMessages,
 
       // Computed
       orderedChats,
@@ -210,14 +247,18 @@ export const useChatStore = defineStore(
       getLastMessageTime,
       setMemberTyping,
       getTypingMembersInChat,
-      isMemberTypingInChat
+      isMemberTypingInChat,
+      setDraftMessage,
+      getDraftMessage,
+      clearDraftMessage,
+      clearAllDraftMessages
     };
   },
   {
     persist: {
       storage: localStorage,
       key: 'chats',
-      pick: ['chatOrder', 'currentChatId']
+      pick: ['chatOrder', 'currentChatId', 'draftMessages']
     }
   }
 );
