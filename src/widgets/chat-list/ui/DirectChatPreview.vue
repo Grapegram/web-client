@@ -67,7 +67,7 @@ function formatDateTime(dateString: string): string {
 const chatVariants = cva('', {
   variants: {
     variant: {
-      expanded: 'px-3 flex flex-row items-center gap-3',
+      expanded: 'px-4 flex flex-row items-center gap-4',
       compact: 'flex flex-row items-start justify-center'
     }
   },
@@ -111,13 +111,9 @@ const chatVariants = cva('', {
         <h3 class="truncate">
           <strong>{{ mate?.username || chat.title }}</strong>
         </h3>
-        <div
-          v-if="mate?.isOnline"
-          class="h-2 w-2 rounded-full bg-green-500"
-          title="Online"
-        />
       </div>
       <LastMessage
+        :chat-id="chat.id"
         :message="lastMessage ?? undefined"
         :show-sender-prefix="false"
         placeholder="No messages yet"
