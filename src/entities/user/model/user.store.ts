@@ -71,6 +71,20 @@ export const useUserStore = defineStore(
       users.value = {};
     }
 
+    function setUserOnline(userId: string) {
+      const targetUser = users.value[userId];
+      if (targetUser) {
+        users.value[userId] = { ...targetUser, isOnline: true };
+      }
+    }
+
+    function setUserOffline(userId: string) {
+      const targetUser = users.value[userId];
+      if (targetUser) {
+        users.value[userId] = { ...targetUser, isOnline: false };
+      }
+    }
+
     return {
       user,
       users,
@@ -84,7 +98,9 @@ export const useUserStore = defineStore(
       removeUser,
       searchUsers,
       clearUsers,
-      reset
+      reset,
+      setUserOnline,
+      setUserOffline
     };
   },
   {
