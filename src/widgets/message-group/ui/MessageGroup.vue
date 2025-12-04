@@ -6,6 +6,8 @@ import type {
 } from '@grapegram/ui-kit';
 
 import type { Message } from '@/entities/message';
+import { useUserStore } from '@/entities/user';
+import { textToColor } from '@/shared/lib/text-to-color';
 
 export type MessageGroupProps = {
   side: MessageSide;
@@ -36,6 +38,8 @@ import { UserProfileDialog } from '@/widgets/user-profile-dialog';
 
 const props = defineProps<MessageGroupProps>();
 
+const userStore = useUserStore();
+
 const isUserProfileDialogOpen = ref(false);
 const { mutate: deleteMessage } = useDeleteMessageMutation();
 
@@ -48,13 +52,14 @@ function messageVariantByIdAndLength(i: number): MessageVariants {
 }
 
 const user = computed(() => {
-  if (!props.messages || props.messages.length === 0) {
+  const user = userStore.getUserById(props.messages?.[0]?.sender_id);
+  if (!user) {
     return { id: '', username: 'Unknown', color: '#f00' };
   }
   return {
-    id: props.messages[0].sender_id,
-    username: props.messages[0].sender_id,
-    color: '#f00'
+    id: user.id,
+    username: user.username,
+    color: textToColor(user.username)
   };
 });
 
