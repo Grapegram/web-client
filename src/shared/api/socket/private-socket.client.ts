@@ -1,29 +1,27 @@
 import { EventEmitter } from '@/shared/lib';
 
-import type {
-  AuthMessage,
-  AuthResponse,
-  WebSocketMessage
-} from './socket.types';
-import { isAuthResponse, isWebSocketMessage } from './socket.types';
+import type { AuthMessage, AuthResponse, WebSocketEvent } from './socket.types';
+import { isAuthResponse, isWebSocketEvent } from './socket.types';
 
-export class ChatSocketClient {
+export class PrivateSocketClient {
   private socket?: WebSocket;
   private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 10;
   private isAuthorized = false;
 
-  public emitter = new EventEmitter();
+  public emitter: EventEmitter;
 
   constructor(
-    private chatId: string,
+    private url: string,
     private token: string,
-    private baseUrl = `${import.meta.env.VITE_SOCKET_URL}/ws/chat`
-  ) {}
+    private baseUrl = `${import.meta.env.VITE_SOCKET_URL}`
+  ) {
+    this.emitter = new EventEmitter();
+  }
 
   connect(): void {
-    const url = `${this.baseUrl}/${this.chatId}`;
+    const url = `${this.baseUrl}/${this.url}`;
     this.socket = new WebSocket(url);
 
     this.socket.onopen = () => {
@@ -105,7 +103,7 @@ export class ChatSocketClient {
     }
 
     // Handle WebSocket event
-    if (isWebSocketMessage(message)) {
+    if (isWebSocketEvent(message)) {
       this.handleEvent(message);
       return;
     }
@@ -123,15 +121,15 @@ export class ChatSocketClient {
     }
   }
 
-  private handleEvent(message: WebSocketMessage): void {
-    const event = message.data;
-    const eventName = event.event_name;
+  private handleEvent(event: WebSocketEvent): void {
+    const data = event.data;
+    const eventName = event.event_type;
 
     // Emit specific event
-    this.emitter.emit(eventName, event);
+    this.emitter.emit(eventName, data);
 
     // Emit general event for subscribers listening to all events
-    this.emitter.emit('event', event);
+    this.emitter.emit('event', data);
   }
 
   getConnectionState(): number {
@@ -144,6 +142,22 @@ export class ChatSocketClient {
 
   isAuth(): boolean {
     return this.isAuthorized;
+  }
+
+  send(data: object): void {
+    if (!this.isConnected()) {
+      return;
+    }
+
+    if (!this.isAuthorized) {
+      return;
+    }
+
+    try {
+      this.socket?.send(JSON.stringify(data));
+    } catch (error) {
+      this.emitter.emit('send_error', error);
+    }
   }
 
   disconnect(): void {

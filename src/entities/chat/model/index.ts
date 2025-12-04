@@ -12,6 +12,8 @@ export {
 } from './archiveChat.mutation';
 export { useUploadChatAvatarMutation } from './uploadChatAvatar.mutation';
 export { useDeleteChatMutation } from './deleteChat.mutation';
+export { useFetchChatByIdMutation } from './fetchChatById.mutation';
 
 // Queries
 export { useGetChatsQuery } from './getChats.query';
+export { useGetChatByIdQuery } from './getChatById.query';

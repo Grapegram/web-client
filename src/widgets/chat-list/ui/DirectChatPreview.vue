@@ -1,5 +1,6 @@
 <script lang="ts">
 import type { Chat } from '@/entities/chat';
+import { UserAvatar } from '@/features/user-avatar';
 
 type Variants = 'compact' | 'expanded';
 type Props = {
@@ -21,7 +22,6 @@ import { DateTime } from 'luxon';
 
 import { useLoadLastMessageQuery } from '@/entities/message';
 import { useUserStore } from '@/entities/user';
-import { ChatAvatar } from '@/features/chat-avatar';
 import { cn } from '@/shared/lib/utils';
 import { Badge } from '@/shared/ui/badge';
 
@@ -67,7 +67,7 @@ function formatDateTime(dateString: string): string {
 const chatVariants = cva('', {
   variants: {
     variant: {
-      expanded: 'px-3 flex flex-row items-center gap-3',
+      expanded: 'px-4 flex flex-row items-center gap-4',
       compact: 'flex flex-row items-start justify-center'
     }
   },
@@ -92,13 +92,7 @@ const chatVariants = cva('', {
     "
   >
     <div class="relative h-auto w-auto">
-      <ChatAvatar :chat-id="chat.id" />
-
-      <!-- Online indicator for direct chats -->
-      <div
-        v-if="mate?.isOnline"
-        class="border-background absolute right-0 bottom-0 h-3 w-3 rounded-full border-2 bg-green-500"
-      />
+      <UserAvatar show-status :user-id="mate?.id || ''" />
 
       <Badge
         v-if="props.variant === 'compact' && unreaded > 0"
@@ -117,13 +111,9 @@ const chatVariants = cva('', {
         <h3 class="truncate">
           <strong>{{ mate?.username || chat.title }}</strong>
         </h3>
-        <div
-          v-if="mate?.isOnline"
-          class="h-2 w-2 rounded-full bg-green-500"
-          title="Online"
-        />
       </div>
       <LastMessage
+        :chat-id="chat.id"
         :message="lastMessage ?? undefined"
         :show-sender-prefix="false"
         placeholder="No messages yet"

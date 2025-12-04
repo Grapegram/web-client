@@ -4,6 +4,12 @@ import { defineStore } from 'pinia';
 
 import type { Chat } from './chat.types';
 
+interface DraftMessage {
+  text: string;
+  images: string[];
+  message_id?: string;
+}
+
 export const useChatStore = defineStore(
   'chat',
   () => {
@@ -11,6 +17,7 @@ export const useChatStore = defineStore(
     const chats = ref<Map<string, Chat>>(new Map());
     const chatOrder = ref<string[]>([]);
     const currentChatId = ref<string | null>(null);
+    const draftMessages = ref<Record<string, DraftMessage>>({});
 
     // Computed
     const orderedChats = computed(() => {
@@ -150,11 +157,73 @@ export const useChatStore = defineStore(
       return null;
     };
 
+    const setMemberTyping = (
+      chatId: string,
+      userId: string,
+      isTyping: boolean
+    ) => {
+      const chat = chats.value.get(chatId);
+      if (!chat) return;
+
+      const updatedMembers = chat.members.map(member =>
+        member.user_id === userId ? { ...member, is_typing: isTyping } : member
+      );
+
+      chats.value.set(chatId, { ...chat, members: updatedMembers });
+    };
+
+    const getTypingMembersInChat = (chatId: string): string[] => {
+      const chat = chats.value.get(chatId);
+      if (!chat) return [];
+
+      return chat.members
+        .filter(member => member.is_typing === true)
+        .map(member => member.user_id);
+    };
+
+    const isMemberTypingInChat = (chatId: string, userId: string): boolean => {
+      const chat = chats.value.get(chatId);
+      if (!chat) return false;
+
+      const member = chat.members.find(m => m.user_id === userId);
+      return member?.is_typing === true;
+    };
+
+    const setDraftMessage = (
+      chatId: string,
+      text: string,
+      images: string[] = [],
+      messageId?: string
+    ) => {
+      if (text.trim() === '' && images.length === 0) {
+        delete draftMessages.value[chatId];
+      } else {
+        draftMessages.value[chatId] = {
+          text,
+          images,
+          message_id: messageId
+        };
+      }
+    };
+
+    const getDraftMessage = (chatId: string): DraftMessage | undefined => {
+      return draftMessages.value[chatId];
+    };
+
+    const clearDraftMessage = (chatId: string) => {
+      delete draftMessages.value[chatId];
+    };
+
+    const clearAllDraftMessages = () => {
+      draftMessages.value = {};
+    };
+
     return {
       // State
       chats,
       chatOrder,
       currentChatId,
+      draftMessages,
 
       // Computed
       orderedChats,
@@ -175,14 +244,21 @@ export const useChatStore = defineStore(
       getUnreadCount,
       updateChatAvatar,
       setChats,
-      getLastMessageTime
+      getLastMessageTime,
+      setMemberTyping,
+      getTypingMembersInChat,
+      isMemberTypingInChat,
+      setDraftMessage,
+      getDraftMessage,
+      clearDraftMessage,
+      clearAllDraftMessages
     };
   },
   {
     persist: {
       storage: localStorage,
       key: 'chats',
-      pick: ['chatOrder', 'currentChatId']
+      pick: ['chatOrder', 'currentChatId', 'draftMessages']
     }
   }
 );

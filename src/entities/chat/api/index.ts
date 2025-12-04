@@ -9,5 +9,8 @@ export type {
   ArchiveChatRequest,
   UnarchiveChatRequest,
   AddMemberRequest,
-  AddMemberResponse
+  AddMemberResponse,
+  GetChatByIdResponse
 } from './chat.api.types';
+
+export type * from './chat.events';

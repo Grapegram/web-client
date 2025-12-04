@@ -8,13 +8,14 @@ import { Button } from '@grapegram/ui-kit';
 
 import type { Chat } from '@/entities/chat';
 import {
+  useChatStore,
   useDeleteChatMutation,
   useUploadChatAvatarMutation
 } from '@/entities/chat';
 import { useUserStore } from '@/entities/user';
 import { AvatarEditorDialog } from '@/features/avatar-editor';
 import type { CroppedImageResult } from '@/features/avatar-editor';
-import { ChatAvatar } from '@/features/chat-avatar';
+import { UserAvatar } from '@/features/user-avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,6 +32,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const usersStore = useUserStore();
+const chatStore = useChatStore();
 
 const chatId = computed(() => props.chat.id);
 
@@ -56,7 +58,13 @@ const mateId = computed(() => {
 
 const chatTitle = computed(() => mate.value?.username || props.chat.title);
 
+const isTyping = computed(() => {
+  if (!mateId.value) return false;
+  return chatStore.isMemberTypingInChat(chatId.value, mateId.value);
+});
+
 const chatStatusString = computed(() => {
+  if (isTyping.value) return 'typing';
   if (!mate.value) return 'User not found';
   return mate.value.isOnline ? 'Online' : 'Offline';
 });
@@ -98,10 +106,10 @@ async function handleDeleteChat() {
   <header
     class="h-header bg-card border-border flex flex-row items-center justify-between gap-3 rounded-lg border p-3"
   >
-    <ChatAvatar
+    <UserAvatar
       size="sm"
       class="cursor-pointer transition-opacity hover:opacity-80"
-      :chat-id="chatId"
+      :user-id="mateId || ''"
       @click="handleAvatarClick"
     />
     <div class="flex grow flex-col items-start justify-center">
@@ -110,11 +118,20 @@ async function handleDeleteChat() {
       </span>
       <span
         :class="[
-          'text-sm',
-          mate?.isOnline ? 'text-green-500' : 'text-muted-foreground'
+          'flex items-center gap-1 text-sm',
+          mate?.isOnline ? 'text-accent font-bold' : 'text-muted-foreground'
         ]"
       >
         {{ chatStatusString }}
+        <span v-if="isTyping" class="flex gap-0.5">
+          <span class="animate-bounce-dot" style="animation-delay: 0ms">.</span>
+          <span class="animate-bounce-dot" style="animation-delay: 150ms"
+            >.</span
+          >
+          <span class="animate-bounce-dot" style="animation-delay: 300ms"
+            >.</span
+          >
+        </span>
       </span>
     </div>
 
@@ -154,3 +171,21 @@ async function handleDeleteChat() {
     </div>
   </header>
 </template>
+
+<style scoped>
+@keyframes bounce-dot {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-bounce-dot {
+  display: inline-block;
+  animation: bounce-dot 1s infinite;
+}
+</style>

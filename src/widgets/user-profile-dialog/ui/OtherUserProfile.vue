@@ -108,12 +108,8 @@ async function handleSendMessage() {
               <UserAvatar
                 v-if="userId"
                 :user-id="userId"
-                size="lg"
+                avatar-class="size-20"
                 class="size-20"
-              />
-              <div
-                v-if="isOnline"
-                class="absolute right-0 bottom-0 size-4 rounded-full border-2 border-white bg-green-500"
               />
             </div>
             <div>

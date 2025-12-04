@@ -11,6 +11,7 @@ import type {
   CreateDirectChatRequest,
   CreateDirectChatResponse,
   DeleteChatRequest,
+  GetChatByIdResponse,
   GetChatsListResponse,
   UnarchiveChatRequest,
   UploadChatAvatarResponse
@@ -105,6 +106,17 @@ async function getAll() {
   }
 }
 
+async function getById(chatId: string) {
+  try {
+    const response = await $api.get<GetChatByIdResponse>(
+      `${API_PREFIX}/${chatId}`
+    );
+    return response.data;
+  } catch (error) {
+    toApiError(error);
+  }
+}
+
 async function createDirect(dto: CreateDirectChatRequest) {
   try {
     const response = await $api.post<CreateDirectChatResponse>(
@@ -126,5 +138,6 @@ export const ChatApi = {
   unarchive,
   addMember,
   uploadAvatar,
-  getAll
+  getAll,
+  getById
 };

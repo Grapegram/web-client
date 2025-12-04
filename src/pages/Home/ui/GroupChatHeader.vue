@@ -8,6 +8,7 @@ import { Button } from '@grapegram/ui-kit';
 
 import type { Chat } from '@/entities/chat';
 import {
+  useChatStore,
   useDeleteChatMutation,
   useUploadChatAvatarMutation
 } from '@/entities/chat';
@@ -32,6 +33,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const usersStore = useUserStore();
+const chatStore = useChatStore();
 
 const chatId = computed(() => props.chat.id);
 const chatTitle = computed(() => props.chat.title);
@@ -43,11 +45,34 @@ const membersCount = computed(() => props.chat.members.length);
 const onlineMembersCount = computed(
   () => chatUsers.value?.filter(user => user?.isOnline).length || 0
 );
-const chatStatusString = computed(
-  () =>
+
+const typingMembers = computed(() => {
+  return chatStore.getTypingMembersInChat(chatId.value);
+});
+
+const typingUsernames = computed(() => {
+  return typingMembers.value
+    .map(userId => usersStore.getUserById(userId)?.username)
+    .filter(Boolean);
+});
+
+const typingStatusString = computed(() => {
+  const count = typingUsernames.value.length;
+  if (count === 0) return '';
+  if (count === 1) return `${typingUsernames.value[0]} is typing`;
+  if (count === 2)
+    return `${typingUsernames.value[0]} and ${typingUsernames.value[1]} are typing`;
+  return `${count} people are typing`;
+});
+
+const chatStatusString = computed(() => {
+  if (typingStatusString.value) return typingStatusString.value;
+
+  return (
     (membersCount.value === 1 ? '1 member' : `${membersCount.value} members`) +
     (onlineMembersCount.value > 0 ? `, ${onlineMembersCount.value} online` : '')
-);
+  );
+});
 
 const isAddUserDialogOpen = ref(false);
 const isAvatarDialogOpen = ref(false);
@@ -109,7 +134,18 @@ async function handleDeleteChat() {
       <span>
         <strong>{{ chatTitle }}</strong>
       </span>
-      <span class="text-muted-foreground text-sm">{{ chatStatusString }}</span>
+      <span class="text-muted-foreground flex items-center gap-1 text-sm">
+        {{ chatStatusString }}
+        <span v-if="typingMembers.length > 0" class="flex gap-0.5">
+          <span class="animate-bounce-dot" style="animation-delay: 0ms">.</span>
+          <span class="animate-bounce-dot" style="animation-delay: 150ms"
+            >.</span
+          >
+          <span class="animate-bounce-dot" style="animation-delay: 300ms"
+            >.</span
+          >
+        </span>
+      </span>
     </div>
 
     <div class="flex items-center gap-2">
@@ -157,3 +193,21 @@ async function handleDeleteChat() {
     </div>
   </header>
 </template>
+
+<style scoped>
+@keyframes bounce-dot {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-bounce-dot {
+  display: inline-block;
+  animation: bounce-dot 1s infinite;
+}
+</style>

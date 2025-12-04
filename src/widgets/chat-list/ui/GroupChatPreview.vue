@@ -63,7 +63,7 @@ function formatDateTime(dateString: string): string {
 const chatVariants = cva('', {
   variants: {
     variant: {
-      expanded: 'px-3 flex flex-row items-center gap-3',
+      expanded: 'px-4 flex flex-row items-center gap-4',
       compact: 'flex flex-row items-start justify-center'
     }
   },
@@ -87,7 +87,7 @@ const chatVariants = cva('', {
       )
     "
   >
-    <div class="relative h-auto w-auto">
+    <div class="relative h-full w-auto">
       <ChatAvatar :chat-id="chat.id" />
 
       <Badge
@@ -101,15 +101,16 @@ const chatVariants = cva('', {
 
     <div
       v-if="props.variant === 'expanded'"
-      class="flex h-full grow flex-col justify-between self-start overflow-hidden py-1"
+      class="flex h-full grow flex-col justify-evenly self-start overflow-hidden py-1"
     >
-      <div class="flex items-center gap-1.5">
+      <div class="flex items-center gap-2">
         <Users :size="16" class="shrink-0" />
         <h3 class="truncate">
           <strong>{{ chat.title }}</strong>
         </h3>
       </div>
       <LastMessage
+        :chat-id="chat.id"
         :message="lastMessage ?? undefined"
         :sender-name="lastMessageSender"
         :show-sender-prefix="true"

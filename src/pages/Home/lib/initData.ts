@@ -2,7 +2,7 @@ import { computed, watch } from 'vue';
 
 import { useChatStore, useGetChatsQuery } from '@/entities/chat';
 import { useGetMeQuery, useGetUsersQuery, useUserStore } from '@/entities/user';
-import { useChatSocket } from '@/features/chat';
+import { useChatSocket, useConcreteChatSocket } from '@/features/chat';
 import { getTokenFromStorage } from '@/shared/lib';
 
 export const init = () => {
@@ -45,9 +45,27 @@ export const init = () => {
 
   // --- Chat sockets management ---
   // Maintain a connection per chat and clean up when chats are removed
-  const sockets = new Map<string, ReturnType<typeof useChatSocket>>();
+  const sockets = new Map<string, ReturnType<typeof useConcreteChatSocket>>();
 
   const chatIds = computed(() => chatStore.orderedChats.map(c => c.id));
+  const userId = computed(() => userStore.user.id);
+
+  watch(
+    userId,
+    id => {
+      const token = getTokenFromStorage();
+      // If there's no token yet, skip establishing sockets
+      if (!token || !id) return;
+      const instance = useChatSocket(id, token);
+
+      instance.connect();
+
+      return () => {
+        instance.disconnect();
+      };
+    },
+    { immediate: true }
+  );
 
   watch(
     chatIds,
@@ -62,7 +80,8 @@ export const init = () => {
       // Connect sockets for new chats
       ids.forEach(id => {
         if (!existingIds.has(id)) {
-          const instance = useChatSocket(id, token);
+          const instance = useConcreteChatSocket(id, token);
+          instance.connect();
           sockets.set(id, instance);
         }
       });
@@ -72,7 +91,7 @@ export const init = () => {
         if (!currentIds.has(id)) {
           const instance = sockets.get(id);
           if (instance) {
-            instance.socket.disconnect();
+            instance.disconnect();
           }
           sockets.delete(id);
         }
