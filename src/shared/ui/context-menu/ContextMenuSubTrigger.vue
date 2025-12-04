@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { type HTMLAttributes, computed } from 'vue';
+import type { HTMLAttributes } from 'vue';
+
+import { reactiveOmit } from '@vueuse/core';
 
 import { ChevronRight } from 'lucide-vue-next';
-import {
-  ContextMenuSubTrigger,
-  type ContextMenuSubTriggerProps,
-  useForwardProps
-} from 'reka-ui';
+import type { ContextMenuSubTriggerProps } from 'reka-ui';
+import { ContextMenuSubTrigger, useForwardProps } from 'reka-ui';
 
 import { cn } from '@/shared/lib/utils';
 
@@ -17,11 +16,7 @@ const props = defineProps<
   }
 >();
 
-const delegatedProps = computed(() => {
-  const { class: _, ...delegated } = props;
-
-  return delegated;
-});
+const delegatedProps = reactiveOmit(props, 'class');
 
 const forwardedProps = useForwardProps(delegatedProps);
 </script>
@@ -31,7 +26,7 @@ const forwardedProps = useForwardProps(delegatedProps);
     v-bind="forwardedProps"
     :class="
       cn(
-        'focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none',
+        'focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-none select-none',
         inset && 'pl-8',
         props.class
       )

@@ -11,6 +11,7 @@ type Props = {
   sidebarClass?: string;
   contentClass?: string;
   autoSaveId?: string;
+  canCollapseSidebar?: boolean;
 };
 
 export const Px = (value: number): Unite => ({
@@ -24,9 +25,7 @@ export const Percentage = (value: number): Unite => ({
 </script>
 
 <script setup lang="ts">
-import { provide } from 'vue';
-import { watch } from 'vue';
-import { ref, useTemplateRef } from 'vue';
+import { provide, ref, useTemplateRef, watch } from 'vue';
 
 import { useElementSize } from '@vueuse/core';
 
@@ -48,6 +47,7 @@ const convertToSidebarUnits = (unite: Unite) => {
 
 const computedSizes = ref([20, 30, 50, 1000]);
 const sidebarMode = ref<'compact' | 'expanded'>('expanded');
+
 const onResize = () => {
   sidebarMode.value = sidebar.value?.isCollapsed ? 'compact' : 'expanded';
 };
@@ -81,7 +81,7 @@ watch(
     <ResizablePanel
       ref="sidebar"
       id="sidebar"
-      collapsible
+      :collapsible="props.canCollapseSidebar ?? true"
       :collapsed-size="computedSizes[0]"
       :min-size="computedSizes[1]"
       :max-size="computedSizes[2]"

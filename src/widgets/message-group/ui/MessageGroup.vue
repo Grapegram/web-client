@@ -19,14 +19,25 @@ export type MessageGroupProps = {
 
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import { Message as MessageComponent } from '@grapegram/ui-kit';
 
+import { useDeleteMessageMutation } from '@/entities/message';
 import { UserAvatar } from '@/features/user-avatar';
 import { cn } from '@/shared/lib/utils';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger
+} from '@/shared/ui/context-menu';
+import { UserProfileDialog } from '@/widgets/user-profile-dialog';
 
 const props = defineProps<MessageGroupProps>();
+
+const isUserProfileDialogOpen = ref(false);
+const { mutate: deleteMessage } = useDeleteMessageMutation();
 
 function messageVariantByIdAndLength(i: number): MessageVariants {
   const length = props.messages.length;
@@ -46,6 +57,14 @@ const user = computed(() => {
     color: '#f00'
   };
 });
+
+function handleAvatarClick() {
+  isUserProfileDialogOpen.value = true;
+}
+
+function handleDeleteMessage(messageId: string) {
+  deleteMessage({ message_id: messageId });
+}
 </script>
 
 <template>
@@ -53,13 +72,14 @@ const user = computed(() => {
     <UserAvatar
       v-if="props.showAvatar"
       :class="
-        cn('sticky top-[calc(100%-40px)]', {
+        cn('sticky top-[calc(100%-40px)] cursor-pointer', {
           'float-left mr-3': props.side === 'left',
           'float-right ml-3': props.side === 'right'
         })
       "
       size="sm"
       :user-id="user.id"
+      @click="handleAvatarClick"
     />
     <div
       :class="
@@ -71,18 +91,31 @@ const user = computed(() => {
         })
       "
     >
-      <MessageComponent
-        v-for="(message, index) in props.messages"
-        :key="message.id"
-        :variant="messageVariantByIdAndLength(index)"
-        :sender="user"
-        :showHeader="props.showHeader && index === 0"
-        :side="props.side"
-        :color="props.color"
-        :content="{ text: message.text, images: message.images || [] }"
-        :timestamp="new Date(message.sent_at)"
-        status="sent"
-      />
+      <ContextMenu v-for="(message, index) in props.messages" :key="message.id">
+        <ContextMenuTrigger>
+          <MessageComponent
+            :variant="messageVariantByIdAndLength(index)"
+            :sender="user"
+            :showHeader="props.showHeader && index === 0"
+            :side="props.side"
+            :color="props.color"
+            :content="{ text: message.text, images: message.images || [] }"
+            :timestamp="new Date(message.sent_at)"
+            status="sent"
+          />
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem @click="handleDeleteMessage(message.id)">
+            Delete message
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
     </div>
+
+    <!-- User Profile Dialog -->
+    <UserProfileDialog
+      v-model:open="isUserProfileDialogOpen"
+      :user-id="user.id"
+    />
   </div>
 </template>

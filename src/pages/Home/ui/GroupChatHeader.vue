@@ -126,7 +126,7 @@ async function handleDeleteChat() {
           </DropdownMenuItem>
           <DropdownMenuItem @click="isAddUserDialogOpen = true">
             <UserPlus class="mr-2" />
-            Add User
+            Add Member
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem @click="handleDeleteChat">
