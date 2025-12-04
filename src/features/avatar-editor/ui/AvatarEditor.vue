@@ -49,8 +49,7 @@ const {
   moveImage,
   setDragging,
   resetZoom,
-  getCroppedImage,
-  reset
+  getCroppedImage
 } = useAvatarEditor(props.containerSize, {
   maxFileSize: props.maxFileSize,
   outputSize: props.outputSize,
@@ -76,7 +75,7 @@ const imageStyle = computed(() => {
     transform: `translate(${state.value.cropData.x}px, ${state.value.cropData.y}px)`,
     cursor: state.value.isDragging ? 'grabbing' : 'grab',
     maxWidth: 'none',
-    objectFit: 'cover'
+    objectFit: 'cover' as const
   };
 });
 
@@ -185,8 +184,10 @@ function handleTouchEnd(): void {
 }
 
 // Zoom handlers
-function handleZoomChange(value: number[]): void {
-  setScale(value[0]);
+function handleZoomChange(value: number[] | undefined): void {
+  if (value && value.length > 0) {
+    setScale(value[0]);
+  }
 }
 
 function handleWheel(event: WheelEvent): void {
