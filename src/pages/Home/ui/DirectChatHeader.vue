@@ -14,7 +14,7 @@ import {
 import { useUserStore } from '@/entities/user';
 import { AvatarEditorDialog } from '@/features/avatar-editor';
 import type { CroppedImageResult } from '@/features/avatar-editor';
-import { ChatAvatar } from '@/features/chat-avatar';
+import { UserAvatar } from '@/features/user-avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -98,10 +98,10 @@ async function handleDeleteChat() {
   <header
     class="h-header bg-card border-border flex flex-row items-center justify-between gap-3 rounded-lg border p-3"
   >
-    <ChatAvatar
+    <UserAvatar
       size="sm"
       class="cursor-pointer transition-opacity hover:opacity-80"
-      :chat-id="chatId"
+      :user-id="mateId || ''"
       @click="handleAvatarClick"
     />
     <div class="flex grow flex-col items-start justify-center">
