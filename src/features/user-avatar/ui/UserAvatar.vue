@@ -1,6 +1,7 @@
 <script lang="ts">
 export type AvaratProps = Pick<Props, 'size'> & {
   class?: HTMLAttributes['class'];
+  avatarClass?: HTMLAttributes['class'];
   userId: string;
   showStatus?: boolean;
 };
@@ -68,6 +69,7 @@ const isOnline = computed(() => user.value?.isOnline ?? false);
       :src="userAvatar ?? ''"
       :alt="userName"
       :name="userName"
+      :class="props.avatarClass"
       :size="props.size"
     />
     <!-- </div> -->
