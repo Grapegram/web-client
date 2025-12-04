@@ -135,15 +135,6 @@ function formatDate(date: Date | null) {
   });
 }
 
-function getUserInitials(username: string) {
-  return username
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-}
-
 function handleUserClick(userId: string) {
   selectedUserId.value = userId;
   isUserProfileOpen.value = true;
@@ -282,15 +273,15 @@ function handleAvatarEditorCancel() {
                 <button
                   type="button"
                   class="relative cursor-pointer rounded-full transition-opacity hover:opacity-80"
-                  @click="handleUserClick(user.id)"
+                  @click="handleUserClick(user?.id || '')"
                 >
-                  <UserAvatar show-status :user-id="user.id" size="sm" />
+                  <UserAvatar show-status :user-id="user?.id || ''" size="sm" />
                 </button>
 
                 <div class="flex-1 overflow-hidden">
                   <div class="flex items-center gap-1">
                     <p class="truncate text-xs font-medium">
-                      {{ user.username }}
+                      {{ user?.username }}
                     </p>
                     <Badge
                       v-if="member.role !== 'member'"
@@ -309,14 +300,8 @@ function handleAvatarEditorCancel() {
                     class="text-muted-foreground flex items-center gap-1 text-[10px]"
                   >
                     <AtSign :size="10" />
-                    <p class="truncate">{{ user.email }}</p>
+                    <p class="truncate">{{ user?.email }}</p>
                   </div>
-                </div>
-
-                <div v-if="user.isVerified" class="shrink-0">
-                  <Badge variant="outline" class="px-1 py-0 text-[10px]">
-                    Verified
-                  </Badge>
                 </div>
               </div>
 
