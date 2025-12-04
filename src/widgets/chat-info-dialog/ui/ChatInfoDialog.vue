@@ -19,7 +19,7 @@ import { useUserStore } from '@/entities/user';
 import { AvatarEditorDialog } from '@/features/avatar-editor';
 import type { CroppedImageResult } from '@/features/avatar-editor';
 import { ChatAvatar } from '@/features/chat-avatar';
-import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
+import { UserAvatar } from '@/features/user-avatar';
 import { Badge } from '@/shared/ui/badge';
 import {
   Dialog,
@@ -284,20 +284,7 @@ function handleAvatarEditorCancel() {
                   class="relative cursor-pointer rounded-full transition-opacity hover:opacity-80"
                   @click="handleUserClick(user.id)"
                 >
-                  <Avatar class="size-8">
-                    <AvatarImage
-                      v-if="user.avatar"
-                      :src="user.avatar"
-                      :alt="user.username"
-                    />
-                    <AvatarFallback class="text-xs">
-                      {{ getUserInitials(user.username) }}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div
-                    v-if="user.isOnline"
-                    class="absolute right-0 bottom-0 size-2 rounded-full border border-white bg-green-500"
-                  />
+                  <UserAvatar show-status :user-id="user.id" size="sm" />
                 </button>
 
                 <div class="flex-1 overflow-hidden">
