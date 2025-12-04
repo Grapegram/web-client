@@ -1,5 +1,6 @@
 <script lang="ts">
 import type { Chat } from '@/entities/chat';
+import { UserAvatar } from '@/features/user-avatar';
 
 type Variants = 'compact' | 'expanded';
 type Props = {
@@ -21,7 +22,6 @@ import { DateTime } from 'luxon';
 
 import { useLoadLastMessageQuery } from '@/entities/message';
 import { useUserStore } from '@/entities/user';
-import { ChatAvatar } from '@/features/chat-avatar';
 import { cn } from '@/shared/lib/utils';
 import { Badge } from '@/shared/ui/badge';
 
@@ -92,13 +92,7 @@ const chatVariants = cva('', {
     "
   >
     <div class="relative h-auto w-auto">
-      <ChatAvatar :chat-id="chat.id" />
-
-      <!-- Online indicator for direct chats -->
-      <div
-        v-if="mate?.isOnline"
-        class="border-background absolute right-0 bottom-0 h-3 w-3 rounded-full border-2 bg-green-500"
-      />
+      <UserAvatar show-status :user-id="mate?.id || ''" />
 
       <Badge
         v-if="props.variant === 'compact' && unreaded > 0"
