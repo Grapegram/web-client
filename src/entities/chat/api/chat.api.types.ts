@@ -55,3 +55,7 @@ export interface CreateDirectChatResponse {
   chat_id: string;
   title: string;
 }
+
+export interface GetChatByIdResponse {
+  chat: Chat;
+}
