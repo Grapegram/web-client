@@ -1,11 +1,12 @@
 import { useMutation } from '@pinia/colada';
 
 import { MessageApi } from '../api/message.api';
+import type { DeleteMessageRequest } from '../api/message.api.types';
 import { useMessageStore } from './message.store';
 
 export const useDeleteMessageMutation = () =>
   useMutation({
-    mutation: MessageApi.remove,
+    mutation: (variables: DeleteMessageRequest) => MessageApi.remove(variables),
     onSuccess: (_, variables) => {
       const messageStore = useMessageStore();
       // Find the message to get chat_id

@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { type HTMLAttributes, computed } from 'vue';
+import type { HTMLAttributes } from 'vue';
 
-import {
-  ContextMenuItem,
-  type ContextMenuItemEmits,
-  type ContextMenuItemProps,
-  useForwardPropsEmits
-} from 'reka-ui';
+import { reactiveOmit } from '@vueuse/core';
+
+import type { ContextMenuItemEmits, ContextMenuItemProps } from 'reka-ui';
+import { ContextMenuItem, useForwardPropsEmits } from 'reka-ui';
 
 import { cn } from '@/shared/lib/utils';
 
@@ -15,11 +13,7 @@ const props = defineProps<
 >();
 const emits = defineEmits<ContextMenuItemEmits>();
 
-const delegatedProps = computed(() => {
-  const { class: _, ...delegated } = props;
-
-  return delegated;
-});
+const delegatedProps = reactiveOmit(props, 'class');
 
 const forwarded = useForwardPropsEmits(delegatedProps, emits);
 </script>
@@ -29,7 +23,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
     v-bind="forwarded"
     :class="
       cn(
-        'focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50',
+        'focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
         inset && 'pl-8',
         props.class
       )
