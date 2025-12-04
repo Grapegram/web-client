@@ -9,8 +9,7 @@ export const useChangeChatTitleMutation = () =>
     onSuccess: (_, variables) => {
       const chatStore = useChatStore();
       chatStore.updateChat(variables.chat_id, {
-        title: variables.new_title,
-        updated_at: new Date().toISOString()
+        title: variables.new_title
       });
     }
   });

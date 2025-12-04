@@ -12,12 +12,12 @@ export const useAddReactionMutation = () =>
       const allMessages = messageStore.allMessages;
       const message = allMessages.find(m => m.id === variables.message_id);
 
-      if (message) {
-        messageStore.addReaction(
-          message.chat_id,
-          variables.message_id,
-          variables.reaction
-        );
-      }
+      // if (message) {
+      //   messageStore.addReaction(
+      //     message.chat_id,
+      //     variables.message_id,
+      //     variables.reaction
+      //   );
+      // }
     }
   });

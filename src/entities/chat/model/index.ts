@@ -6,10 +6,6 @@ export { useChatStore } from './chat.store';
 export { useCreateChatMutation } from './createChat.mutation';
 export { useCreateDirectChatMutation } from './createDirectChat.mutation';
 export { useChangeChatTitleMutation } from './changeChatTitle.mutation';
-export {
-  useArchiveChatMutation,
-  useUnarchiveChatMutation
-} from './archiveChat.mutation';
 export { useUploadChatAvatarMutation } from './uploadChatAvatar.mutation';
 export { useDeleteChatMutation } from './deleteChat.mutation';
 export { useFetchChatByIdMutation } from './fetchChatById.mutation';
