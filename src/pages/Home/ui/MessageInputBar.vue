@@ -1,15 +1,20 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
+import { useChatStore } from '@entities/chat';
 import { ImagePlus, Paperclip, SendHorizontal, X } from 'lucide-vue-next';
 
 import { MessageInput } from '@/features/message-input';
+import { GLOBAL_EVENT_EMITTER } from '@/shared/api';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { ImageCarousel } from '@/shared/ui/image-carousel';
 
 // Constants
 const MAX_IMAGES = 10;
+
+// Stores
+const chatStore = useChatStore();
 
 // Emits
 const emit = defineEmits<{
@@ -41,6 +46,81 @@ const attachmentButtonTitle = computed(() => {
   return `Attach images (${attachedImages.value.length}/${MAX_IMAGES})`;
 });
 
+const trackTyping = (() => {
+  const set = () =>
+    GLOBAL_EVENT_EMITTER.emit('start_typing', chatStore.currentChatId);
+  const reset = () =>
+    GLOBAL_EVENT_EMITTER.emit('stop_typing', chatStore.currentChatId);
+  const DELAY = 3000; // 3 seconds
+  let interval: ReturnType<typeof setTimeout> | null = null;
+  return () => {
+    if (interval) {
+      clearTimeout(interval);
+    } else {
+      set();
+    }
+    interval = setTimeout(() => {
+      reset();
+      interval = null;
+    }, DELAY);
+  };
+})();
+
+// Watch for draft changes and save to store
+watch(
+  [messageText, attachedImages],
+  () => {
+    trackTyping();
+    const currentChatId = chatStore.currentChatId;
+    if (currentChatId) {
+      chatStore.setDraftMessage(
+        currentChatId,
+        messageText.value,
+        attachedImages.value
+      );
+    }
+  },
+  { deep: true }
+);
+
+// Watch for chat changes and load draft
+watch(
+  () => chatStore.currentChatId,
+  newChatId => {
+    if (newChatId) {
+      const draft = chatStore.getDraftMessage(newChatId);
+      if (draft) {
+        messageText.value = draft.text;
+        attachedImages.value = draft.images;
+
+        // Reset textarea height after loading draft
+        setTimeout(() => {
+          const textarea = document.querySelector(
+            '.message-input-textarea'
+          ) as HTMLTextAreaElement;
+          if (textarea) {
+            textarea.style.height = '';
+            textarea.style.height = textarea.scrollHeight + 'px';
+          }
+        }, 0);
+      } else {
+        // Clear inputs if no draft
+        messageText.value = '';
+        attachedImages.value = [];
+
+        // Reset textarea height
+        const textarea = document.querySelector(
+          '.message-input-textarea'
+        ) as HTMLTextAreaElement;
+        if (textarea) {
+          textarea.style.height = '';
+        }
+      }
+    }
+  },
+  { immediate: true }
+);
+
 // Methods
 function onMessageInput(e: Event) {
   const el = e.target as HTMLTextAreaElement;
@@ -58,6 +138,12 @@ function onSend() {
     text: messageText.value.trim(),
     images: attachedImages.value
   });
+
+  // Clear draft from store
+  const currentChatId = chatStore.currentChatId;
+  if (currentChatId) {
+    chatStore.clearDraftMessage(currentChatId);
+  }
 
   // Clear everything after sending
   messageText.value = '';
