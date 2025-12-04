@@ -150,6 +150,38 @@ export const useChatStore = defineStore(
       return null;
     };
 
+    const setMemberTyping = (
+      chatId: string,
+      userId: string,
+      isTyping: boolean
+    ) => {
+      const chat = chats.value.get(chatId);
+      if (!chat) return;
+
+      const updatedMembers = chat.members.map(member =>
+        member.user_id === userId ? { ...member, is_typing: isTyping } : member
+      );
+
+      chats.value.set(chatId, { ...chat, members: updatedMembers });
+    };
+
+    const getTypingMembersInChat = (chatId: string): string[] => {
+      const chat = chats.value.get(chatId);
+      if (!chat) return [];
+
+      return chat.members
+        .filter(member => member.is_typing === true)
+        .map(member => member.user_id);
+    };
+
+    const isMemberTypingInChat = (chatId: string, userId: string): boolean => {
+      const chat = chats.value.get(chatId);
+      if (!chat) return false;
+
+      const member = chat.members.find(m => m.user_id === userId);
+      return member?.is_typing === true;
+    };
+
     return {
       // State
       chats,
@@ -175,7 +207,10 @@ export const useChatStore = defineStore(
       getUnreadCount,
       updateChatAvatar,
       setChats,
-      getLastMessageTime
+      getLastMessageTime,
+      setMemberTyping,
+      getTypingMembersInChat,
+      isMemberTypingInChat
     };
   },
   {

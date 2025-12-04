@@ -12,3 +12,5 @@ export type {
   AddMemberResponse,
   GetChatByIdResponse
 } from './chat.api.types';
+
+export type * from './chat.events';
