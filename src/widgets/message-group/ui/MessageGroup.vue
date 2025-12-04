@@ -23,13 +23,21 @@ import { computed, ref } from 'vue';
 
 import { Message as MessageComponent } from '@grapegram/ui-kit';
 
+import { useDeleteMessageMutation } from '@/entities/message';
 import { UserAvatar } from '@/features/user-avatar';
 import { cn } from '@/shared/lib/utils';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger
+} from '@/shared/ui/context-menu';
 import { UserProfileDialog } from '@/widgets/user-profile-dialog';
 
 const props = defineProps<MessageGroupProps>();
 
 const isUserProfileDialogOpen = ref(false);
+const { mutate: deleteMessage } = useDeleteMessageMutation();
 
 function messageVariantByIdAndLength(i: number): MessageVariants {
   const length = props.messages.length;
@@ -52,6 +60,10 @@ const user = computed(() => {
 
 function handleAvatarClick() {
   isUserProfileDialogOpen.value = true;
+}
+
+function handleDeleteMessage(messageId: string) {
+  deleteMessage({ message_id: messageId });
 }
 </script>
 
@@ -79,18 +91,25 @@ function handleAvatarClick() {
         })
       "
     >
-      <MessageComponent
-        v-for="(message, index) in props.messages"
-        :key="message.id"
-        :variant="messageVariantByIdAndLength(index)"
-        :sender="user"
-        :showHeader="props.showHeader && index === 0"
-        :side="props.side"
-        :color="props.color"
-        :content="{ text: message.text, images: message.images || [] }"
-        :timestamp="new Date(message.sent_at)"
-        status="sent"
-      />
+      <ContextMenu v-for="(message, index) in props.messages" :key="message.id">
+        <ContextMenuTrigger>
+          <MessageComponent
+            :variant="messageVariantByIdAndLength(index)"
+            :sender="user"
+            :showHeader="props.showHeader && index === 0"
+            :side="props.side"
+            :color="props.color"
+            :content="{ text: message.text, images: message.images || [] }"
+            :timestamp="new Date(message.sent_at)"
+            status="sent"
+          />
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem @click="handleDeleteMessage(message.id)">
+            Delete message
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
     </div>
 
     <!-- User Profile Dialog -->
