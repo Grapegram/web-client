@@ -121,7 +121,7 @@ function handleAvatarEditorCancel() {
                     <UserAvatar
                       v-if="user?.id"
                       :user-id="user.id"
-                      size="lg"
+                      avatar-class="size-20"
                       class="size-20"
                     />
                     <div

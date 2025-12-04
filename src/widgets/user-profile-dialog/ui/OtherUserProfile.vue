@@ -107,9 +107,8 @@ async function handleSendMessage() {
             <div class="relative">
               <UserAvatar
                 v-if="userId"
-                show-status
                 :user-id="userId"
-                size="lg"
+                avatar-class="size-20"
                 class="size-20"
               />
             </div>
